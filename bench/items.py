@@ -11,8 +11,9 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from phc_scribe.encounter import Encounter
 
-Stratum = Literal["S1", "S2", "S3", "R", "pilot", "smoke"]
-Origin = Literal["real", "translated", "constructed"]
+Stratum = Literal["S1", "S2", "S3", "S4", "G", "R", "pilot", "smoke"]
+Origin = Literal["real", "translated", "constructed", "generated"]
+Language = Literal["en", "yo", "pcm", "ha", "ig"]
 T = TypeVar("T", bound=BaseModel)
 
 
@@ -22,7 +23,7 @@ class BenchItem(BaseModel):
     item_id: str
     group_id: str = Field(description="Source-note group; a note and its translation share it.")
     stratum: Stratum
-    language: Literal["en", "yo"]
+    language: Language
     origin: Origin
     transcript: str
     gold: Encounter

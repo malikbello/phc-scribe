@@ -52,8 +52,9 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 | Faster cloud serving (card / Lightning / ZeroGPU) | Malik | Modal account now available; ADR + spend limit + tokens in environment pending |
 | **Gate 1 data-source decision:** AMR has 62 records and ~1 ANC note (`docs/data-audit.md` §4, options a–d) | Malik | **Blocking Gate 1** |
 | HF access: MamaBench ✅ granted. NigBench-MAMAI, nig-bench, med-convo-nig still show **"awaiting review"** for account `malikbello`. Confirm the approval was for this account | Malik | Pending |
-| **Accept or reject ADR-0016** (team-authored, licence-clean benchmark) | Malik | **Blocking the benchmark build** |
-| **Nurse and student confirm roughly 5 h/day for 5–6 days of note-writing and labelling** (ADR-0016 depends on it) | Malik | **Blocking** |
+| **Accept or reject ADR-0016** (revised: counted 500 = real NigBench-MAMAI speech, labelled by Malik; generated notes as a supplement) | Malik | **Blocking the benchmark build** |
+| **Email Intron Health (tobi@intron.io)** to ask for approval of the pending access requests; fallback in ADR-0016 §6 (2 Oct / 5 Oct) | Malik | **Today** |
+| Nurse: about 1 h (double-label 50 items) + 1.5 h (rules/vocabulary review) + optional demo test. Confirm her and the student as named team members (Track B needs 2–5) | Malik | Pending |
 | Before submission: remove day/gate wording from public docs (see Submission conventions) | Malik + Claude | From now |
 | Gate 1 decision rules (`docs/data-audit.md` §3): committed before the audit ran and applied as written. Confirm | Malik | Pending |
 | Review annotation guidelines v0, finding vocabulary, danger-sign rules v0 (open questions in guidelines §9) | Nurse | Pending |
@@ -94,6 +95,8 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 - **Finding:** AMR is a 62-record OCR/HTR benchmark of *synthesized/volunteer-produced* documents. They are English only and mostly general OPD; 1–2 are ANC and 0 ANC notes have danger signs. Under the §3 rules, **ANC scope fails, and the ADR-0013 fallback fails too** (62 ≪ 500). A new data source is needed. The options are in `docs/data-audit.md` §4. Pilot items and the model baselines wait on this decision.
 
 **29 Sept, session 3 (round 3):** IyàwóBench checked: CC BY 4.0, but febrile triage only (0 ANC visits). MamaBench is accessible: 78 ANC vignettes, 37 with danger signs, CC-BY-4.0. The Intron gated sets are still pending. **ADR-0016 proposed:** author the ANC benchmark ourselves (licence-clean, releasable), with MAMAI as the real-language stratum and real clinical data as upside only.
+
+**29 Sept, session 3 (round 4):** read the NAIC build requirements (`docs/naic-requirements.md`): validation must use real data, "not simulated". ADR-0016 revised: the counted benchmark is real NigBench-MAMAI speech. Built the S4 pipeline: `scripts/fetch_mamai.py` (text columns only, seeded stratified queue with keyword hints), an offline labeler at `tools/labeler/labeler.html` (browser-tested, works on a phone), and `scripts/build_s4_items.py` (evidence verified verbatim).
 
 ## Next steps: days 1–2 (Gate 1)
 1. ✅ Access verified (HF, Kaggle). Modal: verify from the laptop.

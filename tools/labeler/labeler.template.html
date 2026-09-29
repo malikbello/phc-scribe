@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PHC Scribe Labeler</title>
+<!--
+  Offline labeler for S4 (real patient speech) items. ADR-0016.
+  Generated from labeler.template.html by scripts/build_labeler.py; do not edit
+  labeler.html by hand. Open the file in a browser; nothing is sent anywhere.
+  Load data/private/label_queue.s4.jsonl, label, then Export and save the file
+  under data/private/labels/ (git-ignored).
+-->
+<style>
+  :root {
+    --bg: #f7f7f5; --panel: #ffffff; --ink: #1d1d1b; --muted: #6b6b66; --line: #deded8;
+    --accent: #1f6f5c; --accent-ink: #ffffff; --danger: #a4302a; --hint: #fff4d6; --sel: #cfe8df;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #161615; --panel: #20201e; --ink: #ecece8; --muted: #a2a29b; --line: #3a3a36;
+      --accent: #5fbfa4; --accent-ink: #0d1f1a; --danger: #ef8a80; --hint: #3b3320; --sel: #24453b;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif; }
+  header { position: sticky; top: 0; z-index: 2; background: var(--panel);
+    border-bottom: 1px solid var(--line); padding: 8px 16px; display: flex; flex-wrap: wrap;
+    gap: 8px; align-items: center; }
+  header .grow { flex: 1; }
+  main { max-width: 860px; margin: 0 auto; padding: 16px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 16px; margin-bottom: 12px; }
+  .meta { color: var(--muted); font-size: 13px; }
+  #transcript { font-size: 21px; line-height: 1.6; white-space: pre-wrap; user-select: text;
+    padding: 12px; border-radius: 8px; background: var(--bg); border: 1px dashed var(--line); }
+  #transcript::selection, #transcript *::selection { background: var(--sel); }
+  label.small { font-size: 13px; color: var(--muted); display: block; margin-bottom: 4px; }
+  select, input[type=text], textarea { font: inherit; color: var(--ink); background: var(--panel);
+    border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; max-width: 100%; }
+  button { font: inherit; border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+    border-radius: 6px; padding: 6px 12px; cursor: pointer; min-height: 38px; }
+  button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  button.on { outline: 2px solid var(--accent); }
+  button:disabled { opacity: .45; cursor: default; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0; }
+  #evidence { min-height: 38px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px;
+    flex: 1; min-width: 200px; background: var(--bg); }
+  ul.list { list-style: none; padding: 0; margin: 0; }
+  ul.list li { display: flex; gap: 8px; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--line); padding: 6px 0; flex-wrap: wrap; }
+  .tag { font-size: 12px; padding: 1px 6px; border-radius: 999px; border: 1px solid var(--line); }
+  .tag.ds { color: var(--danger); border-color: var(--danger); }
+  .hint { background: var(--hint); border-radius: 6px; padding: 6px 8px; margin: 4px 0;
+    display: flex; gap: 8px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+  .status { font-weight: 600; }
+  .err { color: var(--danger); }
+  .kbd { font-size: 12px; color: var(--muted); }
+  #empty { text-align: center; color: var(--muted); padding: 48px 16px; }
+</style>
+</head>
+<body>
+<header>
+  <strong>PHC Scribe Labeler</strong>
+  <label class="small" style="margin:0">Queue <input type="file" id="queueFile" accept=".jsonl,.json"></label>
+  <label class="small" style="margin:0">Resume labels <input type="file" id="labelsFile" accept=".jsonl,.json"></label>
+  <input type="text" id="labeller" placeholder="Your name" size="10" aria-label="Labeller name">
+  <span class="grow"></span>
+  <span id="progress" class="meta"></span>
+  <button id="exportBtn">Export labels</button>
+</header>
+<main>
+  <div id="empty" class="card">Load <code>data/private/label_queue.s4.jsonl</code> to start.
+    <p class="meta">Read <code>docs/annotation-guidelines.md</code> first. Nothing leaves this browser.</p></div>
+  <div id="app" hidden>
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <span class="meta" id="itemMeta"></span>
+        <span class="status" id="itemStatus"></span>
+      </div>
+      <div id="transcript"></div>
+      <p class="kbd">Select the exact words that show a finding, then choose the concept and assertion.</p>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <div id="evidence" aria-live="polite"><span class="meta">Selected evidence appears here</span></div>
+      </div>
+      <div class="row">
+        <select id="concept" aria-label="Concept"></select>
+      </div>
+      <div class="row" id="assertions"></div>
+      <div class="row">
+        <button class="primary" id="addBtn">Add finding (Enter)</button>
+        <span id="addErr" class="err"></span>
+      </div>
+      <ul class="list" id="findings"></ul>
+    </div>
+
+    <div class="card" id="hintsCard">
+      <label class="small">Keyword-baseline hints (suggestions only; check each against the text)</label>
+      <div id="hints"></div>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <label class="small" style="margin:0">Note <input type="text" id="note" size="40"></label>
+      </div>
+      <div class="row">
+        <button id="prevBtn">&larr; Prev</button>
+        <button class="primary" id="doneBtn">Save &amp; next (Ctrl+Enter)</button>
+        <select id="skipReason" aria-label="Skip reason">
+          <option value="">Skip because…</option>
+          <option value="not_pregnancy_related">Not about pregnancy/maternal care</option>
+          <option value="unintelligible">Transcript unintelligible</option>
+          <option value="not_patient_report">Not the woman's own report (general question)</option>
+          <option value="duplicate">Duplicate</option>
+          <option value="other">Other (write a note)</option>
+        </select>
+        <button id="skipBtn">Skip</button>
+        <button id="nextBtn">Next &rarr;</button>
+        <button id="nextOpenBtn">Next unlabelled</button>
+      </div>
+      <p class="kbd">No findings? Just "Save &amp; next": an empty record is a valid label.</p>
+    </div>
+  </div>
+</main>
+
+<script id="vocab" type="application/json">/*VOCAB*/null</script>
+<script>
+"use strict";
+const VOCAB = JSON.parse(document.getElementById("vocab").textContent);
+const ASSERTIONS = [["present","1"],["absent","2"],["possible","3"],["historical","4"]];
+const S = { queue: [], labels: {}, i: 0, pending: [], assertion: "present", evidence: "", key: "" };
+const $ = (id) => document.getElementById(id);
+
+function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* private mode */ } }
+function load(k) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch (e) { return null; } }
+function parseJsonl(text) { return text.split(/\r?\n/).filter(l => l.trim()).map(l => JSON.parse(l)); }
+function esc(s) { return s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+const conceptById = Object.fromEntries(VOCAB.concepts.map(c => [c.id, c]));
+
+function buildConceptSelect() {
+  const sel = $("concept");
+  const groups = [["Danger signs", VOCAB.concepts.filter(c => c.danger_sign)],
+                  ["Other ANC findings", VOCAB.concepts.filter(c => !c.danger_sign)]];
+  sel.innerHTML = "<option value=''>Concept…</option>" + groups.map(([g, cs]) =>
+    `<optgroup label="${g}">` + cs.map(c => `<option value="${c.id}">${esc(c.label_en)}</option>`).join("") + "</optgroup>").join("");
+  $("assertions").innerHTML = ASSERTIONS.map(([a, k]) =>
+    `<button data-a="${a}">${a} <span class="kbd">${k}</span></button>`).join("");
+  $("assertions").querySelectorAll("button").forEach(b => b.onclick = () => setAssertion(b.dataset.a));
+  setAssertion("present");
+}
+function setAssertion(a) {
+  S.assertion = a;
+  $("assertions").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.a === a));
+}
+
+function current() { return S.queue[S.i]; }
+function persist() { store(S.key, { labels: S.labels, i: S.i }); store("labeller", $("labeller").value); }
+
+function render() {
+  const q = current();
+  if (!q) return;
+  $("empty").hidden = true; $("app").hidden = false;
+  const lab = S.labels[q.item_id];
+  S.pending = lab ? JSON.parse(JSON.stringify(lab.findings)) : [];
+  S.evidence = ""; $("evidence").innerHTML = "<span class='meta'>Selected evidence appears here</span>";
+  $("transcript").textContent = q.transcript;
+  $("itemMeta").textContent = `${S.i + 1} / ${S.queue.length} · ${q.language} · ${q.item_id}`;
+  $("itemStatus").textContent = lab ? (lab.status === "skip" ? `skipped (${lab.skip_reason})` : "labelled") : "unlabelled";
+  $("note").value = lab && lab.note ? lab.note : "";
+  $("skipReason").value = "";
+  $("addErr").textContent = "";
+  renderFindings(); renderHints(q);
+  const done = Object.keys(S.labels).length;
+  $("progress").textContent = `${done} / ${S.queue.length} done`;
+  $("prevBtn").disabled = S.i === 0; $("nextBtn").disabled = S.i >= S.queue.length - 1;
+}
+function renderFindings() {
+  $("findings").innerHTML = S.pending.map((f, k) => {
+    const c = conceptById[f.concept];
+    return `<li><span><strong>${esc(c ? c.label_en : f.concept)}</strong>
+      ${c && c.danger_sign ? "<span class='tag ds'>danger sign</span>" : ""}
+      <span class="tag">${f.assertion}</span> “${esc(f.evidence.text)}”</span>
+      <button data-k="${k}" aria-label="Remove">Remove</button></li>`;
+  }).join("") || "<li class='meta'>No findings yet.</li>";
+  $("findings").querySelectorAll("button[data-k]").forEach(b => b.onclick = () => {
+    S.pending.splice(+b.dataset.k, 1); renderFindings();
+  });
+}
+function renderHints(q) {
+  const hints = q.hints || [];
+  $("hintsCard").hidden = hints.length === 0;
+  $("hints").innerHTML = hints.map((h, k) => {
+    const c = conceptById[h.concept];
+    return `<div class="hint"><span>${esc(c ? c.label_en : h.concept)} · ${h.assertion} · “${esc(h.evidence ? h.evidence.text : "")}”</span>
+      <button data-h="${k}">Use</button></div>`;
+  }).join("");
+  $("hints").querySelectorAll("button[data-h]").forEach(b => b.onclick = () => {
+    const h = hints[+b.dataset.h];
+    if (h.evidence) addFinding(h.concept, h.assertion, h.evidence.text);
+  });
+}
+
+function captureSelection() {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0) return;
+  const node = sel.getRangeAt(0).commonAncestorContainer;
+  if (!$("transcript").contains(node)) return;
+  const text = sel.toString().trim();
+  if (!text) return;
+  S.evidence = text;
+  $("evidence").textContent = "“" + text + "”";
+}
+document.addEventListener("selectionchange", captureSelection);
+
+function addFinding(concept, assertion, evidence) {
+  const q = current();
+  $("addErr").textContent = "";
+  if (!concept) { $("addErr").textContent = "Choose a concept."; return; }
+  if (!evidence) { $("addErr").textContent = "Select the evidence words in the transcript."; return; }
+  if (!q.transcript.normalize("NFC").includes(evidence.normalize("NFC"))) {
+    $("addErr").textContent = "Evidence must be exact words from the transcript."; return;
+  }
+  if (S.pending.some(f => f.concept === concept && f.assertion === assertion)) {
+    $("addErr").textContent = "That concept + assertion is already listed."; return;
+  }
+  S.pending.push({ concept, assertion, evidence: { text: evidence } });
+  $("concept").value = ""; renderFindings();
+}
+
+function save(status, skipReason) {
+  const q = current();
+  const labeller = $("labeller").value.trim();
+  if (!labeller) { alert("Enter your name first (top bar)."); $("labeller").focus(); return false; }
+  const note = $("note").value.trim();
+  if (status === "skip" && skipReason === "other" && !note) { alert("Write a note for 'Other'."); return false; }
+  S.labels[q.item_id] = {
+    item_id: q.item_id, status,
+    ...(status === "skip" ? { skip_reason: skipReason } : {}),
+    findings: status === "skip" ? [] : S.pending,
+    labeller, labelled_at: new Date().toISOString(),
+    ...(note ? { note } : {}),
+  };
+  persist(); return true;
+}
+function go(i) { S.i = Math.max(0, Math.min(S.queue.length - 1, i)); persist(); render(); window.scrollTo(0, 0); }
+function nextOpen() {
+  for (let k = 1; k <= S.queue.length; k++) {
+    const j = (S.i + k) % S.queue.length;
+    if (!S.labels[S.queue[j].item_id]) return go(j);
+  }
+  alert("Every item has a label. Export now.");
+}
+
+$("addBtn").onclick = () => addFinding($("concept").value, S.assertion, S.evidence);
+$("doneBtn").onclick = () => { if (save("labelled")) nextOpen(); };
+$("skipBtn").onclick = () => {
+  const r = $("skipReason").value;
+  if (!r) { alert("Choose a skip reason."); return; }
+  if (save("skip", r)) nextOpen();
+};
+$("prevBtn").onclick = () => go(S.i - 1);
+$("nextBtn").onclick = () => go(S.i + 1);
+$("nextOpenBtn").onclick = nextOpen;
+$("labeller").onchange = persist;
+
+document.addEventListener("keydown", (e) => {
+  if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+  if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); $("doneBtn").click(); return; }
+  if (e.key === "Enter" && e.target.tagName !== "SELECT") { e.preventDefault(); $("addBtn").click(); return; }
+  const a = ASSERTIONS.find(([, k]) => k === e.key);
+  if (a && e.target.tagName !== "SELECT") setAssertion(a[0]);
+});
+
+async function hash(text) {
+  try {
+    const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+    return Array.from(new Uint8Array(d)).slice(0, 8).map(b => b.toString(16).padStart(2, "0")).join("");
+  } catch (e) { return String(text.length); }
+}
+$("queueFile").onchange = async (ev) => {
+  const f = ev.target.files[0]; if (!f) return;
+  const text = await f.text();
+  try { S.queue = parseJsonl(text); } catch (e) { alert("Not a valid JSONL queue: " + e.message); return; }
+  S.key = "phc-labels-" + await hash(text);
+  const saved = load(S.key);
+  S.labels = saved ? saved.labels : {}; S.i = saved ? Math.min(saved.i, S.queue.length - 1) : 0;
+  render();
+};
+$("labelsFile").onchange = async (ev) => {
+  const f = ev.target.files[0]; if (!f) return;
+  try {
+    for (const lab of parseJsonl(await f.text())) {
+      const prev = S.labels[lab.item_id];
+      if (!prev || lab.labelled_at >= prev.labelled_at) S.labels[lab.item_id] = lab;
+    }
+  } catch (e) { alert("Not a valid labels file: " + e.message); return; }
+  persist(); render();
+};
+$("exportBtn").onclick = () => {
+  const rows = Object.values(S.labels);
+  if (!rows.length) { alert("No labels yet."); return; }
+  const name = ($("labeller").value.trim() || "labels").replace(/\W+/g, "_");
+  const blob = new Blob([rows.map(r => JSON.stringify(r)).join("\n") + "\n"], { type: "application/jsonl" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `labels.s4.${name}.${new Date().toISOString().slice(0, 10)}.jsonl`;
+  a.click(); URL.revokeObjectURL(a.href);
+};
+
+$("labeller").value = load("labeller") || "";
+buildConceptSelect();
+</script>
+</body>
+</html>
