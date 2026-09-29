@@ -19,3 +19,4 @@ Format: context → decision → consequences. A decision changes only through a
 | [0013](0013-antenatal-module-one.md) | Antenatal care is clinical module one | Accepted |
 | [0014](0014-offline-first-pwa.md) | Offline-first PWA frontend with enforced performance budgets | Accepted |
 | [0015](0015-hf-space-public-api.md) | Host the public API on a free Hugging Face Space; defer GPU serving | Accepted |
+| [0016](0016-licence-clean-benchmark-data.md) | Benchmark data is team-authored and licence-clean, anchored in open real data | **Proposed** |

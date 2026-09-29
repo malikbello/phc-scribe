@@ -11,3 +11,7 @@ One row per data or model source. Nothing is used for training until its row say
 | Nigeria National Standing Orders (CHEWs/JCHEWs) | Rule citations | Government publication; terms to confirm | n/a | Citation | No |
 | AfriMed-QA | Not used in v0 (possible regression or general eval set) | CC BY-NC-SA 4.0 | Per its paper | Non-commercial evaluation | No |
 | Constructed smoke items (`tests/fixtures/smoke_items.jsonl`) | CI smoke-eval only | Written for this repo | n/a (no patient data) | Tests only; never benchmark data | Yes |
+| `HelpMum-Personal/MamaBench` @ `d85c704` | Case-card seeds for the authored ANC benchmark (proposed, ADR-0016) | CC-BY-4.0 (card metadata); gated with automatic approval | Clinician-authored vignettes; no patient data | Adapt with attribution (HelpMum Africa; arXiv 2607.14385) | Card read 29 Sept |
+| IyàwóBench (`anthoniooladimeji11-coder/iyawobench`) @ `6b0006c` | Format reference; possible triage regression check | CC BY 4.0 (README) | Synthetic vignettes derived from deployment statistics | Adapt with attribution (Iyawo Health; arXiv 2605.23465) | README read 29 Sept |
+| `intronhealth/NigBench-MAMAI-Speech-QA` @ `63b8620` | Real-language stratum S4 (proposed); in-domain Yoruba ASR test | CC-BY-4.0 (card) | Informed consent stated; PII removed | Training and evaluation with attribution | Access pending |
+| Intron NC sets (`nig-bench`, `med-convo-nig`, `afrispeech-dialog`, `AfriSwitchCare`) | Evaluation only | CC-BY-NC-SA-4.0 | Simulated/consented per cards | **Never training** | Cards read 29 Sept |

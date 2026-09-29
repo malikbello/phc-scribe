@@ -51,7 +51,9 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 | UI/UCH ethics route for real Yoruba dictations (S2, acceleration phase) | Nurse | Not started |
 | Faster cloud serving (card / Lightning / ZeroGPU) | Malik | Modal account now available; ADR + spend limit + tokens in environment pending |
 | **Gate 1 data-source decision:** AMR has 62 records and ~1 ANC note (`docs/data-audit.md` §4, options a–d) | Malik | **Blocking Gate 1** |
-| Request HF access: `intronhealth/NigBench-MAMAI-Speech-QA`, `intronhealth/nig-bench`, `intronhealth/med-convo-nig` (manual approval) | Malik | **Today** |
+| HF access: MamaBench ✅ granted. NigBench-MAMAI, nig-bench, med-convo-nig still show **"awaiting review"** for account `malikbello`. Confirm the approval was for this account | Malik | Pending |
+| **Accept or reject ADR-0016** (team-authored, licence-clean benchmark) | Malik | **Blocking the benchmark build** |
+| **Nurse and student confirm roughly 5 h/day for 5–6 days of note-writing and labelling** (ADR-0016 depends on it) | Malik | **Blocking** |
 | Before submission: remove day/gate wording from public docs (see Submission conventions) | Malik + Claude | From now |
 | Gate 1 decision rules (`docs/data-audit.md` §3): committed before the audit ran and applied as written. Confirm | Malik | Pending |
 | Review annotation guidelines v0, finding vocabulary, danger-sign rules v0 (open questions in guidelines §9) | Nurse | Pending |
@@ -90,6 +92,8 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 - The access check passes (HF, gated N-ATLaS, dataset, Kaggle). Modal cannot be reached from the cloud session (gRPC); see Environment.
 - **The data audit ran.** `scripts/audit_amr.py` now falls back to reading `metadata.csv` plus the `truth/*.txt` files, because current `datasets` refuses the repo's legacy loading script. The aggregates are in `data/audit/amr_audit.json`. 30 scrubbed samples are in the git-ignored `data/private/`; nobody has read them yet.
 - **Finding:** AMR is a 62-record OCR/HTR benchmark of *synthesized/volunteer-produced* documents. They are English only and mostly general OPD; 1–2 are ANC and 0 ANC notes have danger signs. Under the §3 rules, **ANC scope fails, and the ADR-0013 fallback fails too** (62 ≪ 500). A new data source is needed. The options are in `docs/data-audit.md` §4. Pilot items and the model baselines wait on this decision.
+
+**29 Sept, session 3 (round 3):** IyàwóBench checked: CC BY 4.0, but febrile triage only (0 ANC visits). MamaBench is accessible: 78 ANC vignettes, 37 with danger signs, CC-BY-4.0. The Intron gated sets are still pending. **ADR-0016 proposed:** author the ANC benchmark ourselves (licence-clean, releasable), with MAMAI as the real-language stratum and real clinical data as upside only.
 
 ## Next steps: days 1–2 (Gate 1)
 1. ✅ Access verified (HF, Kaggle). Modal: verify from the laptop.

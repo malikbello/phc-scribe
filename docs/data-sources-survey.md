@@ -53,6 +53,18 @@ _Scope: Indaba 2025 (Kigali) and 2026 (Nigeria) posters, papers, DS4Health works
 - The benchmark design stays **clinician-constructed ANC notes anchored in real data**. The anchors are now stronger: real maternal distributions (St Luke's MNCH), real PHC vignette structure (IyàwóBench), real maternal phrasing (NigBench-MAMAI) and Nigerian maternal QA (HelpMum).
 - **Partnership route (highest upside):** the Iyàwó team (Oyo PHCs) and HelpMum (Ibadan) both hold real Nigerian primary-care or maternal data, near UCH. An evaluation-only data-use agreement or collaboration could give real items before 12 Oct; that timing is not guaranteed. Ask now, in parallel with the constructed benchmark.
 
+## Round 3 (29 Sept): hands-on checks
+- **IyàwóBench** ([repo](https://github.com/anthoniooladimeji11-coder/iyawobench) @ `6b0006c`, **CC BY 4.0**): 200 vignettes (`v1/iyawobench_v1.csv`).
+  - Content: febrile illnesses only (malaria, sepsis, meningitis, pneumonia, typhoid). **18/200 pregnant, 0 ANC visits.**
+  - The `notes` field is one of about 13 templated sentences, often empty. Some values are implausible (e.g. an adult of 27.7 kg).
+  - **Use:** format reference for vitals and triage labels; possibly a small general-PHC triage regression check. **Not ANC data.**
+- **MamaBench** (@ `d85c704`, **CC-BY-4.0**, access granted):
+  - 434 first-person clinician-authored vignettes, median 56 words, with a diagnosis label (371 distinct).
+  - Our heuristics: primary visit type child 196, unknown 101, **ANC 78**, delivery/postnatal 55. **37 ANC vignettes contain a danger sign.** Gestational-age mentions in 68, BP in 18.
+  - **Use:** case-card seeds for the authored ANC benchmark (attribution required); pairs stay within one split.
+- **Intron gated sets** (`NigBench-MAMAI-Speech-QA`, `nig-bench`, `med-convo-nig`): HF still says **"awaiting a review from the repo authors"** for account `malikbello` (checked 29 Sept, late afternoon).
+- **Proposal:** ADR-0016 (Proposed). The core benchmark is team-authored and licence-clean; MAMAI is a real-language stratum; NC sets are evaluation-only; real clinical data is upside, not a dependency.
+
 ## Actions
 - Malik: request access on HF to `NigBench-MAMAI-Speech-QA`, `nig-bench` and `med-convo-nig` (manual approval can take days, so do it today). Accept the MamaBench terms (instant access).
 - Malik: email the IyàwóBench authors and HelpMum about evaluation-only access or collaboration. Download the St Luke's MNCH data from OSF.
