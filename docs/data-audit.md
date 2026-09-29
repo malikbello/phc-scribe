@@ -1,4 +1,4 @@
-# Data audit: African Medical Records (Gate 1 input)
+# Data audit: African Medical Records (input to the data-feasibility decision)
 
 **Status: RUN on 29 Sept 2026** (revision `fa27d29`). Result: **the AMR dataset cannot supply the benchmark.** It has 62 records, and only 1–2 of them are antenatal. Section 3 was committed before the run (commit `4ba335c`) and was not edited afterwards. The data-source decision is Malik's (section 4).
 
@@ -24,7 +24,7 @@ Outputs:
 | Q7 | Do notes carry the fields we extract? | `rows_with_bp`, `rows_with_ga`; manual read |
 | Q8 | Are there duplicates? | `exact_duplicates` (near-duplicates are checked at split time) |
 
-## 3. Proposed Gate 1 decision rules (for Malik to approve before the audit runs)
+## 3. Pre-registered data-feasibility decision rules (for Malik to approve before the audit runs)
 Written down now so the audit result can't bend them.
 - **ANC scope confirmed** if, after de-identification and dedupe, there are **≥ 300 usable ANC notes** (260 test + ≥ 40 for the pilot and dev split) **and** at least **80** of them (≈30% of the 260 test items) contain a danger sign.
 - **Enrichment-only shortfall:** enough ANC notes but fewer than 80 with a danger sign. Keep ANC scope. Fill the gap only with **clinically reviewed rewrites of real notes**, labelled as such and reported separately. Constructed notes never count toward the 500 real items.
@@ -46,15 +46,15 @@ Source: `data/audit/amr_audit.json`. Loader note: the repo ships a legacy loadin
 - **Q7 extractable fields:** BP pattern in 20 rows, gestational age in 1.
 - **Q8 duplicates:** 0 exact.
 
-### Gate 1 data decision (applying section 3 as written)
+### Data-feasibility decision (applying section 3 as written)
 - **ANC scope: not met.** The rule needs ≥ 300 usable ANC notes with ≥ 80 danger-sign notes; AMR has ~1–2 and 0.
 - **The ADR-0013 fallback does not rescue it either.** 62 records in total is far below the 500+ real items the benchmark needs, whatever the scope.
 - **This is the "different source" case.** Section 3 lists it under images-only, but it applies equally here. **Malik decides.** Options, for the decision:
   a. **Find another real-note source**, e.g. a partner PHC/antenatal clinic via the UI/UCH ethics route (open item S2). This is the slowest option, and ethics approval before 12 Oct is unlikely.
   b. **Clinician-authored vignettes plus clinically reviewed rewrites.** The nurse and the student write ANC encounter notes from structured case templates in the style of real notes. This must be reported honestly as constructed data, which needs a change to the "constructed notes never count" rule, so it needs a new ADR.
   c. **A hybrid:** use AMR (62, CC-BY-4.0) as a small real-style *out-of-domain* robustness slice and as the OCR-input demo, and build the ANC benchmark as in (b).
-  d. **Other public corpora** (Kaggle/HF search for Nigerian or African ANC or maternal notes). Worth a time-boxed search (≤ half a day) before choosing (b).
-- The model half of Gate 1 (does base N-ATLaS show clear, fixable failures?) needs the 30 pilot items. It waits on this decision.
+  d. **Other public corpora.** ✅ Searched on 29 Sept (`docs/data-sources-survey.md`). No real ANC-note corpus exists. The Intron Health Nigerian sets can anchor (b)/(c) with real patient language.
+- The model-side check (does base N-ATLaS show clear, fixable failures?) needs the 30 pilot items. It waits on this decision.
 
 ## 5. Known limits of the heuristics
 - Visit type and language are keyword counts, good for sizing and not for labels. Every pilot and test item is read by a person.

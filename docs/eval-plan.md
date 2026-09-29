@@ -53,7 +53,7 @@ Reported per stratum, per language and per field, each with 95% bootstrap CIs.
 - **Regression:** a held-out general Yoruba set, base vs fine-tuned
 - **Diacritics:** Yoruba metrics reported with and without tone-mark folding
 
-## 6. Success criteria (Gate 2). Thresholds are fixed at freeze time.
+## 6. Success criteria (pre-registered). Thresholds are fixed at freeze time.
 - **P1:** danger-sign recall, fine-tuned Q4 − base few-shot. The lower bound of the 95% paired-bootstrap CI must be > 0, in English **and** in Yoruba.
 - **P2:** micro-F1, same test.
 - **G1 (guardrail):** false-alarm rate not worse than base by more than **_TBD_** points

@@ -21,12 +21,19 @@ _Last updated: 29 Sept 2026. Keep this file current; it is the handoff between w
 - Environment variables: `HF_TOKEN` (HF read token), `KAGGLE_API_TOKEN` (Kaggle `KGAT_…` token). The Kaggle CLI/API reads `KAGGLE_API_TOKEN` directly, so no token file needs to be written. For Modal: `MODAL_TOKEN_ID` and `MODAL_TOKEN_SECRET` (not added yet).
 - Intended network allowlist: `huggingface.co`, `*.huggingface.co`, `hf.co`, `*.hf.co`, `kaggle.com`, `*.kaggle.com`, `storage.googleapis.com` (+ `api.modal.com`, `modal.com`, `*.modal.run` if Modal is adopted).
 - ✅ **29 Sept, session 3:** HF and Kaggle are reachable. `python scripts/check_access.py` passes: HF identity, the gated `NCAIR1/N-ATLaS` listing (12 files, 4 weight files, no GGUF), the AMR dataset and Kaggle auth.
-- ⚠️ **Modal cannot be used from the cloud dev sessions.** `MODAL_TOKEN_ID`/`MODAL_TOKEN_SECRET` are set and `api.modal.com` answers over HTTPS, but the Modal client talks gRPC/HTTP-2, and the sessions' egress proxy does not carry that (`modal app list` gives "Could not connect to the Modal server"). The tokens are therefore **not verified**. Test them from the laptop (WSL2, Python ≥ 3.11) with `modal app list`.
+- **Modal:** tokens **verified on the laptop** on 29 Sept (`modal app list` works; no apps yet; profile `malikbello`). The cloud dev sessions cannot reach Modal, because its client uses gRPC, which the egress proxy blocks. So Modal jobs are launched from the laptop, or from a Kaggle notebook. Adopting Modal still needs an ADR superseding ADR-0015, plus a spend limit.
 - Local dev: `pip install -e ".[dev,data]"` (or `pip install --require-hashes -r requirements/ci.lock && pip install --no-deps -e .`), then `ruff check . && ruff format --check . && pyright && pytest`.
 - N-ATLaS gated access: granted on all 5 NCAIR1 repos (N-ATLaS, Hausa/Yoruba/Igbo ASR, NigerianAccentedEnglish).
 - Dev container: 4 CPU, ~15 GB RAM, ~30 GB free disk, no GPU.
 - **Malik's laptop (offline node):** Dell Latitude 5400, i7-8665U, 16 GB RAM, no usable GPU, Windows 11 + WSL2, Ollama installed. **Disk must be freed to at least 25 GB.**
 - **Cloud serving:** Modal was dropped because the virtual card was rejected (ADR-0015). The fallback is a free Hugging Face Space (CPU). **29 Sept: Malik now has a Modal account.** Using it needs a new ADR superseding ADR-0015 and a spend limit so usage stays within free credits ($0 rule). Tokens: create in the Modal dashboard (Settings → API Tokens) and add as environment variables; never paste them in chat. Laptop CLI note: `modal token new` fails on the laptop's Windows Python 3.9 (a `typing` bug hit by recent `aiohttp`). Use WSL2 or Python ≥ 3.11.
+
+## Submission conventions (decided 29 Sept; apply from now)
+Judges see the repo, the benchmark report, the API docs and the demo. They don't see our schedule.
+- **Internal only:** `docs/status.md` (this file: day plans, progress log, open items). The internal "Gate N" labels live only here and in the ADRs.
+- **Public docs use method language.** "Gate 1" becomes **"pre-registered decision point: data feasibility"** (and later "baseline adequacy", "fine-tune go/no-go"). Pre-registration is a strength, so we show it as methodology, not as a timeline.
+- **No "day N" in filenames, branch names, headings or commit subjects.** Branches are named by feature (`data-audit`, `benchmark-v0`, `api-v1`) and merged into `main` promptly. `day1-2-gate1` is the last one named this way; merge it, then delete it.
+- **Submission package** (built in the last 2 days): `README.md` (product + quickstart), `docs/benchmark-report.md` (pre-registered criteria vs measured results, including failures), `docs/api.md` + OpenAPI, a model card, a dataset/benchmark card with licence attributions, and the demo link. The final pass greps for `day[ -]?[0-9]` and `Gate [0-9]` in the public files.
 
 ## Team
 - Malik Bello: lead, ML/engineering, native Yoruba reviewer
@@ -44,7 +51,8 @@ _Last updated: 29 Sept 2026. Keep this file current; it is the handoff between w
 | UI/UCH ethics route for real Yoruba dictations (S2, acceleration phase) | Nurse | Not started |
 | Faster cloud serving (card / Lightning / ZeroGPU) | Malik | Modal account now available; ADR + spend limit + tokens in environment pending |
 | **Gate 1 data-source decision:** AMR has 62 records and ~1 ANC note (`docs/data-audit.md` §4, options a–d) | Malik | **Blocking Gate 1** |
-| Verify the Modal tokens from the laptop (not possible from the cloud sessions: gRPC is blocked) | Malik | Pending |
+| Request HF access: `intronhealth/NigBench-MAMAI-Speech-QA`, `intronhealth/nig-bench`, `intronhealth/med-convo-nig` (manual approval) | Malik | **Today** |
+| Before submission: remove day/gate wording from public docs (see Submission conventions) | Malik + Claude | From now |
 | Gate 1 decision rules (`docs/data-audit.md` §3): committed before the audit ran and applied as written. Confirm | Malik | Pending |
 | Review annotation guidelines v0, finding vocabulary, danger-sign rules v0 (open questions in guidelines §9) | Nurse | Pending |
 | Review/extend the draft Yoruba forms in `bench/baselines/lexicon.v0.yaml` | Malik | Pending |
@@ -75,6 +83,8 @@ _Last updated: 29 Sept 2026. Keep this file current; it is the handoff between w
   - dependencies pinned with hashes in `requirements/ci.lock`
 
   Verified locally on Python 3.12, not yet on GitHub.
+
+**29 Sept, session 3 (cont.)**: Modal verified from the laptop. **Data-source survey:** `docs/data-sources-survey.md`. No public corpus of real Nigerian ANC notes exists. The best anchors are Intron Health's Nigerian sets, above all **NigBench-MAMAI** (real Yoruba/Pidgin maternal-health speech, CC-BY-4.0, gated). Proposed benchmark: clinician-constructed ANC notes anchored in real phrasing, plus real-language, conversation and AMR slices. This needs an ADR.
 
 **29 Sept, session 3** (branch `day1-2-gate1`):
 - The access check passes (HF, gated N-ATLaS, dataset, Kaggle). Modal cannot be reached from the cloud session (gRPC); see Environment.

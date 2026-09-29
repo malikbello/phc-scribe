@@ -27,7 +27,7 @@ It runs without internet on an ordinary laptop. The health worker reviews and co
 Full design: [`docs/architecture.md`](docs/architecture.md) · decisions: [`docs/adr/`](docs/adr/README.md) · evaluation: [`docs/eval-plan.md`](docs/eval-plan.md)
 
 ## Status
-🚧 Day 1 of 14: architecture approved; decision records and eval plan committed. Gate 1 groundwork is in: encounter schema v0.1, the danger-sign rules engine, grounding checks, the rung-1 baseline, the benchmark harness with CIs, and CI. The data audit is waiting on network access. See [`docs/status.md`](docs/status.md).
+🚧 In development. Done so far: architecture and decision records, the evaluation plan, encounter schema v0.1, the danger-sign rules engine, grounding checks, a keyword baseline, the benchmark harness with confidence intervals, CI, and the data audit and data-source survey ([`docs/data-audit.md`](docs/data-audit.md), [`docs/data-sources-survey.md`](docs/data-sources-survey.md)). Next: the benchmark data design (needs an ADR).
 
 ## Development
 ```bash
