@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 // Small shared UI pieces: icons (inline SVG, no external assets), progress ring and
 // bar, top bar, toast and a lightweight celebration burst.
@@ -49,47 +49,59 @@ export const Icon = {
 };
 
 export function Ring({ value, size = 64, label }: { value: number; size?: number; label?: string }) {
+  const id = useId().replace(/:/g, "");
   const r = (size - 8) / 2;
   const c = 2 * Math.PI * r;
   const v = Math.max(0, Math.min(1, value));
   return (
     <div className="relative grid place-items-center" style={{ width: size, height: size }} role="img" aria-label={label ?? `${Math.round(v * 100)}% done`}>
-      <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} strokeWidth={7} className="fill-none stroke-sand-200 dark:stroke-night-600" />
+      <svg width={size} height={size} className="-rotate-90 drop-shadow-[0_0_10px_rgba(62,230,168,.45)]">
+        <defs>
+          <linearGradient id={`ring-${id}`} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#3ee6a8" />
+            <stop offset="1" stopColor="#22d3ee" />
+          </linearGradient>
+        </defs>
+        <circle cx={size / 2} cy={size / 2} r={r} strokeWidth={6} className="fill-none stroke-white/10" />
         <circle
           cx={size / 2}
           cy={size / 2}
           r={r}
-          strokeWidth={7}
+          strokeWidth={6}
           strokeLinecap="round"
           strokeDasharray={c}
           strokeDashoffset={c * (1 - v)}
-          className="fill-none stroke-leaf-500 transition-[stroke-dashoffset] duration-700"
+          stroke={`url(#ring-${id})`}
+          className="fill-none transition-[stroke-dashoffset] duration-1000 ease-out"
         />
       </svg>
-      <span className="absolute text-sm font-bold tabular-nums">{Math.round(v * 100)}%</span>
+      <span className="absolute text-sm font-bold tabular-nums tracking-tight">{Math.round(v * 100)}%</span>
     </div>
   );
 }
 
 export function Bar({ value, className = "" }: { value: number; className?: string }) {
+  const v = Math.max(0, Math.min(1, value));
   return (
-    <div className={`h-2 w-full overflow-hidden rounded-full bg-sand-200 dark:bg-night-600 ${className}`}>
-      <div className="h-full rounded-full bg-leaf-500 transition-[width] duration-500" style={{ width: `${Math.max(0, Math.min(1, value)) * 100}%` }} />
+    <div className={`h-1.5 w-full overflow-hidden rounded-full bg-white/10 ${className}`}>
+      <div
+        className="h-full rounded-full bg-gradient-to-r from-leaf-400 to-cyan-400 shadow-[0_0_12px_rgba(62,230,168,.6)] transition-[width] duration-700 ease-out"
+        style={{ width: `${v * 100}%` }}
+      />
     </div>
   );
 }
 
 export function TopBar({ title, back = "/", right }: { title: string; back?: string | null; right?: React.ReactNode }) {
   return (
-    <header className="sticky top-0 z-20 border-b border-sand-200/80 bg-sand-100/85 backdrop-blur dark:border-night-700 dark:bg-night-900/85">
+    <header className="sticky top-0 z-20 border-b border-white/[.06] bg-night-950/55 backdrop-blur-xl">
       <div className="mx-auto flex h-14 max-w-3xl items-center gap-2 px-4">
         {back !== null && (
-          <Link href={back} className="focus-ring -ml-2 grid h-10 w-10 place-items-center rounded-full hover:bg-sand-200 dark:hover:bg-night-700" aria-label="Back">
+          <Link href={back} className="focus-ring -ml-2 grid h-10 w-10 place-items-center rounded-full hover:bg-sand-200 dark:hover:bg-white/[.08]" aria-label="Back">
             <Icon.Back />
           </Link>
         )}
-        <h1 className="flex-1 truncate text-[17px] font-semibold">{title}</h1>
+        <h1 className="flex-1 truncate text-[17px] font-semibold tracking-tight">{title}</h1>
         {right}
       </div>
     </header>
@@ -100,7 +112,7 @@ export function Toast({ message, tone = "ok" }: { message: string | null; tone?:
   if (!message) return null;
   return (
     <div role="status" aria-live="polite" className="pointer-events-none fixed inset-x-0 bottom-28 z-40 flex justify-center px-4">
-      <div className={`animate-rise rounded-full px-4 py-2 text-sm font-semibold shadow-lift ${tone === "ok" ? "bg-ink text-white dark:bg-sand-100 dark:text-night-900" : "bg-clay-600 text-white"}`}>
+      <div className={`animate-rise rounded-full px-4 py-2 text-sm font-semibold shadow-lift ring-1 backdrop-blur-xl ${tone === "ok" ? "bg-leaf-400/15 text-leaf-100 ring-leaf-400/40" : "bg-clay-500/20 text-clay-100 ring-clay-400/50"}`}>
         {message}
       </div>
     </div>
@@ -118,7 +130,7 @@ export function useToast(): [string | null, (m: string, tone?: "ok" | "error") =
   return [msg, (m, tn = "ok") => { setTone(tn); setMsg(m); }, tone];
 }
 
-const COLORS = ["#2a8a70", "#f2b53a", "#c4553b", "#5fbfa4", "#1f6f5c"];
+const COLORS = ["#3ee6a8", "#22d3ee", "#ffc542", "#ff8591", "#c084fc"];
 
 export function Burst({ show }: { show: boolean }) {
   if (!show) return null;
@@ -143,5 +155,5 @@ export function Burst({ show }: { show: boolean }) {
 }
 
 export function Spinner() {
-  return <div className="mx-auto h-8 w-8 animate-spin rounded-full border-[3px] border-sand-300 border-t-leaf-500" aria-label="Loading" />;
+  return <div className="mx-auto h-9 w-9 animate-spin rounded-full border-[3px] border-white/10 border-t-leaf-400 shadow-glow" aria-label="Loading" />;
 }

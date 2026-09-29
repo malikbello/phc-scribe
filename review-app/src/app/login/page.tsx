@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Logo } from "@/components/Logo";
 import { Icon } from "@/components/ui";
 import { post } from "@/lib/client";
 
@@ -26,19 +27,23 @@ export default function LoginPage() {
 
   return (
     <main className="grid min-h-dvh place-items-center px-4 py-10">
-      <div className="w-full max-w-sm animate-rise">
-        <div className="mb-8 flex items-center gap-3">
-          <div className="grid h-12 w-12 place-items-center rounded-2xl bg-leaf-600 text-white shadow-card">
-            <svg viewBox="0 0 64 64" className="h-8 w-8" aria-hidden><path d="M14 36c7 0 9-12 14-12s8 18 16 18" fill="none" stroke="#fff" strokeWidth="6" strokeLinecap="round" /><circle cx="48" cy="20" r="6" fill="#f2b53a" /></svg>
-          </div>
+      <div className="w-full max-w-sm">
+        <div className="mb-10 flex animate-rise items-center gap-3">
+          <Logo size={52} spin />
           <div>
-            <p className="text-lg font-bold leading-tight">PHC Scribe</p>
-            <p className="muted text-sm">Clinical review</p>
+            <p className="text-lg font-bold leading-tight tracking-tight">PHC Scribe</p>
+            <p className="eyebrow text-leaf-400">Clinical review</p>
           </div>
         </div>
-        <h1 className="text-[28px] font-bold leading-tight">Ẹ káàbọ̀. Welcome.</h1>
-        <p className="muted mt-2">Enter the access code Malik sent you. It keeps the review private to our team.</p>
-        <form onSubmit={submit} className="mt-6 space-y-3">
+        <h1 className="gradient-text animate-rise text-[34px] font-bold leading-[1.1] tracking-tight [animation-delay:60ms]">
+          Ẹ káàbọ̀.
+          <br />
+          Welcome.
+        </h1>
+        <p className="muted mt-3 animate-rise [animation-delay:120ms]">
+          Enter the access code Malik sent you. It keeps this workspace private to our team.
+        </p>
+        <form onSubmit={submit} className="card mt-7 animate-rise space-y-3 p-4 [animation-delay:180ms]">
           <label htmlFor="code" className="sr-only">Access code</label>
           <input
             id="code"
@@ -51,12 +56,12 @@ export default function LoginPage() {
             onChange={(e) => setCode(e.target.value)}
             required
           />
-          {error && <p className="text-sm font-medium text-clay-600" role="alert">{error}</p>}
+          {error && <p className="text-sm font-medium text-clay-400" role="alert">{error}</p>}
           <button className="btn-primary w-full text-base" disabled={busy || !code.trim()}>
             {busy ? "Signing in…" : "Continue"} <Icon.Arrow />
           </button>
         </form>
-        <p className="faint mt-8 flex items-center gap-2 text-xs"><Icon.Lock className="h-4 w-4" /> Private team workspace. Items are confidential.</p>
+        <p className="faint mt-8 flex items-center gap-2 text-xs"><Icon.Lock className="h-4 w-4" /> Private team workspace · items are confidential</p>
       </div>
     </main>
   );

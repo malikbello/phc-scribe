@@ -4,10 +4,11 @@ A private, tap-first web app where the team (clinical adviser, doctor, students,
 
 - **Clinical sign-off:** every danger-sign rule, finding, note phrasing and open question as a card. Tap *Looks right* or *Needs change*; answers save on each tap.
 - **Labelling:** tap the words, tap the finding, tap *Present / Absent / Possible / Past pregnancy*, then *Save & next*. The quoted evidence is always exact text from the item. 20% of items (configurable) go to two people so we can report agreement (Cohen's kappa).
-- **Admin:** upload a queue file, watch progress and agreement, read disagreements, export labels (JSONL for `scripts/build_s4_items.py`) and sign-off answers (JSON).
+- **Admin:** invite and revoke reviewers (no redeploy), upload a queue file, watch progress and agreement, read disagreements, export labels (JSONL for `scripts/build_s4_items.py`) and sign-off answers (JSON).
 
 ## Security
-- Each person signs in with their own access code. Codes live only in the `REVIEWERS` environment variable in Vercel, never in git.
+- Each person signs in with their own access code. Bootstrap admins live in the `REVIEWERS` environment variable in Vercel; everyone else is invited from *Admin → Team*. An invite code is shown once, and only an HMAC-SHA256 hash of it (keyed with `SESSION_SECRET`) is stored. Nothing is ever in git.
+- Revoking someone (Admin → Team → Revoke) ends their access at their next request.
 - Sessions are HMAC-signed, HttpOnly, Secure and SameSite=Lax cookies (14 days). Every API route re-checks the session and the role; admin routes are admin-only.
 - Benchmark items are **never** in the code or the page bundle. The admin uploads them into Redis, and they are served only to signed-in reviewers. Reviewers see their own labels, not each other's.
 - Cross-site writes are refused (Origin check). Failed sign-ins are rate-limited per IP (10 per 15 minutes).
@@ -32,11 +33,18 @@ Roles: `admin` sees everything, uploads and exports; `clinician` does sign-off a
 - **CD:** Vercel's GitHub integration deploys every push to the production branch automatically; other branches get preview URLs (which Vercel protects by default). `vercel.json` skips builds when nothing in `review-app/` changed.
 - **CI:** `.github/workflows/ci.yml` (job `review-app`) runs type checks, unit tests, a production build and `npm audit` on every push. To stop broken code going live, protect the production branch in GitHub and require the `review-app` check.
 
+## Scaling
+- **Reviewers:** no limit in practice; invite from the admin screen. Work is handed out one item at a time, with 15-minute locks so two people never get the same single-label item. Double-labelled items go to exactly two different people.
+- **Items:** tested for sets of hundreds; the design holds to about 5,000 items per set (the item order and double-label subset are stored in the set's metadata). Admin statistics read all labels in pipelined batches (one round trip per 200 items).
+- **Upstash free plan:** 500k commands a month. A label costs about 8 commands, so the free plan covers tens of thousands of labels.
+- **Monitoring:** `GET /api/health` returns `{"ok":true}` when Redis is reachable (for an uptime monitor). It reveals nothing else.
+
 ## Day-to-day
 - **Add a set:** *Admin → Add a labelling set*, then upload a queue file (`data/private/label_queue.*.jsonl`).
 - **Export labels:** *Admin → Labels (JSONL)*, then `python scripts/build_s4_items.py <file>` builds gold items (use `--labeller` for each annotator's set).
 - **Review content:** after changing the vocabulary, rules or phrase bank, run `python scripts/export_review_data.py` (CI fails if you forget).
-- **Revoke someone:** remove them from `REVIEWERS` and redeploy. Their session stops working at the next request.
+- **Add someone:** *Admin → Team → Invite*, then send them the code privately.
+- **Revoke someone:** *Admin → Team → Revoke* (invited people), or remove them from `REVIEWERS` and redeploy (bootstrap people).
 
 ## Local development
 ```bash

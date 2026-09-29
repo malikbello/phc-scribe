@@ -223,12 +223,9 @@ export async function allLabels(queueId: string): Promise<Record<string, Record<
   const s = store();
   const meta = await getMeta(queueId);
   const counts = await s.hgetall<number>(k.counts(queueId));
-  const out: Record<string, Record<string, Label>> = {};
-  for (const id of meta.order) {
-    if (!Number(counts[id] ?? 0)) continue;
-    out[id] = await s.hgetall<Label>(k.labels(queueId, id));
-  }
-  return out;
+  const ids = meta.order.filter((id) => Number(counts[id] ?? 0) > 0);
+  const hashes = await s.hgetallMany<Label>(ids.map((id) => k.labels(queueId, id)));
+  return Object.fromEntries(ids.map((id, i) => [id, hashes[i]]));
 }
 
 export async function queueStats(queueId: string, reviewerIds: string[]) {

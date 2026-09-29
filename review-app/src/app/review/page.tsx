@@ -65,7 +65,7 @@ export default function ReviewPage() {
               <button
                 key={s.id}
                 onClick={() => setSection(i)}
-                className={`chip focus-ring shrink-0 ${active ? "border-leaf-600 bg-leaf-600 text-white dark:border-leaf-500 dark:bg-leaf-500 dark:text-night-900" : "border-sand-300 bg-white dark:border-night-600 dark:bg-night-800"}`}
+                className={`chip focus-ring shrink-0 ${active ? "border-transparent bg-gradient-to-r from-leaf-400 to-cyan-400 text-night-950 shadow-glow" : "border-white/10 bg-white/[.04] text-sand-100 hover:border-leaf-400/40"}`}
                 aria-current={active}
               >
                 {d === s.rows.length && <Icon.Check className="h-4 w-4" />}
@@ -78,7 +78,7 @@ export default function ReviewPage() {
 
         <div className="mt-5 flex items-end justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold">{sec.title}</h2>
+            <h2 className="gradient-text text-2xl font-bold tracking-tight">{sec.title}</h2>
             <p className="muted mt-1 text-sm">{sec.blurb}</p>
           </div>
           <label className="muted flex shrink-0 items-center gap-2 text-sm">
@@ -100,7 +100,7 @@ export default function ReviewPage() {
         )}
         {done === REVIEW_TOTAL && (
           <div className="card mt-6 animate-pop p-6 text-center">
-            <Icon.Sparkle className="mx-auto h-8 w-8 text-sun-400" />
+            <Icon.Sparkle className="mx-auto h-8 w-8 text-sun-400 drop-shadow-[0_0_12px_rgba(255,197,66,.7)]" />
             <p className="mt-2 text-lg font-bold">Sign-off complete. Ẹ ṣé gan!</p>
             <p className="muted mt-1 text-sm">You can still change any answer; it saves as you tap.</p>
           </div>
@@ -131,21 +131,21 @@ function ReviewCard({
   }, [editing, isQuestion]);
 
   const tone = useMemo(() => {
-    if (state === "ok") return "ring-2 ring-leaf-500/60";
-    if (state === "change") return "ring-2 ring-sun-400/80";
-    if (state === "answer") return "ring-2 ring-leaf-500/60";
+    if (state === "ok") return "!ring-leaf-400/50";
+    if (state === "change") return "!ring-sun-400/60";
+    if (state === "answer") return "!ring-leaf-400/50";
     return "";
   }, [state]);
 
   return (
     <li className={`card animate-rise p-4 sm:p-5 ${tone}`}>
       <div className="flex items-start gap-3">
-        {row.danger && <span className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-clay-500" aria-label="Danger sign" />}
+        {row.danger && <span className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-clay-500 shadow-glow-coral" aria-label="Danger sign" />}
         <div className="min-w-0 flex-1">
           <p className="font-semibold">{row.title}</p>
           <p className="mt-1 text-[15px] leading-relaxed">{row.detail}</p>
           {row.extra && (
-            <p className="mt-2 rounded-xl bg-sand-100 px-3 py-2 text-sm dark:bg-night-700">
+            <p className="mt-2 rounded-xl bg-sand-100 px-3 py-2 text-sm dark:bg-white/[.06]">
               <span className="faint text-xs font-semibold uppercase tracking-wide">Health worker sees · </span>
               {row.extra}
             </p>
@@ -174,14 +174,14 @@ function ReviewCard({
         <>
           <div className="mt-4 grid grid-cols-2 gap-2">
             <button
-              className={`btn focus-ring px-3 text-[15px] ${state === "ok" ? "bg-leaf-600 text-white dark:bg-leaf-500 dark:text-night-900" : "bg-leaf-50 text-leaf-700 hover:bg-leaf-100 dark:bg-night-700 dark:text-leaf-500"}`}
+              className={`btn focus-ring px-3 text-[15px] ${state === "ok" ? "bg-gradient-to-r from-leaf-400 to-cyan-400 text-night-950 shadow-glow" : "bg-leaf-400/10 text-leaf-100 ring-1 ring-leaf-400/25 hover:bg-leaf-400/15"}`}
               onClick={() => { setEditing(false); onSave(row, "ok"); }}
               aria-pressed={state === "ok"}
             >
               <Icon.Check /> <span className="whitespace-nowrap">Looks right</span>
             </button>
             <button
-              className={`btn focus-ring px-3 text-[15px] ${state === "change" ? "bg-sun-400 text-ink" : "bg-sun-100 text-sun-600 hover:brightness-95 dark:bg-night-700 dark:text-sun-400"}`}
+              className={`btn focus-ring px-3 text-[15px] ${state === "change" ? "bg-sun-400 text-night-950 shadow-[0_0_24px_-6px_rgba(255,197,66,.6)]" : "bg-sun-400/10 text-sun-100 ring-1 ring-sun-400/25 hover:bg-sun-400/15"}`}
               onClick={() => setEditing(true)}
               aria-pressed={state === "change"}
             >

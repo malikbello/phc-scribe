@@ -11,10 +11,10 @@ import { evidenceLongEnough, type Assertion, type Finding, type SkipReason } fro
 import { evidenceFor, tap, tokenize, type Range } from "@/lib/spans";
 
 const ASSERTIONS: { id: Assertion; label: string; hint: string; key: string; cls: string }[] = [
-  { id: "present", label: "Present", hint: "has it now", key: "1", cls: "bg-clay-600 text-white hover:bg-clay-700" },
-  { id: "absent", label: "Absent", hint: "denied / no", key: "2", cls: "bg-leaf-600 text-white hover:bg-leaf-700 dark:bg-leaf-500 dark:text-night-900" },
-  { id: "possible", label: "Possible", hint: "unsure / maybe", key: "3", cls: "bg-sun-400 text-ink hover:brightness-95" },
-  { id: "historical", label: "Past pregnancy", hint: "not now", key: "4", cls: "bg-sand-300 text-ink hover:brightness-95 dark:bg-night-600 dark:text-sand-100" },
+  { id: "present", label: "Present", hint: "has it now", key: "1", cls: "bg-clay-500 text-white shadow-glow-coral hover:brightness-110" },
+  { id: "absent", label: "Absent", hint: "denied / no", key: "2", cls: "bg-gradient-to-r from-leaf-400 to-cyan-400 text-night-950 shadow-glow hover:brightness-110" },
+  { id: "possible", label: "Possible", hint: "unsure / maybe", key: "3", cls: "bg-sun-400 text-night-950 shadow-[0_0_24px_-6px_rgba(255,197,66,.6)] hover:brightness-110" },
+  { id: "historical", label: "Past pregnancy", hint: "not now", key: "4", cls: "bg-white/10 text-sand-100 ring-1 ring-white/15 hover:bg-white/15" },
 ];
 
 const SKIPS: { id: SkipReason; label: string }[] = [
@@ -26,10 +26,10 @@ const SKIPS: { id: SkipReason; label: string }[] = [
 ];
 
 const ASSERT_STYLE: Record<Assertion, string> = {
-  present: "border-clay-500 bg-clay-50 text-clay-700 dark:bg-clay-700/20 dark:text-clay-100",
-  absent: "border-leaf-500 bg-leaf-50 text-leaf-700 dark:bg-leaf-900/40 dark:text-leaf-100",
-  possible: "border-sun-400 bg-sun-100 text-sun-600 dark:bg-sun-600/20 dark:text-sun-100",
-  historical: "border-sand-300 bg-sand-100 text-ink-soft dark:border-night-500 dark:bg-night-700 dark:text-sand-200",
+  present: "border-clay-400/60 bg-clay-500/15 text-clay-100 shadow-glow-coral",
+  absent: "border-leaf-400/50 bg-leaf-400/10 text-leaf-100",
+  possible: "border-sun-400/60 bg-sun-400/10 text-sun-100",
+  historical: "border-white/15 bg-white/[.05] text-sand-200",
 };
 
 export default function LabelPage() {
@@ -199,10 +199,10 @@ export default function LabelPage() {
         title={progress?.title ?? "Labelling"}
         right={
           <div className="flex items-center gap-1">
-            <button className="focus-ring grid h-10 w-10 place-items-center rounded-full hover:bg-sand-200 dark:hover:bg-night-700" onClick={openPrevious} aria-label="Previous item" title="Previous item">
+            <button className="focus-ring grid h-10 w-10 place-items-center rounded-full hover:bg-sand-200 dark:hover:bg-white/[.08]" onClick={openPrevious} aria-label="Previous item" title="Previous item">
               <Icon.History />
             </button>
-            <button className="focus-ring grid h-10 w-10 place-items-center rounded-full hover:bg-sand-200 dark:hover:bg-night-700" onClick={() => setGuideOpen(true)} aria-label="How to label" title="How to label">
+            <button className="focus-ring grid h-10 w-10 place-items-center rounded-full hover:bg-sand-200 dark:hover:bg-white/[.08]" onClick={() => setGuideOpen(true)} aria-label="How to label" title="How to label">
               <Icon.Book />
             </button>
           </div>
@@ -218,15 +218,15 @@ export default function LabelPage() {
         )}
 
         {revisiting && (
-          <p className="mb-3 rounded-2xl bg-sun-100 px-4 py-2 text-sm font-medium text-sun-600 dark:bg-sun-600/20 dark:text-sun-100">
+          <p className="mb-3 rounded-2xl bg-sun-400/10 px-4 py-2 text-sm font-medium text-sun-100 ring-1 ring-sun-400/30">
             Editing an item you already labelled. Saving updates it.
           </p>
         )}
 
         <section className="card p-5 sm:p-6" aria-label="Item text">
           <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider">
-            <span className="rounded-full bg-sand-200 px-2.5 py-1 dark:bg-night-700">{langName(item.language)}</span>
-            {item.double && <span className="rounded-full bg-leaf-50 px-2.5 py-1 text-leaf-700 dark:bg-leaf-900/40 dark:text-leaf-100">Agreement check</span>}
+            <span className="rounded-full bg-white/[.07] px-2.5 py-1 text-sand-200 ring-1 ring-white/10">{langName(item.language)}</span>
+            {item.double && <span className="rounded-full bg-cyan-400/10 px-2.5 py-1 text-cyan-200 ring-1 ring-cyan-300/30">Agreement check</span>}
           </div>
           <p className="select-none text-[21px] leading-[1.75] sm:text-[23px]" lang={item.language}>
             {tokens.map((t, i) => {
@@ -237,7 +237,7 @@ export default function LabelPage() {
                   <button
                     type="button"
                     onClick={() => setRange((r) => tap(r, i))}
-                    className={`rounded-lg px-0.5 transition ${inRange ? "bg-leaf-500 text-white dark:text-night-900" : used ? "underline decoration-leaf-500 decoration-2 underline-offset-4" : "hover:bg-sand-200 dark:hover:bg-night-700"}`}
+                    className={`rounded-lg px-0.5 transition ${inRange ? "bg-gradient-to-r from-leaf-400 to-cyan-400 text-night-950 shadow-glow" : used ? "underline decoration-leaf-400 decoration-2 underline-offset-4" : "hover:bg-sand-200 dark:hover:bg-white/[.08]"}`}
                   >
                     {t.text}
                   </button>{" "}
@@ -250,7 +250,7 @@ export default function LabelPage() {
 
         <section className="card mt-3 p-4 sm:p-5" aria-label="Add a finding">
           <div className="flex items-center gap-2">
-            <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-leaf-600 text-xs font-bold text-white">1</span>
+            <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-gradient-to-br from-leaf-400 to-cyan-400 text-xs font-bold text-night-950 shadow-glow">1</span>
             {evidence ? (
               <p className="min-w-0 flex-1 truncate font-semibold">“{evidence}”</p>
             ) : (
@@ -260,7 +260,7 @@ export default function LabelPage() {
           </div>
 
           <div className="mt-4 flex items-center gap-2">
-            <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-leaf-600 text-xs font-bold text-white">2</span>
+            <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-gradient-to-br from-leaf-400 to-cyan-400 text-xs font-bold text-night-950 shadow-glow">2</span>
             <p className="muted flex-1">{concept ? <span className="font-semibold text-ink dark:text-sand-100">{CONCEPT_BY_ID.get(concept)?.label}</span> : "What is it?"}</p>
             <input className="input w-36 py-2 text-sm sm:w-48" placeholder="Search" value={search} onChange={(e) => setSearch(e.target.value)} aria-label="Search findings" />
           </div>
@@ -268,7 +268,7 @@ export default function LabelPage() {
           <ChipGroup title="Other findings" items={other} value={concept} onPick={setConcept} />
 
           <div className="mt-4 flex items-center gap-2">
-            <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-leaf-600 text-xs font-bold text-white">3</span>
+            <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-gradient-to-br from-leaf-400 to-cyan-400 text-xs font-bold text-night-950 shadow-glow">3</span>
             <p className="muted">Is it…</p>
           </div>
           <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -290,7 +290,7 @@ export default function LabelPage() {
                 const c = CONCEPT_BY_ID.get(f.concept);
                 return (
                   <li key={`${f.concept}-${f.assertion}`} className={`flex animate-pop items-center gap-3 rounded-2xl border-2 px-4 py-3 ${ASSERT_STYLE[f.assertion]}`}>
-                    {c?.danger && <Icon.Alert className="h-5 w-5 text-clay-600" />}
+                    {c?.danger && <Icon.Alert className="h-5 w-5 text-clay-400" />}
                     <div className="min-w-0 flex-1">
                       <p className="font-semibold">{c?.label} · <span className="capitalize">{f.assertion === "historical" ? "past pregnancy" : f.assertion}</span></p>
                       <p className="truncate text-sm opacity-80">“{f.evidence.text}”</p>
@@ -307,13 +307,13 @@ export default function LabelPage() {
         </section>
 
         {item.hints.length > 0 && (
-          <section className="mt-3 rounded-2xl border border-dashed border-sand-300 p-3 dark:border-night-600">
+          <section className="mt-3 rounded-2xl border border-dashed border-sand-300 p-3 dark:border-white/10">
             <p className="faint mb-2 text-xs font-semibold uppercase tracking-wide">Suggestions (check them against the text)</p>
             <div className="flex flex-wrap gap-2">
               {item.hints.map((h, i) => (
                 <button
                   key={i}
-                  className="chip border-sand-300 bg-white dark:border-night-600 dark:bg-night-800"
+                  className="chip border-white/10 bg-white/[.04] hover:border-leaf-400/50"
                   onClick={() => h.evidence?.text && !findings.some((f) => f.concept === h.concept && f.assertion === h.assertion) && setFindings((fs) => [...fs, { concept: h.concept, assertion: h.assertion, evidence: { text: h.evidence!.text } }])}
                 >
                   + {CONCEPT_BY_ID.get(h.concept)?.label} · {h.assertion}
@@ -324,14 +324,14 @@ export default function LabelPage() {
         )}
       </main>
 
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-sand-200 bg-sand-100/95 backdrop-blur dark:border-night-700 dark:bg-night-900/95" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-white/[.06] bg-night-950/70 backdrop-blur-xl" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
         <div className="mx-auto flex max-w-3xl items-center gap-2 px-4 py-3">
           <div className="relative">
             <button className="btn-ghost" onClick={() => setSkipOpen((o) => !o)} aria-expanded={skipOpen}>Skip</button>
             {skipOpen && (
-              <div className="card absolute bottom-14 left-0 w-72 animate-pop p-2">
+              <div className="card absolute bottom-14 left-0 w-72 animate-pop bg-night-800/90 p-2">
                 {SKIPS.map((s) => (
-                  <button key={s.id} className="block w-full rounded-xl px-3 py-2.5 text-left text-[15px] hover:bg-sand-100 dark:hover:bg-night-700" onClick={() => save("skip", s.id)}>
+                  <button key={s.id} className="block w-full rounded-xl px-3 py-2.5 text-left text-[15px] hover:bg-white/[.08]" onClick={() => save("skip", s.id)}>
                     {s.label}
                   </button>
                 ))}
@@ -354,17 +354,17 @@ function ChipGroup({ title, items, value, onPick, danger = false }: { title: str
   if (!items.length) return null;
   return (
     <div className="mt-3">
-      <p className={`mb-2 text-xs font-bold uppercase tracking-wider ${danger ? "text-clay-600" : "faint"}`}>{title}</p>
+      <p className={`mb-2 text-xs font-bold uppercase tracking-wider ${danger ? "text-clay-400" : "faint"}`}>{title}</p>
       <div className="flex flex-wrap gap-2">
         {items.map((c) => {
           const on = value === c.id;
           const cls = on
             ? danger
-              ? "border-clay-600 bg-clay-600 text-white"
-              : "border-leaf-600 bg-leaf-600 text-white dark:border-leaf-500 dark:bg-leaf-500 dark:text-night-900"
+              ? "border-clay-400 bg-clay-500 text-white shadow-glow-coral"
+              : "border-transparent bg-gradient-to-r from-leaf-400 to-cyan-400 text-night-950 shadow-glow"
             : danger
-              ? "border-clay-100 bg-clay-50 text-clay-700 hover:border-clay-500 dark:border-clay-700 dark:bg-clay-700/20 dark:text-clay-100"
-              : "border-sand-300 bg-white hover:border-leaf-500 dark:border-night-600 dark:bg-night-800";
+              ? "border-clay-400/30 bg-clay-500/10 text-clay-100 hover:border-clay-400/70"
+              : "border-white/10 bg-white/[.04] text-sand-100 hover:border-leaf-400/50";
           return (
             <button key={c.id} className={`chip focus-ring ${cls}`} onClick={() => onPick(c.id)} aria-pressed={on} title={c.definition}>
               {c.label}
@@ -382,7 +382,7 @@ function Guide({ onClose }: { onClose: () => void }) {
       <div className="card max-h-[85dvh] w-full max-w-lg animate-rise overflow-y-auto rounded-b-none p-6 sm:rounded-3xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-bold">The five rules that matter</h2>
-          <button className="grid h-9 w-9 place-items-center rounded-full hover:bg-sand-200 dark:hover:bg-night-700" onClick={onClose} aria-label="Close"><Icon.X /></button>
+          <button className="grid h-9 w-9 place-items-center rounded-full hover:bg-sand-200 dark:hover:bg-white/[.08]" onClick={onClose} aria-label="Close"><Icon.X /></button>
         </div>
         <ol className="mt-4 list-decimal space-y-3 pl-5 text-[15px] leading-relaxed">
           <li><b>Record what is said, not what you'd diagnose.</b> "Headache and BP 150/100" is <i>Headache</i>, not pre-eclampsia.</li>

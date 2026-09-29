@@ -4,6 +4,7 @@ import { candidates, pickDouble } from "@/lib/assign";
 import { reviewerForCode } from "@/lib/reviewers";
 import type { Label } from "@/lib/schema";
 import { LabelInput, evidenceInTranscript } from "@/lib/schema";
+import { displayName } from "@/lib/names";
 import { signSession, verifySession } from "@/lib/session";
 import { evidenceFor, tap, tokenize } from "@/lib/spans";
 
@@ -95,5 +96,14 @@ describe("label validation", () => {
     expect(() => LabelInput.parse({ itemId: "x", status: "labelled", findings: [f("fever", "present"), f("fever", "present")] })).toThrow();
     expect(() => LabelInput.parse({ itemId: "x", status: "labelled", findings: [f("not_a_concept", "present")] })).toThrow();
     expect(LabelInput.parse({ itemId: "x", status: "labelled" }).findings).toEqual([]);
+  });
+});
+
+describe("display names", () => {
+  it("keeps honorifics with the first name", () => {
+    expect(displayName("Dr Adé Okafor")).toBe("Dr Adé");
+    expect(displayName("Nurse Bisi")).toBe("Nurse Bisi");
+    expect(displayName("Tunde Bakare")).toBe("Tunde");
+    expect(displayName("Malik")).toBe("Malik");
   });
 });

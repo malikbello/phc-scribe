@@ -2,24 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: light dark; }
+:root { color-scheme: dark; }
 html { -webkit-tap-highlight-color: transparent; }
-body { @apply bg-sand-100 text-ink antialiased dark:bg-night-900 dark:text-sand-100; }
-::selection { @apply bg-leaf-100 dark:bg-leaf-900; }
+body {
+  @apply bg-night-900 text-sand-100 antialiased;
+  font-feature-settings: "ss01", "cv11";
+}
+::selection { background: rgba(62, 230, 168, .3); }
 
 @layer components {
-  .card { @apply rounded-3xl bg-white shadow-card dark:bg-night-800 dark:shadow-none dark:ring-1 dark:ring-night-600; }
-  .btn { @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-2xl px-5 font-semibold transition active:scale-[.97] disabled:pointer-events-none disabled:opacity-40; }
-  .btn-primary { @apply btn bg-leaf-600 text-white shadow-sm hover:bg-leaf-700 dark:bg-leaf-500 dark:text-night-900; }
-  .btn-ghost { @apply btn bg-sand-200/70 text-ink hover:bg-sand-200 dark:bg-night-700 dark:text-sand-100 dark:hover:bg-night-600; }
-  .btn-danger { @apply btn bg-clay-600 text-white hover:bg-clay-700; }
-  .chip { @apply inline-flex min-h-[40px] items-center gap-1.5 rounded-full border px-3.5 text-[15px] font-medium transition active:scale-95; }
-  .muted { @apply text-ink-soft dark:text-sand-300; }
-  .faint { @apply text-ink-faint dark:text-night-500; }
-  .input { @apply w-full rounded-2xl border border-sand-300 bg-white px-4 py-3 text-base outline-none ring-leaf-500 focus:ring-2 dark:border-night-600 dark:bg-night-700; }
-  .focus-ring { @apply outline-none focus-visible:ring-2 focus-visible:ring-leaf-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-night-900; }
+  .card {
+    @apply rounded-3xl bg-white/[.045] shadow-card ring-1 ring-white/10 backdrop-blur-xl;
+  }
+  .card-hover { @apply transition duration-300 hover:bg-white/[.07] hover:shadow-lift hover:ring-leaf-400/30; }
+  .btn { @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-2xl px-5 font-semibold tracking-tight transition duration-200 active:scale-[.97] disabled:pointer-events-none disabled:opacity-35; }
+  .btn-primary { @apply btn bg-gradient-to-r from-leaf-400 to-cyan-400 text-night-950 shadow-glow hover:brightness-110; }
+  .btn-ghost { @apply btn bg-white/[.06] text-sand-100 ring-1 ring-white/10 hover:bg-white/10; }
+  .btn-danger { @apply btn bg-clay-500 text-white shadow-glow-coral hover:brightness-110; }
+  .chip { @apply inline-flex min-h-[40px] items-center gap-1.5 rounded-full border px-3.5 text-[15px] font-medium transition duration-200 active:scale-95; }
+  .muted { @apply text-sand-300; }
+  .faint { @apply text-night-500; }
+  .eyebrow { @apply text-[11px] font-bold uppercase tracking-[.16em]; }
+  .input { @apply w-full rounded-2xl border border-white/10 bg-white/[.05] px-4 py-3 text-base text-sand-100 outline-none ring-leaf-400/70 transition placeholder:text-sand-300/45 focus:bg-white/[.07] focus:ring-2; }
+  .focus-ring { @apply outline-none focus-visible:ring-2 focus-visible:ring-leaf-400 focus-visible:ring-offset-2 focus-visible:ring-offset-night-900; }
+  .gradient-text { @apply bg-gradient-to-r from-sand-50 via-leaf-100 to-cyan-200 bg-clip-text text-transparent; }
+  .bg-grid {
+    background-image:
+      linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+    background-size: 36px 36px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }

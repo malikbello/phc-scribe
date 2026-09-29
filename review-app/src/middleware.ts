@@ -4,7 +4,7 @@ import { SESSION_COOKIE, verifySession } from "@/lib/session";
 // First gate: everything except the sign-in page, the sign-in API and static assets
 // needs a valid signed session. Route handlers check again (and check roles).
 
-const PUBLIC = ["/login", "/api/login", "/robots.txt"];
+const PUBLIC = ["/login", "/api/login", "/api/health", "/robots.txt"];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;

@@ -20,7 +20,7 @@ export class HttpError extends Error {
 export async function currentReviewer(): Promise<Reviewer | null> {
   const jar = await cookies();
   const s = await verifySession(jar.get(SESSION_COOKIE)?.value);
-  return s ? (findReviewer(s.rid) ?? null) : null;
+  return s ? ((await findReviewer(s.rid)) ?? null) : null;
 }
 
 export async function requireReviewer(roles?: Reviewer["role"][]): Promise<Reviewer> {

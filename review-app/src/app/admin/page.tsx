@@ -40,6 +40,7 @@ export default function Admin() {
     <>
       <TopBar title="Admin" right={<button className="btn-ghost min-h-[40px] px-3 text-sm" onClick={load}>Refresh</button>} />
       <main className="mx-auto max-w-3xl space-y-6 px-4 pb-20 pt-4">
+        <Team onChange={load} notify={showToast} />
         <Upload onDone={() => { showToast("Queue created"); load(); }} onError={(m) => showToast(m, "error")} />
 
         <section className="card p-5">
@@ -84,7 +85,7 @@ export default function Admin() {
                 <summary className="cursor-pointer text-sm font-semibold">Disagreements to adjudicate ({q.agreement.disagreements.length})</summary>
                 <ul className="mt-3 space-y-3">
                   {q.agreement.disagreements.map((d) => (
-                    <li key={d.itemId} className="rounded-2xl bg-sand-100 p-3 text-sm dark:bg-night-700">
+                    <li key={d.itemId} className="rounded-2xl bg-sand-100 p-3 text-sm dark:bg-white/[.06]">
                       <p className="mb-2 leading-relaxed">{d.transcript}</p>
                       {d.labels.map((l) => (
                         <p key={l.labeller} className="mt-1">
@@ -107,7 +108,7 @@ export default function Admin() {
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl bg-sand-100 px-2 py-3 dark:bg-night-700">
+    <div className="rounded-2xl bg-sand-100 px-2 py-3 dark:bg-white/[.06]">
       <p className="text-xl font-bold tabular-nums">{value}</p>
       <p className="faint text-[11px] font-semibold uppercase tracking-wide">{label}</p>
     </div>
@@ -173,6 +174,106 @@ function Upload({ onDone, onError }: { onDone: () => void; onError: (m: string) 
           <button className="btn-primary w-full" disabled={busy || !title.trim()} onClick={submit}>{busy ? "Uploading…" : "Create set"}</button>
         </div>
       )}
+    </section>
+  );
+}
+
+type Member = { id: string; name: string; role: "admin" | "clinician" | "annotator"; source: "env" | "invite"; createdAt?: string };
+const ROLES: { id: Member["role"]; label: string; hint: string }[] = [
+  { id: "clinician", label: "Clinician", hint: "sign-off + labelling" },
+  { id: "annotator", label: "Annotator", hint: "labelling only" },
+  { id: "admin", label: "Admin", hint: "everything" },
+];
+
+function Team({ onChange, notify }: { onChange: () => void; notify: (m: string, tone?: "ok" | "error") => void }) {
+  const [members, setMembers] = useState<Member[] | null>(null);
+  const [name, setName] = useState("");
+  const [role, setRole] = useState<Member["role"]>("clinician");
+  const [issued, setIssued] = useState<{ name: string; code: string } | null>(null);
+  const [confirm, setConfirm] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const load = useCallback(() => api<{ reviewers: Member[] }>("/api/admin/reviewers").then((d) => setMembers(d.reviewers)), []);
+  useEffect(() => { load().catch((e) => notify(e.message, "error")); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
+
+  async function invite() {
+    setBusy(true);
+    try {
+      const res = await post<{ reviewer: Member; code: string }>("/api/admin/reviewers", { name: name.trim(), role });
+      setIssued({ name: res.reviewer.name, code: res.code });
+      setName("");
+      await load();
+      onChange();
+    } catch (e) {
+      notify(e instanceof Error ? e.message : "Invite failed", "error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function revoke(id: string) {
+    if (confirm !== id) return setConfirm(id);
+    try {
+      await post("/api/admin/reviewers/revoke", { id });
+      setConfirm(null);
+      notify("Access revoked");
+      await load();
+      onChange();
+    } catch (e) {
+      notify(e instanceof Error ? e.message : "Couldn't revoke", "error");
+    }
+  }
+
+  return (
+    <section className="card p-5">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-bold tracking-tight">Team</h2>
+        <span className="faint text-xs">{members?.length ?? "–"} people</span>
+      </div>
+      <p className="muted mt-1 text-sm">Invite reviewers without redeploying. Each code is shown once; only a keyed hash is stored. Clinicians do sign-off and labelling; annotators label only.</p>
+
+      <div className="mt-4 grid gap-2 sm:grid-cols-[1fr_auto_auto]">
+        <input className="input" placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)} maxLength={60} aria-label="Name" />
+        <select className="input sm:w-40" value={role} onChange={(e) => setRole(e.target.value as Member["role"])} aria-label="Role">
+          {ROLES.map((r) => <option key={r.id} value={r.id} className="bg-night-800">{r.label}</option>)}
+        </select>
+        <button className="btn-primary" disabled={busy || !name.trim()} onClick={invite}>Invite</button>
+      </div>
+
+      {issued && (
+        <div className="mt-4 animate-pop rounded-2xl bg-leaf-400/10 p-4 ring-1 ring-leaf-400/30">
+          <p className="text-sm font-semibold text-leaf-100">Access code for {issued.name}. Copy it now: it won't be shown again.</p>
+          <div className="mt-2 flex items-center gap-2">
+            <code className="flex-1 truncate rounded-xl bg-night-950/60 px-3 py-2 font-mono text-base tracking-wide text-sand-50">{issued.code}</code>
+            <button
+              className="btn-ghost min-h-[40px] px-3 text-sm"
+              onClick={async () => { try { await navigator.clipboard.writeText(issued.code); notify("Copied"); } catch { notify("Copy failed: select it manually", "error"); } }}
+            >
+              Copy
+            </button>
+          </div>
+          <p className="faint mt-2 text-xs">Send it privately (a direct message, not a group). <button className="underline" onClick={() => setIssued(null)}>Done</button></p>
+        </div>
+      )}
+
+      <ul className="mt-4 divide-y divide-white/[.06]">
+        {(members ?? []).map((m) => (
+          <li key={m.id} className="flex items-center gap-3 py-2.5">
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-leaf-400/30 to-cyan-400/30 text-sm font-bold ring-1 ring-white/10">
+              {m.name.slice(0, 1).toUpperCase()}
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate font-medium">{m.name}</p>
+              <p className="faint text-xs">{ROLES.find((r) => r.id === m.role)?.label ?? m.role}{m.source === "env" ? " · set in Vercel" : ""}</p>
+            </div>
+            {m.source === "invite" && (
+              <button className={`btn min-h-[36px] rounded-full px-3 text-sm ${confirm === m.id ? "bg-clay-500 text-white" : "bg-white/[.06] text-sand-200 ring-1 ring-white/10 hover:bg-white/10"}`} onClick={() => revoke(m.id)}>
+                {confirm === m.id ? "Tap to confirm" : "Revoke"}
+              </button>
+            )}
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

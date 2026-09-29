@@ -59,7 +59,7 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 | Gate 1 decision rules (`docs/data-audit.md` §3): committed before the audit ran and applied as written. Confirm | Malik | Pending |
 | Review annotation guidelines v0, finding vocabulary, danger-sign rules v0 (open questions in guidelines §9) | Nurse | Pending |
 | Review/extend the draft Yoruba forms in `bench/baselines/lexicon.v0.yaml` | Malik | Pending |
-| Merge branch `day1-2-gate1` into `main` | Malik | Pending |
+| Merge branch `day1-2-gate1` into `main` | Claude | ✅ Done 29 Sept (fast-forward; `main` is the Vercel production branch) |
 
 ## Progress log
 **29 Sept, session 2** (branch `day1-2-gate1`; not merged yet). What changed:
@@ -103,6 +103,12 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 - Nurse kit built: a clinical review pack, generated from the repo by `scripts/build_review_pack.py`, covering the vocabulary, the 18 rules, the phrase bank and the §9 questions.
 - A 20-item MamaBench calibration queue (no hints) for Malik and the nurse to label independently, as a first agreement check.
 - Quickstart for labellers: `docs/labelling-quickstart.md`.
+
+**29 Sept, session 3 (round 6), review app:** `review-app/` is a Next.js app on Vercel with Upstash Redis.
+- **What reviewers do:** tap-first clinical sign-off and labelling, 20% of items double-labelled for kappa, admin exports that feed `build_s4_items.py` (verified end to end).
+- **Team:** invite and revoke reviewers from the admin screen with no redeploy; codes are stored only as HMAC hashes.
+- **Operations:** a health endpoint and batched Redis reads for scale; CI job `review-app`; `main` is production.
+- **Data:** med-convo-nig access granted; NigBench-MAMAI and nig-bench still pending.
 
 ## Next steps: days 1–2 (Gate 1)
 1. ✅ Access verified (HF, Kaggle). Modal: verify from the laptop.

@@ -11,10 +11,14 @@ export interface Store {
   hget<T>(key: string, field: string): Promise<T | null>;
   hset(key: string, values: Record<string, unknown>): Promise<void>;
   hgetall<T>(key: string): Promise<Record<string, T>>;
+  /** Several hashes in one round trip (pipelined on Redis). */
+  hgetallMany<T>(keys: string[]): Promise<Record<string, T>[]>;
+  hdel(key: string, field: string): Promise<void>;
   hincrby(key: string, field: string, by: number): Promise<number>;
   sadd(key: string, member: string): Promise<void>;
   smembers(key: string): Promise<string[]>;
   incrWithTtl(key: string, ttlSeconds: number): Promise<number>;
+  ping(): Promise<boolean>;
 }
 
 class UpstashStore implements Store {
@@ -40,6 +44,19 @@ class UpstashStore implements Store {
   async hgetall<T>(key: string) {
     return ((await this.r.hgetall<Record<string, T>>(key)) ?? {}) as Record<string, T>;
   }
+  async hgetallMany<T>(keys: string[]) {
+    const out: Record<string, T>[] = [];
+    for (let i = 0; i < keys.length; i += 200) {
+      const p = this.r.pipeline();
+      for (const k of keys.slice(i, i + 200)) p.hgetall(k);
+      const res = (await p.exec()) as (Record<string, T> | null)[];
+      out.push(...res.map((r) => r ?? {}));
+    }
+    return out;
+  }
+  async hdel(key: string, field: string) {
+    await this.r.hdel(key, field);
+  }
   async hincrby(key: string, field: string, by: number) {
     return this.r.hincrby(key, field, by);
   }
@@ -53,6 +70,9 @@ class UpstashStore implements Store {
     const n = await this.r.incr(key);
     if (n === 1) await this.r.expire(key, ttlSeconds);
     return n;
+  }
+  async ping() {
+    return (await this.r.ping()) === "PONG";
   }
 }
 
@@ -102,6 +122,12 @@ export class MemoryStore implements Store {
   async hgetall<T>(key: string) {
     return this.clone(this.hash(key)) as Record<string, T>;
   }
+  async hgetallMany<T>(keys: string[]) {
+    return Promise.all(keys.map((k) => this.hgetall<T>(k)));
+  }
+  async hdel(key: string, field: string) {
+    delete this.hash(key)[field];
+  }
   async hincrby(key: string, field: string, by: number) {
     const h = this.hash(key);
     h[field] = Number(h[field] ?? 0) + by;
@@ -121,6 +147,9 @@ export class MemoryStore implements Store {
     const n = Number(e?.v ?? 0) + 1;
     this.m.set(key, { v: n, exp: e?.exp ?? Date.now() + ttlSeconds * 1000 });
     return n;
+  }
+  async ping() {
+    return true;
   }
 }
 

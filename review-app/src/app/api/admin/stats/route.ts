@@ -1,4 +1,4 @@
-import { publicReviewer, reviewers } from "@/lib/reviewers";
+import { listReviewers, publicReviewer } from "@/lib/reviewers";
 import { allReviews, itemsById, queueStats } from "@/lib/repo";
 import { REVIEW_TOTAL } from "@/lib/content";
 import { handle, json, requireReviewer } from "@/lib/server";
@@ -7,7 +7,7 @@ import { store } from "@/lib/store";
 export async function GET() {
   return handle(async () => {
     await requireReviewer(["admin"]);
-    const team = reviewers().map(publicReviewer);
+    const team = (await listReviewers()).map(publicReviewer);
     const ids = team.map((t) => t.id);
     const queues = [];
     for (const qid of await store().smembers("queues")) {

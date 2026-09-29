@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { publicReviewer, reviewers } from "@/lib/reviewers";
+import { listReviewers, publicReviewer } from "@/lib/reviewers";
 import { allLabels, allReviews, getMeta } from "@/lib/repo";
 import { handle, HttpError, requireReviewer } from "@/lib/server";
 
@@ -26,7 +26,7 @@ export async function GET(req: Request) {
       });
     }
     if (kind === "review") {
-      const team = reviewers().map(publicReviewer);
+      const team = (await listReviewers()).map(publicReviewer);
       const body = { exported_at: new Date().toISOString(), team, answers: await allReviews(team.map((t) => t.id)) };
       return new NextResponse(JSON.stringify(body, null, 2), {
         headers: {
