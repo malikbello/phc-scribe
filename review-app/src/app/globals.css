@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: light dark; }
+html { -webkit-tap-highlight-color: transparent; }
+body { @apply bg-sand-100 text-ink antialiased dark:bg-night-900 dark:text-sand-100; }
+::selection { @apply bg-leaf-100 dark:bg-leaf-900; }
+
+@layer components {
+  .card { @apply rounded-3xl bg-white shadow-card dark:bg-night-800 dark:shadow-none dark:ring-1 dark:ring-night-600; }
+  .btn { @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-2xl px-5 font-semibold transition active:scale-[.97] disabled:pointer-events-none disabled:opacity-40; }
+  .btn-primary { @apply btn bg-leaf-600 text-white shadow-sm hover:bg-leaf-700 dark:bg-leaf-500 dark:text-night-900; }
+  .btn-ghost { @apply btn bg-sand-200/70 text-ink hover:bg-sand-200 dark:bg-night-700 dark:text-sand-100 dark:hover:bg-night-600; }
+  .btn-danger { @apply btn bg-clay-600 text-white hover:bg-clay-700; }
+  .chip { @apply inline-flex min-h-[40px] items-center gap-1.5 rounded-full border px-3.5 text-[15px] font-medium transition active:scale-95; }
+  .muted { @apply text-ink-soft dark:text-sand-300; }
+  .faint { @apply text-ink-faint dark:text-night-500; }
+  .input { @apply w-full rounded-2xl border border-sand-300 bg-white px-4 py-3 text-base outline-none ring-leaf-500 focus:ring-2 dark:border-night-600 dark:bg-night-700; }
+  .focus-ring { @apply outline-none focus-visible:ring-2 focus-visible:ring-leaf-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-night-900; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

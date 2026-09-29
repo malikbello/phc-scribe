@@ -1,0 +1,566 @@
+{
+ "vocabulary_version": "0.1.0",
+ "min_quote_chars": 2,
+ "concepts": [
+  {
+   "id": "vaginal_bleeding",
+   "label": "Vaginal bleeding",
+   "danger": true,
+   "definition": "Any bleeding or spotting per vagina during the current pregnancy."
+  },
+  {
+   "id": "convulsions",
+   "label": "Convulsions / fits",
+   "danger": true,
+   "definition": "Fits, seizures or convulsions."
+  },
+  {
+   "id": "severe_headache",
+   "label": "Severe headache",
+   "danger": true,
+   "definition": "Headache described as severe, very bad, persistent, or not relieved by usual measures. A headache without any severity qualifier is `headache`."
+  },
+  {
+   "id": "blurred_vision",
+   "label": "Blurred vision / visual disturbance",
+   "danger": true,
+   "definition": "Blurred or dim vision, seeing spots or flashing lights, sudden loss of vision."
+  },
+  {
+   "id": "fever",
+   "label": "Fever",
+   "danger": true,
+   "definition": "Reported fever or feeling hot. A measured temperature goes in vitals."
+  },
+  {
+   "id": "severe_abdominal_pain",
+   "label": "Severe abdominal pain",
+   "danger": true,
+   "definition": "Abdominal (including epigastric) pain described as severe or very bad. Abdominal pain without a severity qualifier is `abdominal_pain`."
+  },
+  {
+   "id": "reduced_fetal_movement",
+   "label": "Reduced or absent fetal movement",
+   "danger": true,
+   "definition": "The baby is moving less than usual or has stopped moving."
+  },
+  {
+   "id": "breathing_difficulty",
+   "label": "Difficulty breathing",
+   "danger": true,
+   "definition": "Shortness of breath, fast or difficult breathing."
+  },
+  {
+   "id": "swelling_face_hands",
+   "label": "Swelling of face or hands",
+   "danger": true,
+   "definition": "Swelling (oedema) of the face or hands, or generalised swelling. Swelling limited to the feet or ankles is `leg_oedema`."
+  },
+  {
+   "id": "leaking_amniotic_fluid",
+   "label": "Leaking or gush of fluid (waters breaking)",
+   "danger": true,
+   "definition": "Fluid draining or gushing from the vagina before labour."
+  },
+  {
+   "id": "severe_vomiting",
+   "label": "Severe vomiting",
+   "danger": true,
+   "definition": "Vomiting described as severe, persistent, or unable to keep food or fluids down. Ordinary morning sickness is `nausea_vomiting`."
+  },
+  {
+   "id": "unconscious",
+   "label": "Unconscious / unresponsive",
+   "danger": true,
+   "definition": "Loss of consciousness, fainting with unresponsiveness, cannot be woken."
+  },
+  {
+   "id": "severe_pallor",
+   "label": "Severe pallor",
+   "danger": true,
+   "definition": "Very pale palms, conjunctivae or tongue noted on examination or reported."
+  },
+  {
+   "id": "looks_very_ill",
+   "label": "Looks very ill",
+   "danger": true,
+   "definition": "The health worker states the woman looks very ill or is in a bad state."
+  },
+  {
+   "id": "headache",
+   "label": "Headache (not described as severe)",
+   "danger": false,
+   "definition": "Headache without a severity qualifier."
+  },
+  {
+   "id": "abdominal_pain",
+   "label": "Abdominal pain (not described as severe)",
+   "danger": false,
+   "definition": "Abdominal or lower abdominal pain without a severity qualifier."
+  },
+  {
+   "id": "nausea_vomiting",
+   "label": "Nausea and vomiting",
+   "danger": false,
+   "definition": "Nausea or vomiting not described as severe."
+  },
+  {
+   "id": "heartburn",
+   "label": "Heartburn",
+   "danger": false,
+   "definition": "Burning feeling in the chest or upper abdomen, indigestion."
+  },
+  {
+   "id": "leg_cramps",
+   "label": "Leg cramps",
+   "danger": false,
+   "definition": "Painful cramps in the legs."
+  },
+  {
+   "id": "constipation",
+   "label": "Constipation",
+   "danger": false,
+   "definition": "Hard or infrequent stools."
+  },
+  {
+   "id": "low_back_pain",
+   "label": "Low back pain",
+   "danger": false,
+   "definition": "Pain in the lower back."
+  },
+  {
+   "id": "pelvic_pain",
+   "label": "Pelvic pain",
+   "danger": false,
+   "definition": "Pain in the pelvis or pubic area."
+  },
+  {
+   "id": "varicose_veins",
+   "label": "Varicose veins",
+   "danger": false,
+   "definition": "Swollen, visible veins, usually in the legs."
+  },
+  {
+   "id": "leg_oedema",
+   "label": "Swelling of feet or ankles",
+   "danger": false,
+   "definition": "Swelling limited to the feet, ankles or legs."
+  },
+  {
+   "id": "dizziness",
+   "label": "Dizziness",
+   "danger": false,
+   "definition": "Feeling dizzy or light-headed, without loss of consciousness."
+  },
+  {
+   "id": "fatigue",
+   "label": "Tiredness / weakness",
+   "danger": false,
+   "definition": "Feeling tired, weak or lacking energy."
+  },
+  {
+   "id": "cough",
+   "label": "Cough",
+   "danger": false,
+   "definition": "Cough of any duration."
+  },
+  {
+   "id": "abnormal_vaginal_discharge",
+   "label": "Abnormal vaginal discharge",
+   "danger": false,
+   "definition": "Vaginal discharge that is itchy, smelly, coloured or otherwise abnormal."
+  },
+  {
+   "id": "painful_urination",
+   "label": "Painful or burning urination",
+   "danger": false,
+   "definition": "Pain or burning when passing urine."
+  }
+ ],
+ "rules": [
+  {
+   "id": "DS-001",
+   "name": "Vaginal bleeding",
+   "when": "Vaginal bleeding (present or possible)",
+   "message": "Vaginal bleeding in pregnancy: refer now.",
+   "severity": "urgent_referral"
+  },
+  {
+   "id": "DS-002",
+   "name": "Convulsions",
+   "when": "Convulsions / fits (present or possible)",
+   "message": "Convulsions in pregnancy (possible eclampsia): refer now.",
+   "severity": "urgent_referral"
+  },
+  {
+   "id": "DS-003",
+   "name": "Severe headache",
+   "when": "Severe headache (present or possible)",
+   "message": "Severe headache: check BP and refer now.",
+   "severity": "urgent_referral"
+  },
+  {
+   "id": "DS-004",
+   "name": "Blurred vision",
+   "when": "Blurred vision / visual disturbance (present or possible)",
+   "message": "Blurred vision in pregnancy: check BP and refer now.",
+   "severity": "urgent_referral"
+  },
+  {
+   "id": "DS-005",
+   "name": "Fever",
+   "when": "(Fever (present or possible) or temperature (°C) ≥ 38.0)",
+   "message": "Fever in pregnancy: test for malaria and refer.",
+   "severity": "refer"
+  },
+  {
+   "id": "DS-006",
+   "name": "Severe abdominal pain",
+   "when": "Severe abdominal pain (present or possible)",
+   "message": "Severe abdominal pain in pregnancy: refer now.",
+   "severity": "urgent_referral"
+  },
+  {
+   "id": "DS-007",
+   "name": "Reduced fetal movement",
+   "when": "Reduced or absent fetal movement (present or possible)",
+   "message": "Baby moving less or not at all: refer now.",
+   "severity": "urgent_referral"
+  },
+  {
+   "id": "DS-008",
+   "name": "Difficulty breathing",
+   "when": "Difficulty breathing (present or possible)",
+   "message": "Difficulty breathing in pregnancy: refer now.",
+   "severity": "urgent_referral"
+  },
+  {
+   "id": "DS-009",
+   "name": "Swelling of face or hands",
+   "when": "Swelling of face or hands (present or possible)",
+   "message": "Swelling of face or hands: check BP and urine protein, then refer.",
+   "severity": "refer"
+  },
+  {
+   "id": "DS-010",
+   "name": "Leaking fluid before labour",
+   "when": "Leaking or gush of fluid (waters breaking) (present or possible)",
+   "message": "Waters breaking or leaking fluid: refer now.",
+   "severity": "urgent_referral"
+  },
+  {
+   "id": "DS-011",
+   "name": "Severe vomiting",
+   "when": "Severe vomiting (present or possible)",
+   "message": "Severe vomiting: check for dehydration and refer.",
+   "severity": "refer"
+  },
+  {
+   "id": "DS-012",
+   "name": "Unconscious",
+   "when": "Unconscious / unresponsive (present or possible)",
+   "message": "Unconscious or unresponsive: emergency referral now.",
+   "severity": "urgent_referral"
+  },
+  {
+   "id": "DS-013",
+   "name": "Severe pallor",
+   "when": "Severe pallor (present or possible)",
+   "message": "Severe pallor (possible severe anaemia): check Hb/PCV and refer.",
+   "severity": "refer"
+  },
+  {
+   "id": "DS-014",
+   "name": "Looks very ill",
+   "when": "Looks very ill (present or possible)",
+   "message": "Looks very ill: refer now.",
+   "severity": "urgent_referral"
+  },
+  {
+   "id": "VS-001",
+   "name": "Severe hypertension",
+   "when": "(systolic BP ≥ 160 or diastolic BP ≥ 110)",
+   "message": "BP at or above 160/110: severe hypertension, refer now.",
+   "severity": "urgent_referral"
+  },
+  {
+   "id": "VS-002",
+   "name": "Hypertension",
+   "when": "(systolic BP ≥ 140 or diastolic BP ≥ 90)",
+   "message": "BP at or above 140/90: check urine protein and refer for assessment.",
+   "severity": "refer"
+  },
+  {
+   "id": "CB-001",
+   "name": "Possible pre-eclampsia",
+   "when": "((systolic BP ≥ 140 or diastolic BP ≥ 90) AND (Severe headache (present or possible) or Blurred vision / visual disturbance (present or possible) or Severe abdominal pain (present or possible) or Swelling of face or hands (present or possible) or urine protein is 2+ or 3+ or 4+))",
+   "message": "Raised BP with a pre-eclampsia sign: refer now.",
+   "severity": "urgent_referral"
+  },
+  {
+   "id": "LB-001",
+   "name": "Severe anaemia",
+   "when": "(Hb (g/dL) < 7.0 or PCV (%) < 21.0)",
+   "message": "Hb below 7 g/dL (or PCV below 21%): severe anaemia, refer now.",
+   "severity": "urgent_referral"
+  }
+ ],
+ "phrases": [
+  {
+   "concept": "vaginal_bleeding",
+   "label": "Vaginal bleeding",
+   "forms": [
+    "PV bleeding",
+    "vaginal bleeding",
+    "bleeding per vaginam",
+    "spotting per vaginam"
+   ]
+  },
+  {
+   "concept": "convulsions",
+   "label": "Convulsions / fits",
+   "forms": [
+    "convulsions",
+    "fits",
+    "seizures"
+   ]
+  },
+  {
+   "concept": "severe_headache",
+   "label": "Severe headache",
+   "forms": [
+    "severe headache",
+    "persistent severe headache",
+    "intense headache"
+   ]
+  },
+  {
+   "concept": "blurred_vision",
+   "label": "Blurred vision / visual disturbance",
+   "forms": [
+    "blurring of vision",
+    "blurred vision",
+    "visual disturbance"
+   ]
+  },
+  {
+   "concept": "fever",
+   "label": "Fever",
+   "forms": [
+    "fever",
+    "pyrexia",
+    "hot body"
+   ]
+  },
+  {
+   "concept": "severe_abdominal_pain",
+   "label": "Severe abdominal pain",
+   "forms": [
+    "severe abdominal pain",
+    "severe lower abdominal pain",
+    "severe epigastric pain"
+   ]
+  },
+  {
+   "concept": "reduced_fetal_movement",
+   "label": "Reduced or absent fetal movement",
+   "forms": [
+    "reduced fetal movements",
+    "decreased FM",
+    "reduced foetal movement"
+   ]
+  },
+  {
+   "concept": "breathing_difficulty",
+   "label": "Difficulty breathing",
+   "forms": [
+    "difficulty in breathing",
+    "breathlessness",
+    "shortness of breath"
+   ]
+  },
+  {
+   "concept": "swelling_face_hands",
+   "label": "Swelling of face or hands",
+   "forms": [
+    "facial swelling",
+    "swelling of face and hands",
+    "puffy face and hands"
+   ]
+  },
+  {
+   "concept": "leaking_amniotic_fluid",
+   "label": "Leaking or gush of fluid (waters breaking)",
+   "forms": [
+    "drainage of liquor",
+    "leaking liquor",
+    "gush of fluid per vaginam"
+   ]
+  },
+  {
+   "concept": "severe_vomiting",
+   "label": "Severe vomiting",
+   "forms": [
+    "persistent vomiting",
+    "severe vomiting",
+    "vomiting everything taken"
+   ]
+  },
+  {
+   "concept": "unconscious",
+   "label": "Unconscious / unresponsive",
+   "forms": [
+    "loss of consciousness",
+    "unresponsiveness"
+   ]
+  },
+  {
+   "concept": "severe_pallor",
+   "label": "Severe pallor",
+   "forms": [
+    "marked pallor",
+    "severe pallor"
+   ]
+  },
+  {
+   "concept": "looks_very_ill",
+   "label": "Looks very ill",
+   "forms": [
+    "ill-looking",
+    "very ill appearance"
+   ]
+  },
+  {
+   "concept": "headache",
+   "label": "Headache (not described as severe)",
+   "forms": [
+    "mild headache",
+    "headache"
+   ]
+  },
+  {
+   "concept": "abdominal_pain",
+   "label": "Abdominal pain (not described as severe)",
+   "forms": [
+    "mild abdominal pain",
+    "lower abdominal discomfort"
+   ]
+  },
+  {
+   "concept": "nausea_vomiting",
+   "label": "Nausea and vomiting",
+   "forms": [
+    "nausea",
+    "morning sickness",
+    "occasional vomiting"
+   ]
+  },
+  {
+   "concept": "heartburn",
+   "label": "Heartburn",
+   "forms": [
+    "heartburn",
+    "epigastric burning after meals"
+   ]
+  },
+  {
+   "concept": "leg_cramps",
+   "label": "Leg cramps",
+   "forms": [
+    "leg cramps",
+    "cramps in the calves"
+   ]
+  },
+  {
+   "concept": "constipation",
+   "label": "Constipation",
+   "forms": [
+    "constipation",
+    "infrequent hard stools"
+   ]
+  },
+  {
+   "concept": "low_back_pain",
+   "label": "Low back pain",
+   "forms": [
+    "low back pain",
+    "waist pain"
+   ]
+  },
+  {
+   "concept": "pelvic_pain",
+   "label": "Pelvic pain",
+   "forms": [
+    "pelvic pain",
+    "pubic pain"
+   ]
+  },
+  {
+   "concept": "varicose_veins",
+   "label": "Varicose veins",
+   "forms": [
+    "varicose veins"
+   ]
+  },
+  {
+   "concept": "leg_oedema",
+   "label": "Swelling of feet or ankles",
+   "forms": [
+    "pedal oedema",
+    "swollen ankles",
+    "bilateral leg swelling"
+   ]
+  },
+  {
+   "concept": "dizziness",
+   "label": "Dizziness",
+   "forms": [
+    "dizziness",
+    "dizzy spells"
+   ]
+  },
+  {
+   "concept": "fatigue",
+   "label": "Tiredness / weakness",
+   "forms": [
+    "easy fatigability",
+    "body weakness"
+   ]
+  },
+  {
+   "concept": "cough",
+   "label": "Cough",
+   "forms": [
+    "cough",
+    "productive cough"
+   ]
+  },
+  {
+   "concept": "abnormal_vaginal_discharge",
+   "label": "Abnormal vaginal discharge",
+   "forms": [
+    "abnormal vaginal discharge",
+    "offensive vaginal discharge",
+    "itchy vaginal discharge"
+   ]
+  },
+  {
+   "concept": "painful_urination",
+   "label": "Painful or burning urination",
+   "forms": [
+    "dysuria",
+    "painful micturition",
+    "pain on passing urine"
+   ]
+  }
+ ],
+ "questions": [
+  "Is the danger-sign list in the vocabulary complete for Nigerian PHC practice? Add, merge or drop any?",
+  "Should \"headache\" with BP ≥ 140/90 be treated as a danger sign even when it is not described as severe?",
+  "Is \"BP 14/9\" shorthand common enough to rely on, or should it go to review?",
+  "Should a single BP number (\"systolic 150\") be recorded?",
+  "Is PCV < 21% an acceptable stand-in for Hb < 7 g/dL in the severe-anaemia rule?",
+  "Which edition and sections of the National Standing Orders should each rule cite?",
+  "Are there common local terms (English or Yoruba) for these signs that we are missing?"
+ ]
+}

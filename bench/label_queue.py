@@ -78,6 +78,7 @@ class Label(BaseModel):
     labeller: str
     labelled_at: str
     note: str | None = None
+    elapsed_ms: int | None = None
 
 
 def sample_queue(
