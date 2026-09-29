@@ -1,0 +1,7 @@
+PHC Scribe uses N-ATLaS and the N-ATLaS ASR models.
+
+N-ATLaS is an initiative of the Federal Ministry of Communications, Innovation and Digital Economy, and powered by Awarri Technologies.
+
+Awarri Technologies and the Federal Government of Nigeria, developers of N-ATLaS (Hausa-ASR / Igbo-ASR / Yoruba-ASR / NigerianAccentedEnglish).
+
+The N-ATLaS models are licensed under the N-ATLaS Terms of Use ("Open-Source Research and Innovation License", v1.0, Sept 2025). They are not covered by this repository's code license. Model derivatives published from this project carry the same terms and the suffix "Powered by Awarri". Deployments are subject to the cap of 1,000 active end-users per rolling 30 days unless a commercial license is obtained from Awarri Technologies.

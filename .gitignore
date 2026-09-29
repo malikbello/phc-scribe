@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.env
+.env.*
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+# Node
+node_modules/
+dist/
+.vite/
+# Data and models: never committed (manifests and hashes only)
+data/raw/
+data/interim/
+data/private/
+*.gguf
+*.safetensors
+*.bin
+*.pt
+models/
+mlruns/
+# Secrets
+*.pem
+*.key
+kaggle.json
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
