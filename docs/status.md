@@ -98,6 +98,12 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 
 **29 Sept, session 3 (round 4):** read the NAIC build requirements (`docs/naic-requirements.md`): validation must use real data, "not simulated". ADR-0016 revised: the counted benchmark is real NigBench-MAMAI speech. Built the S4 pipeline: `scripts/fetch_mamai.py` (text columns only, seeded stratified queue with keyword hints), an offline labeler at `tools/labeler/labeler.html` (browser-tested, works on a phone), and `scripts/build_s4_items.py` (evidence verified verbatim).
 
+**29 Sept, session 3 (round 5):**
+- Stratum G generated (300 notes, verified).
+- Nurse kit built: a clinical review pack, generated from the repo by `scripts/build_review_pack.py`, covering the vocabulary, the 18 rules, the phrase bank and the §9 questions.
+- A 20-item MamaBench calibration queue (no hints) for Malik and the nurse to label independently, as a first agreement check.
+- Quickstart for labellers: `docs/labelling-quickstart.md`.
+
 ## Next steps: days 1–2 (Gate 1)
 1. ✅ Access verified (HF, Kaggle). Modal: verify from the laptop.
 2. ✅ Audit run; results are in `docs/data-audit.md` §4. ⛔ **Malik: choose the data source (options a–d)**, then read the 30 scrubbed samples. Option (b) or (c) needs an ADR that changes the "constructed notes never count" rule.
