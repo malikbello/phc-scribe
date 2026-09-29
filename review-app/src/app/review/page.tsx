@@ -144,6 +144,14 @@ function ReviewCard({
         <div className="min-w-0 flex-1">
           <p className="font-semibold">{row.title}</p>
           <p className="mt-1 text-[15px] leading-relaxed">{row.detail}</p>
+          {row.list && (
+            <div className="mt-3 rounded-2xl bg-clay-500/[.07] p-3 ring-1 ring-clay-400/20">
+              <p className="eyebrow text-clay-400">{row.list.title}</p>
+              <ol className="mt-2 grid list-decimal gap-x-6 gap-y-1 pl-5 text-[15px] sm:grid-cols-2">
+                {row.list.items.map((item) => <li key={item}>{item}</li>)}
+              </ol>
+            </div>
+          )}
           {row.extra && (
             <p className="mt-2 rounded-xl bg-sand-100 px-3 py-2 text-sm dark:bg-white/[.06]">
               <span className="faint text-xs font-semibold uppercase tracking-wide">Health worker sees · </span>

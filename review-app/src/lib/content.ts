@@ -14,6 +14,7 @@ export const QUESTIONS: string[] = data.questions;
 export const MIN_QUOTE_CHARS: number = data.min_quote_chars;
 export const CONCEPT_BY_ID = new Map(CONCEPTS.map((c) => [c.id, c]));
 export const DANGER_IDS = new Set(CONCEPTS.filter((c) => c.danger).map((c) => c.id));
+export const DANGER_LABELS = CONCEPTS.filter((c) => c.danger).map((c) => c.label);
 
 export type ReviewKind = "question" | "rule" | "concept" | "phrase";
 export type ReviewRow = {
@@ -22,6 +23,8 @@ export type ReviewRow = {
   title: string;
   detail: string;
   extra?: string;
+  /** Reference list shown under the card (e.g. the danger signs a question refers to). */
+  list?: { title: string; items: string[] };
   danger?: boolean;
 };
 
@@ -32,7 +35,16 @@ export const REVIEW_SECTIONS: ReviewSection[] = [
     id: "question",
     title: "Open questions",
     blurb: "Short answers are perfect. These decide how a few edge cases are scored.",
-    rows: QUESTIONS.map((q, i) => ({ key: `question:${i + 1}`, kind: "question", title: `Question ${i + 1}`, detail: q })),
+    rows: QUESTIONS.map((q, i) => ({
+      key: `question:${i + 1}`,
+      kind: "question",
+      title: `Question ${i + 1}`,
+      detail: q,
+      // Questions about the danger signs show the list they refer to, so no tab-switching.
+      ...(/danger-sign list|these signs/i.test(q)
+        ? { list: { title: `The ${DANGER_LABELS.length} danger signs we use now`, items: DANGER_LABELS } }
+        : {}),
+    })),
   },
   {
     id: "rule",
