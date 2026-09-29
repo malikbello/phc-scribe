@@ -1,0 +1,62 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "phc-scribe"
+version = "0.1.0.dev0"
+description = "Offline-first AI scribe and safety net for Nigerian primary health care, built on N-ATLaS."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.8,<3",
+    "pyyaml>=6.0",
+    "numpy>=1.26",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "ruff>=0.6",
+    "pyright>=1.1.380",
+    "types-PyYAML",
+]
+# Only needed for the access check and the data audit (network + tokens).
+data = [
+    "huggingface_hub>=0.25",
+    "kaggle>=1.7",
+    "datasets>=3.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["serve/phc_scribe", "bench"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["serve", "."]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "S"]
+ignore = [
+    "RUF001", # Yoruba text legitimately contains characters ruff calls ambiguous
+    "RUF002",
+    "RUF003",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["phc_scribe", "bench"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101"]
+
+[tool.pyright]
+include = ["serve", "bench", "scripts", "tests"]
+extraPaths = ["serve", ".", "scripts"]
+pythonVersion = "3.11"
+typeCheckingMode = "standard"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["serve", "."]
+addopts = "-q"

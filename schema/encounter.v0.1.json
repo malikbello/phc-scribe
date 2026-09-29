@@ -1,0 +1,667 @@
+{
+  "$defs": {
+    "Anc": {
+      "additionalProperties": false,
+      "properties": {
+        "contact_number": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Count"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "ANC contact (visit) number."
+        },
+        "gestational_age": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/GestationalAge"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "gravida": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Count"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "medications": {
+          "items": {
+            "$ref": "#/$defs/MedicationGiven"
+          },
+          "title": "Medications",
+          "type": "array"
+        },
+        "parity": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Count"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "tests": {
+          "items": {
+            "$ref": "#/$defs/TestResult"
+          },
+          "title": "Tests",
+          "type": "array"
+        }
+      },
+      "title": "Anc",
+      "type": "object"
+    },
+    "Assertion": {
+      "enum": [
+        "present",
+        "absent",
+        "possible",
+        "historical",
+        "not_mentioned"
+      ],
+      "title": "Assertion",
+      "type": "string"
+    },
+    "BloodPressure": {
+      "additionalProperties": false,
+      "properties": {
+        "diastolic": {
+          "description": "mm[Hg]",
+          "title": "Diastolic",
+          "type": "integer"
+        },
+        "evidence": {
+          "$ref": "#/$defs/Evidence"
+        },
+        "systolic": {
+          "description": "mm[Hg]",
+          "title": "Systolic",
+          "type": "integer"
+        },
+        "unit": {
+          "const": "mm[Hg]",
+          "default": "mm[Hg]",
+          "title": "Unit",
+          "type": "string"
+        }
+      },
+      "required": [
+        "systolic",
+        "diastolic",
+        "evidence"
+      ],
+      "title": "BloodPressure",
+      "type": "object"
+    },
+    "ConceptId": {
+      "enum": [
+        "vaginal_bleeding",
+        "convulsions",
+        "severe_headache",
+        "blurred_vision",
+        "fever",
+        "severe_abdominal_pain",
+        "reduced_fetal_movement",
+        "breathing_difficulty",
+        "swelling_face_hands",
+        "leaking_amniotic_fluid",
+        "severe_vomiting",
+        "unconscious",
+        "severe_pallor",
+        "looks_very_ill",
+        "headache",
+        "abdominal_pain",
+        "nausea_vomiting",
+        "heartburn",
+        "leg_cramps",
+        "constipation",
+        "low_back_pain",
+        "pelvic_pain",
+        "varicose_veins",
+        "leg_oedema",
+        "dizziness",
+        "fatigue",
+        "cough",
+        "abnormal_vaginal_discharge",
+        "painful_urination"
+      ],
+      "title": "ConceptId",
+      "type": "string"
+    },
+    "Count": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "$ref": "#/$defs/Evidence"
+        },
+        "value": {
+          "title": "Value",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "value",
+        "evidence"
+      ],
+      "title": "Count",
+      "type": "object"
+    },
+    "Disposition": {
+      "additionalProperties": false,
+      "properties": {
+        "next_visit": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NextVisit"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "referral": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Referral"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "Disposition",
+      "type": "object"
+    },
+    "Evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "end": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "End offset (exclusive) in the NFC transcript. Set by grounding.",
+          "title": "End"
+        },
+        "start": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Start offset in the NFC transcript (code points). Set by grounding.",
+          "title": "Start"
+        },
+        "text": {
+          "description": "Verbatim quote from the transcript that supports the value.",
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text"
+      ],
+      "title": "Evidence",
+      "type": "object"
+    },
+    "Finding": {
+      "additionalProperties": false,
+      "properties": {
+        "assertion": {
+          "$ref": "#/$defs/Assertion"
+        },
+        "concept": {
+          "$ref": "#/$defs/ConceptId"
+        },
+        "evidence": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Evidence"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "concept",
+        "assertion"
+      ],
+      "title": "Finding",
+      "type": "object"
+    },
+    "GestationalAge": {
+      "additionalProperties": false,
+      "properties": {
+        "days": {
+          "anyOf": [
+            {
+              "maximum": 6,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Days"
+        },
+        "evidence": {
+          "$ref": "#/$defs/Evidence"
+        },
+        "weeks": {
+          "title": "Weeks",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "weeks",
+        "evidence"
+      ],
+      "title": "GestationalAge",
+      "type": "object"
+    },
+    "LabTest": {
+      "enum": [
+        "malaria_rdt",
+        "urine_protein",
+        "urine_glucose",
+        "haemoglobin",
+        "pcv",
+        "hiv",
+        "syphilis",
+        "hepatitis_b"
+      ],
+      "title": "LabTest",
+      "type": "string"
+    },
+    "Medication": {
+      "enum": [
+        "iron_folic_acid",
+        "ipt_sp",
+        "tetanus_diphtheria",
+        "deworming",
+        "calcium",
+        "other"
+      ],
+      "title": "Medication",
+      "type": "string"
+    },
+    "MedicationGiven": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "$ref": "#/$defs/Evidence"
+        },
+        "medication": {
+          "$ref": "#/$defs/Medication"
+        },
+        "name_text": {
+          "anyOf": [
+            {
+              "maxLength": 100,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Name as said; required for `other`.",
+          "title": "Name Text"
+        }
+      },
+      "required": [
+        "medication",
+        "evidence"
+      ],
+      "title": "MedicationGiven",
+      "type": "object"
+    },
+    "NextVisit": {
+      "additionalProperties": false,
+      "properties": {
+        "date": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Only if an explicit date was said.",
+          "title": "Date"
+        },
+        "evidence": {
+          "$ref": "#/$defs/Evidence"
+        },
+        "text": {
+          "description": "As said, e.g. 'in 4 weeks', 'TCA 2/52'.",
+          "maxLength": 100,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "evidence"
+      ],
+      "title": "NextVisit",
+      "type": "object"
+    },
+    "Pulse": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "$ref": "#/$defs/Evidence"
+        },
+        "unit": {
+          "const": "/min",
+          "default": "/min",
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "value",
+        "evidence"
+      ],
+      "title": "Pulse",
+      "type": "object"
+    },
+    "Referral": {
+      "additionalProperties": false,
+      "properties": {
+        "destination": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Destination"
+        },
+        "evidence": {
+          "$ref": "#/$defs/Evidence"
+        },
+        "referred": {
+          "title": "Referred",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "referred",
+        "evidence"
+      ],
+      "title": "Referral",
+      "type": "object"
+    },
+    "Temperature": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "$ref": "#/$defs/Evidence"
+        },
+        "unit": {
+          "default": "Cel",
+          "enum": [
+            "Cel",
+            "[degF]"
+          ],
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "number"
+        }
+      },
+      "required": [
+        "value",
+        "evidence"
+      ],
+      "title": "Temperature",
+      "type": "object"
+    },
+    "TestResult": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "$ref": "#/$defs/Evidence"
+        },
+        "result": {
+          "anyOf": [
+            {
+              "enum": [
+                "positive",
+                "negative",
+                "trace",
+                "1+",
+                "2+",
+                "3+",
+                "4+"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Qualitative result, if stated.",
+          "title": "Result"
+        },
+        "test": {
+          "$ref": "#/$defs/LabTest"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "enum": [
+                "g/dL",
+                "%"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Numeric result (Hb, PCV), if stated.",
+          "title": "Value"
+        }
+      },
+      "required": [
+        "test",
+        "evidence"
+      ],
+      "title": "TestResult",
+      "type": "object"
+    },
+    "Vitals": {
+      "additionalProperties": false,
+      "properties": {
+        "blood_pressure": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BloodPressure"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "pulse": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Pulse"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "temperature": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Temperature"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "weight": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Weight"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "title": "Vitals",
+      "type": "object"
+    },
+    "Weight": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "$ref": "#/$defs/Evidence"
+        },
+        "unit": {
+          "const": "kg",
+          "default": "kg",
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "number"
+        }
+      },
+      "required": [
+        "value",
+        "evidence"
+      ],
+      "title": "Weight",
+      "type": "object"
+    }
+  },
+  "$id": "https://github.com/malikbello/phc-scribe/blob/main/schema/encounter.v0.1.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "A drafted antenatal encounter record. A health worker must confirm it.",
+  "properties": {
+    "anc": {
+      "$ref": "#/$defs/Anc"
+    },
+    "disposition": {
+      "$ref": "#/$defs/Disposition"
+    },
+    "findings": {
+      "items": {
+        "$ref": "#/$defs/Finding"
+      },
+      "title": "Findings",
+      "type": "array"
+    },
+    "module": {
+      "const": "anc",
+      "default": "anc",
+      "title": "Module",
+      "type": "string"
+    },
+    "referral_summary": {
+      "anyOf": [
+        {
+          "maxLength": 600,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Short English summary for the receiving facility. Human review only.",
+      "title": "Referral Summary"
+    },
+    "schema_version": {
+      "const": "0.1.0",
+      "default": "0.1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "vitals": {
+      "$ref": "#/$defs/Vitals"
+    }
+  },
+  "title": "PHC Scribe antenatal encounter record",
+  "type": "object",
+  "x-schema-version": "0.1.0",
+  "x-vocabulary-version": "0.1.0"
+}

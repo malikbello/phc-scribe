@@ -1,0 +1,140 @@
+# Surface forms for the rung-1 keyword baseline (no ML). Matching runs on folded text
+# (lower case, no tone marks, no dot-below), so diacritics here are for readability.
+#
+# English: Nigerian clinical English, including note shorthand.
+# Yoruba: DRAFT forms written without native-speaker review. Malik must check and
+# extend them before the baseline is run on the Yoruba stratum; until then the
+# Yoruba baseline numbers are provisional.
+
+version: 0.1.0
+
+concepts:
+  vaginal_bleeding:
+    en: [vaginal bleeding, pv bleeding, bleeding per vagina, blood per vagina, bleeding, bled,
+         spotting, passing blood]
+    yo: [ẹ̀jẹ̀ ń jáde, ẹ̀jẹ̀ ń bọ̀, ẹ̀jẹ̀ dídà, ń ṣe ẹ̀jẹ̀]
+  convulsions:
+    en: [convulsion, convulsions, convulsing, convulsed, fits, fitting, seizure, seizures]
+    yo: [gìrì, wárápá]
+  severe_headache:
+    en: [severe headache, severe headaches, serious headache, very bad headache, terrible headache,
+         persistent headache, headache that will not go, severe head pain]
+    yo: [orí fífọ́ gidigidi, orí ń fọ́ mi gidigidi, orí ń fọ́ mi gan]
+  headache:
+    en: [headache, headaches, head ache, head pain]
+    yo: [orí fífọ́, orí ń fọ́, orí ń dùn]
+  blurred_vision:
+    en: [blurred vision, blurry vision, blurring of vision, vision is blurry, vision is blurred,
+         dim vision, seeing stars, flashing lights, cannot see clearly, can't see clearly]
+    yo: [ojú ń ṣókùnkùn, ojú mi ò ríran, kò ríran dáadáa]
+  fever:
+    en: [fever, feverish, pyrexia, hot body, feeling hot, body is hot]
+    yo: [ibà, ara gbígbóná, ara ń gbóná, ara mi gbóná]
+  severe_abdominal_pain:
+    en: [severe abdominal pain, severe stomach pain, severe lower abdominal pain,
+         severe epigastric pain, severe belly pain, serious stomach pain]
+    yo: [inú rírun gidigidi, inú ń run mi gidigidi, ikùn ń dùn mi gidigidi]
+  abdominal_pain:
+    en: [abdominal pain, lower abdominal pain, stomach pain, stomach ache, tummy pain, belly pain,
+         epigastric pain]
+    yo: [inú rírun, inú ń run, ikùn ń dùn, inú ń dùn]
+  reduced_fetal_movement:
+    en: [reduced fetal movement, reduced fetal movements, reduced foetal movement, poor fetal movement,
+         no fetal movement, baby not moving, baby is not moving, baby has stopped moving,
+         baby is moving less, baby moving less, not feeling the baby]
+    yo: [ọmọ kò mira, ọmọ inú kò mira, ọmọ kò yíra]
+  breathing_difficulty:
+    en: [difficulty breathing, difficulty in breathing, shortness of breath, short of breath,
+         breathlessness, cannot breathe, can't breathe, hard to breathe]
+    yo: [mímí ṣòro, èémí kúkúrú, kò lè mí]
+  swelling_face_hands:
+    en: [swollen face, facial swelling, face is swollen, swelling of the face, swelling of face,
+         puffy face, facial puffiness, swollen hands, hands are swollen, swelling of the hands,
+         generalised swelling, generalized swelling, generalised oedema, generalized edema]
+    yo: [ojú wú, ojú mi wú, ojú rẹ̀ wú, ọwọ́ wú, ọwọ́ mi wú, ọwọ́ rẹ̀ wú]
+  leg_oedema:
+    en: [swollen legs, swollen feet, swollen ankles, leg swelling, ankle swelling, feet are swollen,
+         legs are swollen, pedal oedema, pedal edema, leg oedema, leg edema]
+    yo: [ẹsẹ̀ wú, ẹsẹ̀ mi wú, ẹsẹ̀ rẹ̀ wú, ẹsẹ̀ wíwú]
+  leaking_amniotic_fluid:
+    en: [leaking fluid, leaking water, water broke, waters broke, water has broken, draining liquor,
+         liquor drainage, gush of fluid, rupture of membranes, watery discharge]
+    yo: [omi ń dà, omi ń jáde, omi ọmọ]
+  severe_vomiting:
+    en: [severe vomiting, persistent vomiting, vomiting everything, cannot keep food down,
+         can't keep food down, cannot keep anything down, hyperemesis]
+    yo: [èébì gidigidi, ń bì gidigidi]
+  nausea_vomiting:
+    en: [nausea, vomiting, vomits, vomited, morning sickness]
+    yo: [èébì, ń bì]
+  unconscious:
+    en: [unconscious, unresponsive, loss of consciousness, passed out, collapsed]
+    yo: [dákú]
+  severe_pallor:
+    en: [severe pallor, very pale, markedly pale, severely pale]
+    yo: []
+  looks_very_ill:
+    en: [looks very ill, very ill looking, critically ill]
+    yo: []
+  heartburn:
+    en: [heartburn, heart burn, indigestion, dyspepsia, chest burning]
+    yo: [àyà ń jó]
+  leg_cramps:
+    en: [leg cramps, leg cramp, cramps in her legs, cramps in my legs]
+    yo: []
+  constipation:
+    en: [constipation, constipated, hard stool, hard stools]
+    yo: [ìgbẹ́ le]
+  low_back_pain:
+    en: [low back pain, lower back pain, back pain, backache, back ache, waist pain]
+    yo: [ìbàdí ń dùn, ẹ̀yìn ń dùn]
+  pelvic_pain:
+    en: [pelvic pain, pain in the pelvis, pubic pain]
+    yo: []
+  varicose_veins:
+    en: [varicose veins, varicose vein]
+    yo: []
+  dizziness:
+    en: [dizziness, dizzy, light headed, lightheaded, light-headed]
+    yo: [òòyì, orí ń yí]
+  fatigue:
+    en: [tiredness, tired, fatigue, weakness, body weakness, weak]
+    yo: [àárẹ̀, ó rẹ̀ mí, ara ń rẹ̀ mí]
+  cough:
+    en: [cough, coughing]
+    yo: [ikọ́]
+  abnormal_vaginal_discharge:
+    en: [abnormal vaginal discharge, abnormal discharge, smelly discharge, itchy discharge,
+         vaginal discharge, offensive discharge]
+    yo: []
+  painful_urination:
+    en: [painful urination, pain when urinating, pain passing urine, burning urine,
+         burning when urinating, dysuria]
+    yo: [ìtọ̀ ń ta]
+
+# Assertion cues. `pre` cues must sit in the same clause before the term (and after
+# the last comma); `post` cues right after it. Historical cues apply anywhere in the
+# clause. Priority: negation > historical > hedge > present.
+cues:
+  negation:
+    pre: ["no", not, denies, denied, without, never, nil, negative for, free of, does not have,
+          doesn't have, did not have, didn't have, has not had, hasn't had, kò, kò sí, kìí]
+    post: [nil, none, absent, denied, negative, "no", rárá, kò sí]
+  hedge:
+    pre: [maybe, possibly, possible, might, may be, may have, not sure, query, suspected, suspect,
+          likely, bóyá]
+    post: [maybe, possibly]
+  historical:
+    any: [last pregnancy, previous pregnancy, past pregnancy, previous pregnancies, history of,
+          h/o, in the past, years ago, last year, oyún tó kọjá, oyún àkọ́kọ́, nígbà kan rí]
+  answer_yes: ["yes", yeah, "yes o", bẹ́ẹ̀ni, bẹ́ẹ̀ ni]
+  answer_no: ["no", "no o", none, nil, rárá, kò sí]
+  clause_breaks: [but, however, although, though, ṣùgbọ́n, sugbon]
+
+medications:
+  iron_folic_acid: [ferrous sulphate, ferrous sulfate, ferrous, fefol, folic acid, iron tablets,
+                    iron, haematinics, hematinics, fesolate]
+  ipt_sp: [sulfadoxine, fansidar, ipt, sp]
+  tetanus_diphtheria: [tetanus toxoid, tetanus, tt, td]
+  deworming: [mebendazole, albendazole, deworming, dewormed]
+  calcium: [calcium]

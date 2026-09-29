@@ -1,0 +1,253 @@
+# Danger-sign rules for the antenatal module (ADR-0003: rules decide, the model documents).
+#
+# Status: DRAFT v0.1 (29 Sept 2026). NOT FOR CLINICAL USE until every rule is reviewed
+# and signed off by the clinical adviser. The thresholds below follow WHO antenatal
+# guidance as commonly stated (hypertension >= 140/90, severe >= 160/110, fever >= 38 C,
+# severe anaemia Hb < 7 g/dL). They and the section references must be checked against
+# the source documents; every `verified: false` below means "not yet checked".
+#
+# Condition language (evaluated by serve/phc_scribe/rules.py, no eval()):
+#   finding: <concept>                      concept asserted present or possible
+#   finding: {concept: c, assertion: [...]} explicit assertion set
+#   vital: {name: n, gte|gt|lte|lt: x}      numeric vital; missing value never matches
+#   test:  {name: n, gte|gt|lte|lt: x}      numeric lab value
+#   test:  {name: n, in: [...]}             qualitative lab result
+#   any: [...] / all: [...]                 combinators
+# Vitals: bp_systolic, bp_diastolic, temperature_c, pulse, weight_kg
+# Tests:  haemoglobin (g/dL), pcv (%), urine_protein, urine_glucose, malaria_rdt, ...
+#
+# Each rule carries golden tests; tests/test_rules.py runs all of them.
+
+version: 0.1.0
+module: anc
+
+sources:
+  WHO-ANC-DAK-2021:
+    title: "WHO Digital adaptation kit for antenatal care: operational requirements for implementing WHO recommendations in digital systems (2021)"
+    verified: false
+  WHO-ANC-2016:
+    title: "WHO recommendations on antenatal care for a positive pregnancy experience (2016)"
+    verified: false
+  NG-NSO:
+    title: "Federal Ministry of Health (Nigeria), National Standing Orders for CHEWs and JCHEWs (edition to confirm)"
+    verified: false
+
+severities:
+  urgent_referral: Refer now to a facility that can manage obstetric emergencies.
+  refer: Refer for assessment; do not send home without a plan.
+
+rules:
+  - id: DS-001
+    name: Vaginal bleeding
+    severity: urgent_referral
+    when: {finding: vaginal_bleeding}
+    message_en: "Vaginal bleeding in pregnancy: refer now."
+    source: {ref: WHO-ANC-DAK-2021, section: "Quick check: danger signs", verified: false}
+    tests:
+      - {name: present fires, facts: {findings: {vaginal_bleeding: [present]}}, fires: true}
+      - {name: possible fires, facts: {findings: {vaginal_bleeding: [possible]}}, fires: true}
+      - {name: absent is silent, facts: {findings: {vaginal_bleeding: [absent]}}, fires: false}
+      - {name: past pregnancy is silent, facts: {findings: {vaginal_bleeding: [historical]}}, fires: false}
+
+  - id: DS-002
+    name: Convulsions
+    severity: urgent_referral
+    when: {finding: convulsions}
+    message_en: "Convulsions in pregnancy (possible eclampsia): refer now."
+    source: {ref: WHO-ANC-DAK-2021, section: "Quick check: danger signs", verified: false}
+    tests:
+      - {name: present fires, facts: {findings: {convulsions: [present]}}, fires: true}
+      - {name: absent is silent, facts: {findings: {convulsions: [absent]}}, fires: false}
+
+  - id: DS-003
+    name: Severe headache
+    severity: urgent_referral
+    when: {finding: severe_headache}
+    message_en: "Severe headache: check BP and refer now."
+    source: {ref: NG-NSO, section: "Danger signs in pregnancy (to locate)", verified: false}
+    tests:
+      - {name: present fires, facts: {findings: {severe_headache: [present]}}, fires: true}
+      - {name: mild headache is silent, facts: {findings: {headache: [present]}}, fires: false}
+
+  - id: DS-004
+    name: Blurred vision
+    severity: urgent_referral
+    when: {finding: blurred_vision}
+    message_en: "Blurred vision in pregnancy: check BP and refer now."
+    source: {ref: WHO-ANC-DAK-2021, section: "Quick check: danger signs", verified: false}
+    tests:
+      - {name: present fires, facts: {findings: {blurred_vision: [present]}}, fires: true}
+
+  - id: DS-005
+    name: Fever
+    severity: refer
+    when:
+      any:
+        - {finding: fever}
+        - {vital: {name: temperature_c, gte: 38.0}}
+    message_en: "Fever in pregnancy: test for malaria and refer."
+    source: {ref: WHO-ANC-DAK-2021, section: "Quick check: danger signs", verified: false}
+    tests:
+      - {name: reported fever fires, facts: {findings: {fever: [present]}}, fires: true}
+      - {name: 38.0 C fires, facts: {vitals: {temperature_c: 38.0}}, fires: true}
+      - {name: 37.9 C is silent, facts: {vitals: {temperature_c: 37.9}}, fires: false}
+      - {name: no data is silent, facts: {}, fires: false}
+
+  - id: DS-006
+    name: Severe abdominal pain
+    severity: urgent_referral
+    when: {finding: severe_abdominal_pain}
+    message_en: "Severe abdominal pain in pregnancy: refer now."
+    source: {ref: WHO-ANC-DAK-2021, section: "Quick check: danger signs", verified: false}
+    tests:
+      - {name: present fires, facts: {findings: {severe_abdominal_pain: [present]}}, fires: true}
+      - {name: mild pain is silent, facts: {findings: {abdominal_pain: [present]}}, fires: false}
+
+  - id: DS-007
+    name: Reduced fetal movement
+    severity: urgent_referral
+    when: {finding: reduced_fetal_movement}
+    message_en: "Baby moving less or not at all: refer now."
+    source: {ref: NG-NSO, section: "Danger signs in pregnancy (to locate)", verified: false}
+    tests:
+      - {name: present fires, facts: {findings: {reduced_fetal_movement: [present]}}, fires: true}
+
+  - id: DS-008
+    name: Difficulty breathing
+    severity: urgent_referral
+    when: {finding: breathing_difficulty}
+    message_en: "Difficulty breathing in pregnancy: refer now."
+    source: {ref: NG-NSO, section: "Danger signs in pregnancy (to locate)", verified: false}
+    tests:
+      - {name: present fires, facts: {findings: {breathing_difficulty: [present]}}, fires: true}
+
+  - id: DS-009
+    name: Swelling of face or hands
+    severity: refer
+    when: {finding: swelling_face_hands}
+    message_en: "Swelling of face or hands: check BP and urine protein, then refer."
+    source: {ref: NG-NSO, section: "Danger signs in pregnancy (to locate)", verified: false}
+    tests:
+      - {name: present fires, facts: {findings: {swelling_face_hands: [present]}}, fires: true}
+      - {name: ankle swelling alone is silent, facts: {findings: {leg_oedema: [present]}}, fires: false}
+
+  - id: DS-010
+    name: Leaking fluid before labour
+    severity: urgent_referral
+    when: {finding: leaking_amniotic_fluid}
+    message_en: "Waters breaking or leaking fluid: refer now."
+    source: {ref: NG-NSO, section: "Danger signs in pregnancy (to locate)", verified: false}
+    tests:
+      - {name: present fires, facts: {findings: {leaking_amniotic_fluid: [present]}}, fires: true}
+
+  - id: DS-011
+    name: Severe vomiting
+    severity: refer
+    when: {finding: severe_vomiting}
+    message_en: "Severe vomiting: check for dehydration and refer."
+    source: {ref: WHO-ANC-DAK-2021, section: "Quick check: danger signs", verified: false}
+    tests:
+      - {name: present fires, facts: {findings: {severe_vomiting: [present]}}, fires: true}
+      - {name: morning sickness is silent, facts: {findings: {nausea_vomiting: [present]}}, fires: false}
+
+  - id: DS-012
+    name: Unconscious
+    severity: urgent_referral
+    when: {finding: unconscious}
+    message_en: "Unconscious or unresponsive: emergency referral now."
+    source: {ref: WHO-ANC-DAK-2021, section: "Quick check: danger signs", verified: false}
+    tests:
+      - {name: present fires, facts: {findings: {unconscious: [present]}}, fires: true}
+
+  - id: DS-013
+    name: Severe pallor
+    severity: refer
+    when: {finding: severe_pallor}
+    message_en: "Severe pallor (possible severe anaemia): check Hb/PCV and refer."
+    source: {ref: WHO-ANC-DAK-2021, section: "Physical examination: pallor", verified: false}
+    tests:
+      - {name: present fires, facts: {findings: {severe_pallor: [present]}}, fires: true}
+
+  - id: DS-014
+    name: Looks very ill
+    severity: urgent_referral
+    when: {finding: looks_very_ill}
+    message_en: "Looks very ill: refer now."
+    source: {ref: WHO-ANC-DAK-2021, section: "Quick check: danger signs", verified: false}
+    tests:
+      - {name: present fires, facts: {findings: {looks_very_ill: [present]}}, fires: true}
+
+  - id: VS-001
+    name: Severe hypertension
+    severity: urgent_referral
+    supersedes: [VS-002]
+    when:
+      any:
+        - {vital: {name: bp_systolic, gte: 160}}
+        - {vital: {name: bp_diastolic, gte: 110}}
+    message_en: "BP at or above 160/110: severe hypertension, refer now."
+    source: {ref: WHO-ANC-2016, section: "Hypertension in pregnancy (to locate)", verified: false}
+    tests:
+      - {name: 160/100 fires, facts: {vitals: {bp_systolic: 160, bp_diastolic: 100}}, fires: true}
+      - {name: 150/110 fires, facts: {vitals: {bp_systolic: 150, bp_diastolic: 110}}, fires: true}
+      - {name: 159/109 is silent, facts: {vitals: {bp_systolic: 159, bp_diastolic: 109}}, fires: false}
+
+  - id: VS-002
+    name: Hypertension
+    severity: refer
+    when:
+      any:
+        - {vital: {name: bp_systolic, gte: 140}}
+        - {vital: {name: bp_diastolic, gte: 90}}
+    message_en: "BP at or above 140/90: check urine protein and refer for assessment."
+    source: {ref: WHO-ANC-2016, section: "Hypertension in pregnancy (to locate)", verified: false}
+    tests:
+      - {name: 140/80 fires, facts: {vitals: {bp_systolic: 140, bp_diastolic: 80}}, fires: true}
+      - {name: 130/90 fires, facts: {vitals: {bp_systolic: 130, bp_diastolic: 90}}, fires: true}
+      - {name: 139/89 is silent, facts: {vitals: {bp_systolic: 139, bp_diastolic: 89}}, fires: false}
+
+  - id: CB-001
+    name: Possible pre-eclampsia
+    severity: urgent_referral
+    supersedes: [VS-002]
+    when:
+      all:
+        - any:
+            - {vital: {name: bp_systolic, gte: 140}}
+            - {vital: {name: bp_diastolic, gte: 90}}
+        - any:
+            - {finding: severe_headache}
+            - {finding: blurred_vision}
+            - {finding: severe_abdominal_pain}
+            - {finding: swelling_face_hands}
+            - {test: {name: urine_protein, in: ["2+", "3+", "4+"]}}
+    message_en: "Raised BP with a pre-eclampsia sign: refer now."
+    source: {ref: WHO-ANC-DAK-2021, section: "Pre-eclampsia decision logic (to locate)", verified: false}
+    tests:
+      - name: BP and severe headache fires
+        facts: {vitals: {bp_systolic: 145, bp_diastolic: 95}, findings: {severe_headache: [present]}}
+        fires: true
+      - name: BP and proteinuria fires
+        facts: {vitals: {bp_systolic: 140, bp_diastolic: 85}, tests: {urine_protein: "2+"}}
+        fires: true
+      - name: BP with trace protein is silent
+        facts: {vitals: {bp_systolic: 140, bp_diastolic: 85}, tests: {urine_protein: trace}}
+        fires: false
+      - name: headache without BP is silent
+        facts: {findings: {severe_headache: [present]}}
+        fires: false
+
+  - id: LB-001
+    name: Severe anaemia
+    severity: urgent_referral
+    when:
+      any:
+        - {test: {name: haemoglobin, lt: 7.0}}
+        - {test: {name: pcv, lt: 21.0}}
+    message_en: "Hb below 7 g/dL (or PCV below 21%): severe anaemia, refer now."
+    source: {ref: WHO-ANC-2016, section: "Anaemia (to locate)", verified: false}
+    tests:
+      - {name: Hb 6.5 fires, facts: {tests: {haemoglobin: 6.5}}, fires: true}
+      - {name: PCV 20 fires, facts: {tests: {pcv: 20}}, fires: true}
+      - {name: Hb 7.0 is silent, facts: {tests: {haemoglobin: 7.0}}, fires: false}
+      - {name: PCV 30 is silent, facts: {tests: {pcv: 30}}, fires: false}

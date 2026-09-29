@@ -1,0 +1,6 @@
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Fake token-shaped strings used to test output masking"
+paths = ['''tests/test_safe_output\.py''']

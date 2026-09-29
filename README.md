@@ -27,7 +27,15 @@ It runs without internet on an ordinary laptop. The health worker reviews and co
 Full design: [`docs/architecture.md`](docs/architecture.md) · decisions: [`docs/adr/`](docs/adr/README.md) · evaluation: [`docs/eval-plan.md`](docs/eval-plan.md)
 
 ## Status
-🚧 Day 1 of 14: architecture approved; decision records and eval plan committed. Build in progress.
+🚧 Day 1 of 14: architecture approved; decision records and eval plan committed. Gate 1 groundwork is in: encounter schema v0.1, the danger-sign rules engine, grounding checks, the rung-1 baseline, the benchmark harness with CIs, and CI. The data audit is waiting on network access. See [`docs/status.md`](docs/status.md).
+
+## Development
+```bash
+pip install -e ".[dev,data]"
+ruff check . && ruff format --check . && pyright && pytest
+python -m bench.harness run --system keyword --items tests/fixtures/smoke_items.jsonl --out /tmp/preds.jsonl
+python -m bench.harness score --items tests/fixtures/smoke_items.jsonl --pred /tmp/preds.jsonl
+```
 
 ## Team
 - **Malik Bello:** lead, ML and engineering

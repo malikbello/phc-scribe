@@ -1,0 +1,229 @@
+# Controlled vocabulary for findings in the antenatal (ANC) encounter record.
+#
+# Status: DRAFT v0.1 (29 Sept 2026). Needs review by the clinical adviser before the
+# gold labels are made. Nothing here is clinical advice.
+#
+# - `danger_sign: true` concepts feed the rules engine (rules/danger_signs.v0.yaml).
+# - `dak` names the WHO ANC DAK data element/option the concept is intended to map to.
+#   These mappings are from memory of the DAK and are NOT yet checked against the DAK
+#   data dictionary: `dak_verified: false` until someone checks them.
+# - ICD-11 codes are deliberately left empty until they can be looked up and verified.
+# - Yoruba labels are left for Malik (native speaker) to write; the keyword baseline's
+#   draft Yoruba surface forms live in bench/baselines/lexicon.v0.yaml.
+
+version: 0.1.0
+module: anc
+
+concepts:
+  # ---------------------------------------------------------------- danger signs
+  - id: vaginal_bleeding
+    label_en: Vaginal bleeding
+    danger_sign: true
+    definition: Any bleeding or spotting per vagina during the current pregnancy.
+    dak: "Danger signs: Bleeding vaginally"
+    dak_verified: false
+
+  - id: convulsions
+    label_en: Convulsions / fits
+    danger_sign: true
+    definition: Fits, seizures or convulsions.
+    dak: "Danger signs: Convulsing"
+    dak_verified: false
+
+  - id: severe_headache
+    label_en: Severe headache
+    danger_sign: true
+    definition: >-
+      Headache described as severe, very bad, persistent, or not relieved by usual
+      measures. A headache without any severity qualifier is `headache`.
+    dak: "Danger signs: Severe headache / Headache and visual disturbance"
+    dak_verified: false
+
+  - id: blurred_vision
+    label_en: Blurred vision / visual disturbance
+    danger_sign: true
+    definition: Blurred or dim vision, seeing spots or flashing lights, sudden loss of vision.
+    dak: "Danger signs: Visual disturbance"
+    dak_verified: false
+
+  - id: fever
+    label_en: Fever
+    danger_sign: true
+    definition: Reported fever or feeling hot. A measured temperature goes in vitals.
+    dak: "Danger signs: Fever"
+    dak_verified: false
+
+  - id: severe_abdominal_pain
+    label_en: Severe abdominal pain
+    danger_sign: true
+    definition: >-
+      Abdominal (including epigastric) pain described as severe or very bad. Abdominal
+      pain without a severity qualifier is `abdominal_pain`.
+    dak: "Danger signs: Severe abdominal pain"
+    dak_verified: false
+
+  - id: reduced_fetal_movement
+    label_en: Reduced or absent fetal movement
+    danger_sign: true
+    definition: The baby is moving less than usual or has stopped moving.
+    dak: "Symptoms: Reduced or poor fetal movement"
+    dak_verified: false
+
+  - id: breathing_difficulty
+    label_en: Difficulty breathing
+    danger_sign: true
+    definition: Shortness of breath, fast or difficult breathing.
+    dak: "Danger signs: Difficulty breathing"
+    dak_verified: false
+
+  - id: swelling_face_hands
+    label_en: Swelling of face or hands
+    danger_sign: true
+    definition: >-
+      Swelling (oedema) of the face or hands, or generalised swelling. Swelling limited
+      to the feet or ankles is `leg_oedema`.
+    dak: "Symptoms/signs: Oedema (face, hands, generalised)"
+    dak_verified: false
+
+  - id: leaking_amniotic_fluid
+    label_en: Leaking or gush of fluid (waters breaking)
+    danger_sign: true
+    definition: Fluid draining or gushing from the vagina before labour.
+    dak: "Danger signs: Draining liquor / rupture of membranes"
+    dak_verified: false
+
+  - id: severe_vomiting
+    label_en: Severe vomiting
+    danger_sign: true
+    definition: >-
+      Vomiting described as severe, persistent, or unable to keep food or fluids down.
+      Ordinary morning sickness is `nausea_vomiting`.
+    dak: "Danger signs: Severe vomiting"
+    dak_verified: false
+
+  - id: unconscious
+    label_en: Unconscious / unresponsive
+    danger_sign: true
+    definition: Loss of consciousness, fainting with unresponsiveness, cannot be woken.
+    dak: "Danger signs: Unconscious"
+    dak_verified: false
+
+  - id: severe_pallor
+    label_en: Severe pallor
+    danger_sign: true
+    definition: Very pale palms, conjunctivae or tongue noted on examination or reported.
+    dak: "Signs: Severe pallor"
+    dak_verified: false
+
+  - id: looks_very_ill
+    label_en: Looks very ill
+    danger_sign: true
+    definition: The health worker states the woman looks very ill or is in a bad state.
+    dak: "Danger signs: Looks very ill"
+    dak_verified: false
+
+  # ------------------------------------------------------- other ANC symptoms
+  - id: headache
+    label_en: Headache (not described as severe)
+    danger_sign: false
+    definition: Headache without a severity qualifier.
+    dak: "Symptoms: Headache"
+    dak_verified: false
+
+  - id: abdominal_pain
+    label_en: Abdominal pain (not described as severe)
+    danger_sign: false
+    definition: Abdominal or lower abdominal pain without a severity qualifier.
+    dak: "Symptoms: Abdominal pain"
+    dak_verified: false
+
+  - id: nausea_vomiting
+    label_en: Nausea and vomiting
+    danger_sign: false
+    definition: Nausea or vomiting not described as severe.
+    dak: "Physiological symptoms: Nausea and vomiting"
+    dak_verified: false
+
+  - id: heartburn
+    label_en: Heartburn
+    danger_sign: false
+    definition: Burning feeling in the chest or upper abdomen, indigestion.
+    dak: "Physiological symptoms: Heartburn"
+    dak_verified: false
+
+  - id: leg_cramps
+    label_en: Leg cramps
+    danger_sign: false
+    definition: Painful cramps in the legs.
+    dak: "Physiological symptoms: Leg cramps"
+    dak_verified: false
+
+  - id: constipation
+    label_en: Constipation
+    danger_sign: false
+    definition: Hard or infrequent stools.
+    dak: "Physiological symptoms: Constipation"
+    dak_verified: false
+
+  - id: low_back_pain
+    label_en: Low back pain
+    danger_sign: false
+    definition: Pain in the lower back.
+    dak: "Physiological symptoms: Low back pain"
+    dak_verified: false
+
+  - id: pelvic_pain
+    label_en: Pelvic pain
+    danger_sign: false
+    definition: Pain in the pelvis or pubic area.
+    dak: "Physiological symptoms: Pelvic pain"
+    dak_verified: false
+
+  - id: varicose_veins
+    label_en: Varicose veins
+    danger_sign: false
+    definition: Swollen, visible veins, usually in the legs.
+    dak: "Physiological symptoms: Varicose veins"
+    dak_verified: false
+
+  - id: leg_oedema
+    label_en: Swelling of feet or ankles
+    danger_sign: false
+    definition: Swelling limited to the feet, ankles or legs.
+    dak: "Physiological symptoms: Oedema"
+    dak_verified: false
+
+  - id: dizziness
+    label_en: Dizziness
+    danger_sign: false
+    definition: Feeling dizzy or light-headed, without loss of consciousness.
+    dak: "Symptoms: Dizziness"
+    dak_verified: false
+
+  - id: fatigue
+    label_en: Tiredness / weakness
+    danger_sign: false
+    definition: Feeling tired, weak or lacking energy.
+    dak: "Symptoms: Tiredness"
+    dak_verified: false
+
+  - id: cough
+    label_en: Cough
+    danger_sign: false
+    definition: Cough of any duration.
+    dak: "Symptoms: Cough"
+    dak_verified: false
+
+  - id: abnormal_vaginal_discharge
+    label_en: Abnormal vaginal discharge
+    danger_sign: false
+    definition: Vaginal discharge that is itchy, smelly, coloured or otherwise abnormal.
+    dak: "Symptoms: Abnormal vaginal discharge"
+    dak_verified: false
+
+  - id: painful_urination
+    label_en: Painful or burning urination
+    danger_sign: false
+    definition: Pain or burning when passing urine.
+    dak: "Symptoms: Painful urination"
+    dak_verified: false
