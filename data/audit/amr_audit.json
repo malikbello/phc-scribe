@@ -1,0 +1,129 @@
+{
+  "dataset": "Nigeria-Health-data-OCR-pipeline/African-Medical-Records",
+  "revision": "fa27d29dae4128ac45f035fd580928c84bec4e98",
+  "audited_at": "2026-09-29T15:50:29+00:00",
+  "card": {
+    "license": "cc-by-4.0",
+    "gated": false,
+    "task_categories": [
+      "image-to-text",
+      "image-feature-extraction"
+    ],
+    "languages": [
+      "en"
+    ],
+    "card_chars": 5533,
+    "topic_mentions": {
+      "license": 6,
+      "consent": 0,
+      "ethics": 0,
+      "deidentification": 1,
+      "provenance": 17
+    }
+  },
+  "files": {
+    "files": 141,
+    "total_mb": 218.8,
+    "by_extension": {
+      ".png": {
+        "files": 74,
+        "mb": 218.7
+      },
+      ".txt": {
+        "files": 62,
+        "mb": 0.0
+      },
+      ".md": {
+        "files": 2,
+        "mb": 0.0
+      },
+      "(none)": {
+        "files": 1,
+        "mb": 0.0
+      },
+      ".py": {
+        "files": 1,
+        "mb": 0.0
+      },
+      ".csv": {
+        "files": 1,
+        "mb": 0.0
+      }
+    }
+  },
+  "splits": {
+    "train": {
+      "columns": {
+        "pair_id": "Value(string)",
+        "text": "Value(string)",
+        "num_pages": "Value(int64)"
+      },
+      "text_columns_avg_chars": {
+        "pair_id": 7.0,
+        "text": 779.8
+      },
+      "image_columns": [],
+      "text_column_used": "text",
+      "rows_audited": 62,
+      "summary": {
+        "rows": 62,
+        "empty_text": 0,
+        "exact_duplicates": 0,
+        "chars": {
+          "min": 84,
+          "p25": 308.75,
+          "median": 461.0,
+          "p75": 849.0,
+          "max": 4210
+        },
+        "words": {
+          "min": 15,
+          "p25": 42.75,
+          "median": 62.0,
+          "p75": 102.75,
+          "max": 671
+        },
+        "visit_type_primary": {
+          "general_opd": 34,
+          "unknown": 22,
+          "child": 3,
+          "delivery_postnatal": 2,
+          "anc": 1
+        },
+        "visit_type_any": {
+          "general_opd": 36,
+          "unknown": 22,
+          "child": 3,
+          "anc": 2,
+          "delivery_postnatal": 2
+        },
+        "language_guess": {
+          "en": 62
+        },
+        "rows_with_identifier": {
+          "date": 42,
+          "labelled_name": 36,
+          "record_number": 16,
+          "nin_or_bvn": 4,
+          "phone": 4
+        },
+        "rows_with_any_identifier": 46,
+        "rows_with_danger_keyword": 18,
+        "anc_rows_with_danger_keyword": 0,
+        "rows_with_bp": 20,
+        "rows_with_ga": 1
+      }
+    }
+  },
+  "loader": {
+    "method": "direct: metadata.csv + truth_file text (legacy loading script)",
+    "records": 62,
+    "image_pages": 74,
+    "pages_per_record": {
+      "1": 57,
+      "3": 4,
+      "5": 1
+    },
+    "contributors": 15
+  }
+}

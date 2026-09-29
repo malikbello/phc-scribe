@@ -1,6 +1,6 @@
 # Data audit: African Medical Records (Gate 1 input)
 
-**Status: NOT RUN YET. Blocked on 29 Sept 2026:** the cloud dev environment's network policy refused `huggingface.co`, `hf.co` and `api.kaggle.com` (HTTP 403 from the egress proxy), so the dataset could not be read. The tooling is ready. Once the hosts are allowed, run the two commands below and fill in section 4 from the report. Nothing below section 3 is a finding yet.
+**Status: RUN on 29 Sept 2026** (revision `fa27d29`). Result: **the AMR dataset cannot supply the benchmark.** It has 62 records, and only 1–2 of them are antenatal. Section 3 was committed before the run (commit `4ba335c`) and was not edited afterwards. The data-source decision is Malik's (section 4).
 
 ## 1. How to run
 ```bash
@@ -33,15 +33,28 @@ Written down now so the audit result can't bend them.
 - **License or consent unclear:** evaluation-only use is acceptable if the license allows it. Training use waits for clarity. Everything is recorded in `docs/license-ledger.md`.
 
 ## 4. Results
-_Pending the run._ Fill in from `data/audit/amr_audit.json`:
-- revision audited:
-- rows / splits / text or image:
-- ANC notes (heuristic → after manual check):
-- languages:
-- identifiers found (rows by kind):
-- license / consent / ethics statements:
-- ANC notes with a danger keyword:
-- **Gate 1 data decision:** ANC scope / enrichment gap / fallback / images-only (and why)
+Source: `data/audit/amr_audit.json`. Loader note: the repo ships a legacy loading script (`African-Medical-Records.py`), and current `datasets` releases refuse those. `scripts/audit_amr.py` therefore reads `metadata.csv` plus the `truth/*.txt` transcriptions directly. The images are counted, not downloaded.
+
+- **Revision audited:** `fa27d29dae4128ac45f035fd580928c84bec4e98`
+- **Q1 rows / splits / text or image:** **62 records**, one split. Each has handwritten PNG scans (74 pages: 57 records with 1 page, 4 with 3, 1 with 5) plus a ground-truth `.txt` transcription, so text is usable. Median 62 words (IQR 43–103, max 671). No empty texts, no exact duplicates. 15 contributors.
+- **What the dataset is:** an **OCR/HTR benchmark**, not a record extract. The card lists "visit notes, prescriptions, nursing observation charts, lab request forms, clinical case scenarios" and says the records are **"synthesized/volunteer-produced clinical documents"**. So these are not real patient notes, even though they look like them.
+- **Q2 ANC notes (heuristic):** primary visit type: general OPD 34, unknown 22, child 3, delivery/postnatal 2, **ANC 1**. Any ANC keyword: **2**. Only 1 row has a gestational-age pattern. A manual read of the 30 scrubbed samples is still to do, but it cannot change the order of magnitude.
+- **Q3 languages:** English 62/62. No Yoruba, Hausa, Igbo or Pidgin detected.
+- **Q4 identifiers (rows, first-pass scan):** any 46; date 42, labelled name 36, record number 16, phone 4, 11-digit ID 4. The records are synthesized, but they are formatted like real ones, so they still get the full de-identification pass.
+- **Q5 license / consent / ethics:** CC-BY-4.0 (attribution required: "AMR Contributors", citation in the card). The card does not mention consent or ethics approval. It has one de-identification statement (the "synthesized/volunteer-produced" line). This is recorded in `docs/license-ledger.md`.
+- **Q6 danger signs:** 18 rows hit a danger-sign keyword; **0** of them are ANC rows.
+- **Q7 extractable fields:** BP pattern in 20 rows, gestational age in 1.
+- **Q8 duplicates:** 0 exact.
+
+### Gate 1 data decision (applying section 3 as written)
+- **ANC scope: not met.** The rule needs ≥ 300 usable ANC notes with ≥ 80 danger-sign notes; AMR has ~1–2 and 0.
+- **The ADR-0013 fallback does not rescue it either.** 62 records in total is far below the 500+ real items the benchmark needs, whatever the scope.
+- **This is the "different source" case.** Section 3 lists it under images-only, but it applies equally here. **Malik decides.** Options, for the decision:
+  a. **Find another real-note source**, e.g. a partner PHC/antenatal clinic via the UI/UCH ethics route (open item S2). This is the slowest option, and ethics approval before 12 Oct is unlikely.
+  b. **Clinician-authored vignettes plus clinically reviewed rewrites.** The nurse and the student write ANC encounter notes from structured case templates in the style of real notes. This must be reported honestly as constructed data, which needs a change to the "constructed notes never count" rule, so it needs a new ADR.
+  c. **A hybrid:** use AMR (62, CC-BY-4.0) as a small real-style *out-of-domain* robustness slice and as the OCR-input demo, and build the ANC benchmark as in (b).
+  d. **Other public corpora** (Kaggle/HF search for Nigerian or African ANC or maternal notes). Worth a time-boxed search (≤ half a day) before choosing (b).
+- The model half of Gate 1 (does base N-ATLaS show clear, fixable failures?) needs the 30 pilot items. It waits on this decision.
 
 ## 5. Known limits of the heuristics
 - Visit type and language are keyword counts, good for sizing and not for labels. Every pilot and test item is read by a person.

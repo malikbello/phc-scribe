@@ -53,6 +53,43 @@ def _file_summary(siblings: list[Any]) -> dict[str, Any]:
     }
 
 
+def _load_direct(dataset: str, revision: str | None) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Read a script-based dataset from its metadata.csv and text files.
+
+    Recent `datasets` releases refuse repos that ship a loading script. The AMR repo
+    pairs `htr/*.png` images with `truth/*.txt` transcriptions through `metadata.csv`,
+    so the transcriptions are read directly. Images are counted, not downloaded, and
+    the contributor column (volunteer names) is reduced to a count.
+    """
+    import csv
+
+    from datasets import Dataset
+    from huggingface_hub import hf_hub_download
+
+    def get(path: str) -> str:
+        local = hf_hub_download(dataset, path, repo_type="dataset", revision=revision)
+        return Path(local).read_text(encoding="utf-8")
+
+    meta = list(csv.DictReader(get("metadata.csv").splitlines()))
+    rows = [
+        {
+            "pair_id": m["pair_id"],
+            "text": get(m["truth_file"]),
+            "num_pages": int(m.get("num_pages") or 1),
+        }
+        for m in meta
+    ]
+    pages: Counter[int] = Counter(r["num_pages"] for r in rows)
+    info = {
+        "method": "direct: metadata.csv + truth_file text (legacy loading script)",
+        "records": len(rows),
+        "image_pages": sum(len([p for p in m["htr_file"].split(";") if p.strip()]) for m in meta),
+        "pages_per_record": {str(k): v for k, v in sorted(pages.items())},
+        "contributors": len({m.get("contributor") for m in meta}),
+    }
+    return {"train": Dataset.from_list(rows)}, info
+
+
 def _columns(features: Any) -> tuple[list[str], list[str], dict[str, str]]:
     from datasets import Image, Value
 
@@ -172,7 +209,15 @@ def main() -> int:
     }
 
     samples: list[dict[str, str]] = []
-    dsd = load_dataset(args.dataset, revision=revision, streaming=True)
+    try:
+        dsd = load_dataset(args.dataset, revision=revision, streaming=True)
+        report["loader"] = "datasets.load_dataset (streaming)"
+    except RuntimeError as e:
+        if "Dataset scripts are no longer supported" not in str(e):
+            raise
+        say("legacy loading script refused by datasets; reading metadata.csv + truth files")
+        dsd, loader_info = _load_direct(args.dataset, revision)
+        report["loader"] = loader_info
     for split, ds in dsd.items():
         say(f"auditing split {split} ...")
         report["splits"][str(split)] = audit_split(ds, str(split), args, samples)

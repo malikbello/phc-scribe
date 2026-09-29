@@ -20,7 +20,8 @@ _Last updated: 29 Sept 2026. Keep this file current; it is the handoff between w
 ## Environment (cloud dev sessions)
 - Environment variables: `HF_TOKEN` (HF read token), `KAGGLE_API_TOKEN` (Kaggle `KGAT_…` token). The Kaggle CLI/API reads `KAGGLE_API_TOKEN` directly, so no token file needs to be written. For Modal: `MODAL_TOKEN_ID` and `MODAL_TOKEN_SECRET` (not added yet).
 - Intended network allowlist: `huggingface.co`, `*.huggingface.co`, `hf.co`, `*.hf.co`, `kaggle.com`, `*.kaggle.com`, `storage.googleapis.com` (+ `api.modal.com`, `modal.com`, `*.modal.run` if Modal is adopted).
-- ⚠️ **29 Sept: the environment's network policy does NOT yet allow these.** `huggingface.co`, `hf.co` and `api.kaggle.com` were refused (403 from the egress proxy); only `storage.googleapis.com` got through. Fix in the environment settings (Edit → Network access), then start a new session. `python scripts/check_access.py` verifies everything without printing tokens.
+- ✅ **29 Sept, session 3:** HF and Kaggle are reachable. `python scripts/check_access.py` passes: HF identity, the gated `NCAIR1/N-ATLaS` listing (12 files, 4 weight files, no GGUF), the AMR dataset and Kaggle auth.
+- ⚠️ **Modal cannot be used from the cloud dev sessions.** `MODAL_TOKEN_ID`/`MODAL_TOKEN_SECRET` are set and `api.modal.com` answers over HTTPS, but the Modal client talks gRPC/HTTP-2, and the sessions' egress proxy does not carry that (`modal app list` gives "Could not connect to the Modal server"). The tokens are therefore **not verified**. Test them from the laptop (WSL2, Python ≥ 3.11) with `modal app list`.
 - Local dev: `pip install -e ".[dev,data]"` (or `pip install --require-hashes -r requirements/ci.lock && pip install --no-deps -e .`), then `ruff check . && ruff format --check . && pyright && pytest`.
 - N-ATLaS gated access: granted on all 5 NCAIR1 repos (N-ATLaS, Hausa/Yoruba/Igbo ASR, NigerianAccentedEnglish).
 - Dev container: 4 CPU, ~15 GB RAM, ~30 GB free disk, no GPU.
@@ -42,8 +43,9 @@ _Last updated: 29 Sept 2026. Keep this file current; it is the handoff between w
 | Revoke the HF/Kaggle tokens pasted in chat on 29 Sept; create new ones in the environment | Malik | Reported done; confirm the old ones are revoked |
 | UI/UCH ethics route for real Yoruba dictations (S2, acceleration phase) | Nurse | Not started |
 | Faster cloud serving (card / Lightning / ZeroGPU) | Malik | Modal account now available; ADR + spend limit + tokens in environment pending |
-| **Allow HF + Kaggle hosts in the cloud environment's network policy** (blocks access check, data audit, baselines) | Malik | **Blocking Gate 1** |
-| Approve the Gate 1 decision rules in `docs/data-audit.md` §3 (before the audit runs) | Malik | Pending |
+| **Gate 1 data-source decision:** AMR has 62 records and ~1 ANC note (`docs/data-audit.md` §4, options a–d) | Malik | **Blocking Gate 1** |
+| Verify the Modal tokens from the laptop (not possible from the cloud sessions: gRPC is blocked) | Malik | Pending |
+| Gate 1 decision rules (`docs/data-audit.md` §3): committed before the audit ran and applied as written. Confirm | Malik | Pending |
 | Review annotation guidelines v0, finding vocabulary, danger-sign rules v0 (open questions in guidelines §9) | Nurse | Pending |
 | Review/extend the draft Yoruba forms in `bench/baselines/lexicon.v0.yaml` | Malik | Pending |
 | Merge branch `day1-2-gate1` into `main` | Malik | Pending |
@@ -74,9 +76,14 @@ _Last updated: 29 Sept 2026. Keep this file current; it is the handoff between w
 
   Verified locally on Python 3.12, not yet on GitHub.
 
+**29 Sept, session 3** (branch `day1-2-gate1`):
+- The access check passes (HF, gated N-ATLaS, dataset, Kaggle). Modal cannot be reached from the cloud session (gRPC); see Environment.
+- **The data audit ran.** `scripts/audit_amr.py` now falls back to reading `metadata.csv` plus the `truth/*.txt` files, because current `datasets` refuses the repo's legacy loading script. The aggregates are in `data/audit/amr_audit.json`. 30 scrubbed samples are in the git-ignored `data/private/`; nobody has read them yet.
+- **Finding:** AMR is a 62-record OCR/HTR benchmark of *synthesized/volunteer-produced* documents. They are English only and mostly general OPD; 1–2 are ANC and 0 ANC notes have danger signs. Under the §3 rules, **ANC scope fails, and the ADR-0013 fallback fails too** (62 ≪ 500). A new data source is needed. The options are in `docs/data-audit.md` §4. Pilot items and the model baselines wait on this decision.
+
 ## Next steps: days 1–2 (Gate 1)
-1. ⛔ **Blocked:** allow the HF/Kaggle hosts (see Environment), start a new session, then run `python scripts/check_access.py`.
-2. Run `python scripts/audit_amr.py` and fill in `docs/data-audit.md` §4. Malik reads the 30 scrubbed samples. Apply the §3 decision rules (approve them first).
+1. ✅ Access verified (HF, Kaggle). Modal: verify from the laptop.
+2. ✅ Audit run; results are in `docs/data-audit.md` §4. ⛔ **Malik: choose the data source (options a–d)**, then read the 30 scrubbed samples. Option (b) or (c) needs an ADR that changes the "constructed notes never count" rule.
 3. ✅ Drafted: schema v0.1, vocabulary, annotation guidelines v0, danger-sign rules v0. All need nurse review before gold labelling.
 4. Pick 30 pilot items (after the audit). Rung 1 (keyword baseline) runs anywhere now via `python -m bench.harness`. Still to build: the model runner for rungs 2–4 (Llama-3-8B-Instruct, base N-ATLaS zero-/few-shot) with schema-constrained decoding on a Kaggle GPU (or Modal, if an ADR approves it). Also measure Q4 GGUF latency on CPU.
 5. **Gate 1 decision:** does base N-ATLaS show clear, fixable failures, and does the data support ANC scope (or the general-PHC fallback, ADR-0013)?
