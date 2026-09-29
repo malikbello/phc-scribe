@@ -1,0 +1,109 @@
+# Phrase bank for the generated ANC-note stratum G (ADR-0016). English, v0.
+#
+# Status: DRAFT (29 Sept 2026). The clinical adviser reviews THIS FILE once (about 30
+# min) instead of reviewing every generated note. Nothing here is clinical advice.
+#
+# Written independently of bench/baselines/lexicon.v0.yaml on purpose: the generator
+# reports how many evidence phrases the keyword baseline's lexicon also contains, so an
+# overlap advantage for rung 1 is measured, not hidden.
+#
+# forms:      how the finding itself is written (Nigerian PHC note register)
+# frames:     how each assertion wraps a form; {x} is the form. The whole rendered
+#             frame is the evidence quote, so it is verbatim by construction.
+# Frames must not mention any other concept.
+
+version: 0.1.0
+
+frames:
+  present:
+    - "c/o {x}"
+    - "complains of {x}"
+    - "{x} since yesterday"
+    - "{x} x 2/7"
+    - "presented with {x}"
+    - "reports {x}"
+  absent:
+    - "no {x}"
+    - "denies {x}"
+    - "{x}: nil"
+    - "not {x}"      # only used with forms marked adjective: true
+  historical:
+    - "had {x} in last pregnancy"
+    - "hx of {x} in previous pregnancy"
+    - "{x} in her last pregnancy"
+  possible:
+    - "?{x}"
+    - "query {x}"
+    - "possible {x}"
+
+concepts:
+  vaginal_bleeding:
+    forms: [PV bleeding, vaginal bleeding, bleeding per vaginam, spotting per vaginam]
+  convulsions:
+    forms: [convulsions, fits, seizures]
+  severe_headache:
+    forms: [severe headache, persistent severe headache, intense headache]
+  blurred_vision:
+    forms: [blurring of vision, blurred vision, visual disturbance]
+  fever:
+    forms: [fever, pyrexia, hot body]
+  severe_abdominal_pain:
+    forms: [severe abdominal pain, severe lower abdominal pain, severe epigastric pain]
+  reduced_fetal_movement:
+    forms: [reduced fetal movements, decreased FM, reduced foetal movement]
+  breathing_difficulty:
+    forms: [difficulty in breathing, breathlessness, shortness of breath]
+  swelling_face_hands:
+    forms: [facial swelling, swelling of face and hands, puffy face and hands]
+  leaking_amniotic_fluid:
+    forms: [drainage of liquor, leaking liquor, gush of fluid per vaginam]
+  severe_vomiting:
+    forms: [persistent vomiting, severe vomiting, vomiting everything taken]
+  unconscious:
+    forms: [loss of consciousness, unresponsiveness]
+  severe_pallor:
+    forms: [marked pallor, severe pallor]
+  looks_very_ill:
+    forms: [ill-looking, very ill appearance]
+  headache:
+    forms: [mild headache, headache]
+  abdominal_pain:
+    forms: [mild abdominal pain, lower abdominal discomfort]
+  nausea_vomiting:
+    forms: [nausea, morning sickness, occasional vomiting]
+  heartburn:
+    forms: [heartburn, epigastric burning after meals]
+  leg_cramps:
+    forms: [leg cramps, cramps in the calves]
+  constipation:
+    forms: [constipation, infrequent hard stools]
+  low_back_pain:
+    forms: [low back pain, waist pain]
+  pelvic_pain:
+    forms: [pelvic pain, pubic pain]
+  varicose_veins:
+    forms: [varicose veins]
+  leg_oedema:
+    forms: [pedal oedema, swollen ankles, bilateral leg swelling]
+  dizziness:
+    forms: [dizziness, dizzy spells]
+  fatigue:
+    forms: [easy fatigability, body weakness]
+  cough:
+    forms: [cough, productive cough]
+  abnormal_vaginal_discharge:
+    forms: [abnormal vaginal discharge, offensive vaginal discharge, itchy vaginal discharge]
+  painful_urination:
+    forms: [dysuria, painful micturition, pain on passing urine]
+
+# Clauses with no finding, vital or ANC field in them, used to make notes read like
+# real ones. They must not mention any concept above.
+fillers:
+  - "FHR 140 bpm, regular."
+  - "Fundal height corresponds with dates."
+  - "Counselled on birth preparedness."
+  - "Cephalic presentation."
+  - "Health talk given on nutrition."
+  - "Husband present."
+  - "Keeps appointments."
+  - "Chest clear."

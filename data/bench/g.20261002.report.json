@@ -1,0 +1,11 @@
+{
+  "generator": "notegen-v0",
+  "phrase_bank": "0.1.0",
+  "seed": 20261002,
+  "items": 300,
+  "with_positive_danger": 109,
+  "rejected": [],
+  "evidence_quotes": 705,
+  "evidence_in_baseline_lexicon": 541,
+  "baseline_extra_concepts": 10
+}
