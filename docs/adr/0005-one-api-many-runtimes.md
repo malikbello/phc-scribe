@@ -1,6 +1,6 @@
 # ADR-0005: One API contract, many runtimes
 
-- **Status:** Accepted
+- **Status:** Accepted. Amended by ADR-0015 (cloud runtime is a free HF Space for NAIC)
 - **Date:** 2026-09-29
 
 ## Context

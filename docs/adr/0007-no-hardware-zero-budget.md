@@ -1,6 +1,6 @@
 # ADR-0007: No purchased hardware and a $0 cash budget for NAIC
 
-- **Status:** Accepted
+- **Status:** Accepted. Amended by ADR-0015 (Modal replaced by a free HF Space)
 - **Date:** 2026-09-29
 
 ## Context

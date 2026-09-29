@@ -18,3 +18,4 @@ Format: context → decision → consequences. A decision changes only through a
 | [0012](0012-hfr-tenancy.md) | Tenancy keyed to the Nigeria Health Facility Registry hierarchy | Accepted |
 | [0013](0013-antenatal-module-one.md) | Antenatal care is clinical module one | Accepted |
 | [0014](0014-offline-first-pwa.md) | Offline-first PWA frontend with enforced performance budgets | Accepted |
+| [0015](0015-hf-space-public-api.md) | Host the public API on a free Hugging Face Space; defer GPU serving | Accepted |

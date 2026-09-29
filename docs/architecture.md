@@ -39,7 +39,7 @@ v1 had the right shape but was light on all six. v2 fixes that. The changes from
 
 | Constraint | Consequence |
 |---|---|
-| **No purchased hardware; $0 budget** | Training on Kaggle (free, about 30 GPU-h/week). Online API on Modal ($30/month free credits, scales to zero). Offline node on Malik's laptop. |
+| **No purchased hardware; $0 budget** | Training on Kaggle (free, about 30 GPU-h/week). Public API on a **free Hugging Face Space** (CPU, llama.cpp; ADR-0015). Offline node on Malik's laptop. Modal was dropped because it needs a card. |
 | **Laptop: Dell Latitude 5400, Core i7-8665U (4 cores / 8 threads, AVX2), 16 GB RAM, Intel UHD 620 (no usable GPU), Windows 11 + WSL2, Ollama already installed** | Runs the Q4 8B model and speech recognition on CPU. Expect roughly 2–5 tokens/s generation, to be measured on day 1–2. |
 | ⚠️ **Laptop disk: only 8.3 GB free** | **Blocker.** Malik must free **≥25 GB** before day 2: model (about 5 GB), speech models (about 1 GB), WSL/Python environments, working data. The 16 GB full-precision weights **never** touch the laptop; conversion happens on Kaggle. |
 | Team of 3: Malik (lead, ML/eng, native Yoruba), UCH nurse (clinical adviser/adjudicator), medical student (annotator) | Covers the 2–5 team-size rule and clinical credibility |
@@ -83,7 +83,7 @@ v1 had the right shape but was light on all six. v2 fixes that. The changes from
  │  /v1/reports/nhmis ─► monthly summary export (CSV, DHIS2 dataValueSets JSON)           │
  │  /v1/chat/completions ─► OpenAI-compatible passthrough (for other developers)          │
  │                                                                                        │
- │  Model adapter ─┬─ GPU: vLLM + LoRA on Modal (cloud, scale-to-zero)                   │
+ │  Model adapter ─┬─ GPU: vLLM + LoRA (when credits exist; ADR-0015)                    │
  │                 └─ CPU: llama.cpp server, GGUF Q4_K_M (laptop / future edge box)       │
  └────────────────────────────────────────────────────────────────────────────────────────┘
 
@@ -194,11 +194,12 @@ The exact thresholds are fixed after the 30-item pilot and **before training**. 
 - **API contract first:** an OpenAPI spec for `/v1`, versioned schema, idempotency keys on record writes, a consistent error envelope, request IDs.
 - **Runtimes:**
   - **Laptop (offline node):** llama.cpp server (Q4_K_M, prompt-prefix caching, schema grammar) + faster-whisper (int8), run under WSL2. Ollama (already installed) is the fallback runtime.
-  - **Cloud:** Modal, vLLM + LoRA, scale-to-zero, for judges and developers.
+  - **Cloud (NAIC):** a free Hugging Face Space running the same llama.cpp image as the laptop node, for judges and developers. It is slower (CPU), but always on and $0.
+  - **Cloud GPU (later):** vLLM + LoRA once NAIC acceleration credits or pilot funding exist.
 - **Observability:** structured JSON logs with clinical text **redacted**, plus p50/p95 latency, token counts, schema-valid rate, grounding-failure rate and NEEDS_REVIEW rate per model version.
 - **Security:**
   - hashed API keys, rate limiting, TLS on cloud
-  - secrets only in Kaggle/Modal secret stores, never in the repo (CI secret scan)
+  - secrets only in Kaggle / Hugging Face secret stores, never in the repo (CI secret scan)
   - pinned dependencies with a vulnerability audit in CI
 - **Data protection (NDPA 2023):**
   - de-identified by default
@@ -225,7 +226,8 @@ Reviewed and signed off by the nurse. Examples:
 ## 9. Where it runs (no purchases)
 | Tier | Where | Internet | Purpose |
 |---|---|---|---|
-| Cloud GPU | Modal | Online | Judges' API, benchmark runs |
+| Cloud (NAIC) | Free Hugging Face Space (CPU) | Online | Judges' and developers' API (ADR-0015) |
+| Cloud GPU (later) | vLLM on NAIC acceleration credits or funded infra | Online | Fast serving at pilot scale |
 | **Offline node** | **Malik's laptop**, phones on its Wi-Fi hotspot | **None** | Offline demo (video), pilot |
 | Future edge box | Mini-PC/Jetson + solar, paid for by the buyer | None | State pilot and national rollout; same image as the laptop |
 
@@ -255,7 +257,7 @@ rules/       danger_signs.v0.yaml + tests (nurse-reviewed)
 bench/       harness, metrics, bootstrap/McNemar stats, reports/
 data/        manifests + hashes only (no raw clinical text in git)
 train/       configs/, Kaggle notebooks, merge + GGUF scripts
-serve/       FastAPI app, runtime adapters (llama.cpp, vLLM), Modal app
+serve/       FastAPI app, runtime adapters (llama.cpp, vLLM), HF Space Dockerfile
 web/         minimal capture/review UI
 tests/       unit, contract, rules golden tests, smoke-eval
 .github/     CI: ruff, pyright, pytest, secret scan, dependency audit, smoke-eval
@@ -277,15 +279,15 @@ tests/       unit, contract, rules golden tests, smoke-eval
 ## 12. 14-day plan with gates (v3: ML, platform and design tracks run in parallel)
 | Days | ML track | Platform track | Design track | Gate |
 |---|---|---|---|---|
-| 0 (now) | **Malik:** free ≥25 GB disk; Kaggle + Modal accounts; confirm teammates; email organisers; **pick the name** | — | — | — |
+| 0 (now) | **Malik:** free ≥25 GB disk; Kaggle account + HF/Kaggle tokens in environment settings; confirm teammates; email organisers; **pick the name** | — | — | — |
 | 1–2 | Eval plan + decision records committed; AMR data audit; schema v0 (WHO ANC DAK-aligned); 30-item pilot; baseline ladder | Repo, CI, monorepo skeleton, API contract (OpenAPI), multi-tenant data model | Brand + design tokens + **clickable prototype** of the core flow for Malik and the nurse to review | **Gate 1:** base has fixable failures; the data supports the scope |
 | 2–5 | Annotation, agreement check, translations, red-team set, **freeze test set**, fix thresholds | Event store, sync protocol, auth/roles, FHIR mapping | Walkthrough with the nurse (+ colleagues if possible), then iterate | Test set frozen |
 | 3–8 | Training data; QLoRA runs; merge; GGUF; eval full precision and Q4; regression check | Extraction pipeline + guardrails + rules engine; runtime adapters | Build the design system + core screens (record → review → confirm → flag) | **Gate 2:** pre-registered criteria |
-| 8–11 | Final benchmark report | Cloud control plane on Modal; laptop node; DHIS2 play-server push (stretch); observability | Monthly report screen; accessibility pass (WCAG 2.2 AA); performance budget check on a low-end phone | CI green; a11y + perf budgets met |
+| 8–11 | Final benchmark report | Cloud API on a Hugging Face Space (+ daily keep-warm ping); laptop node; DHIS2 play-server push (stretch); observability | Monthly report screen; accessibility pass (WCAG 2.2 AA); performance budget check on a low-end phone | CI green; a11y + perf budgets met |
 | 11–12 | Model card, datasheet | Security review, load test (small), docs | **Usability test with 5 health workers**, System Usability Scale (SUS) score, fix top issues | SUS ≥ 75 target |
 | 12–13 | — | Submission package | 3–5 min video | **Submit day 13** |
 
-**Cut lines if behind** (in order): DHIS2 live push → red-team set size → ablation → monthly-report polish → Modal (keep laptop + recorded demo).
+**Cut lines if behind** (in order): DHIS2 live push → red-team set size → ablation → monthly-report polish → HF Space polish (keep laptop + recorded demo).
 **Never cut:** the frozen real-data test set, the statistics, grounding, the rules engine, the offline-first core flow, accessibility basics.
 
 ## 13. Decisions log
@@ -301,6 +303,7 @@ tests/       unit, contract, rules golden tests, smoke-eval
 | Design bar | Premium, research-led, accessible, offline-first (Part C) |
 | Architecture | ✅ Approved 29 Sept 2026 |
 | Service architecture | Modular monolith + separately scaled AI services (B9, ADR-0010) |
+| Cloud hosting | Free Hugging Face Space. Modal dropped (card rejected); $0 kept (ADR-0015) |
 | **Pending** | Agent name (C1) |
 
 ---
@@ -389,7 +392,7 @@ tests/       unit, contract, rules golden tests, smoke-eval
 - **Backend:** Python 3.12, FastAPI, Pydantic v2, SQLAlchemy 2 + Alembic, Postgres (cloud) / SQLite (edge), OpenTelemetry
 - **AI runtime:** vLLM (cloud GPU) and llama.cpp (edge CPU) behind one adapter; faster-whisper for ASR
 - **Frontend:** TypeScript, **Preact + Vite** (React API, ~4 KB runtime, for cheap phones), Workbox service worker, Dexie (IndexedDB), FormatJS (ICU i18n)
-- **Infra:** Docker Compose for the edge node; Modal (code-defined) for the NAIC cloud; Terraform when moving to a Nigerian data centre
+- **Infra:** Docker Compose for the edge node; a Hugging Face Space (Docker) for the NAIC cloud; Terraform when moving to a Nigerian data centre
 - **Quality:** ruff, pyright, pytest, Playwright end-to-end tests, axe-core accessibility checks in CI, Lighthouse performance budgets in CI
 
 
