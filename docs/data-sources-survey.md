@@ -34,6 +34,27 @@ The four Intron conversation and QA sets are **non-commercial (NC-SA)**. Using t
 3. **Conversation slice:** med-convo-nig (the pre-eclampsia and hyperemesis conversations) plus afrispeech-dialog, for conversation → note.
 4. **OOD slice:** AMR (62 records).
 
+## Round 2 (29 Sept): Deep Learning Indaba, Masakhane, ML Collective, Nigerian teams
+_Scope: Indaba 2025 (Kigali) and 2026 (Nigeria) posters, papers, DS4Health workshop and African Datasets pages; AfricaNLP 2025/2026; the Masakhane HF org; ML Collective; Lacuna Fund; HF org catalogues (Intron, HelpMum, DSN, NCAIR1, Lelapa, Sunbird, CLEAR Global, McGill-NLP); Kaggle. The dev environment blocks deeplearningindaba.com, arXiv, ACL Anthology, OpenReview and OSF, so those were read through search snippets and GitHub sources. **Malik should open the Indaba "Posters" and "African Datasets" pages for 2025 and 2026 in a browser.** Their full lists could not be read here._
+
+**Finding:** there is real Nigerian PHC and maternal data. It is **held by teams, not openly published as notes.** The published parts that fit us:
+
+| Source | What it is | Why it matters | How to get it |
+|---|---|---|---|
+| **IyàwóBench v1/v2** ([arXiv 2605.23465](https://arxiv.org/abs/2605.23465), [v2 2607.29085](https://arxiv.org/html/2607.29085)) | 200 vignettes for LLM triage in **Nigerian PHCs**. Fields: vitals, **BP**, WHO IMCI danger-sign checklist, **pregnancy status**, **free-text clinical notes**; triage labels REFER NOW / REFER TODAY / TREAT HERE. Generated from the distributions of **1,200 real encounters at 19 PHCs in Oyo State (Apr 2026)** | Closest match to our task: same state as UCH, CHEW setting, danger signs and triage. The team holds real PHC encounter data | Check the paper for a data link (arXiv is blocked here). **Contact the authors** about evaluation-only access or a collaboration |
+| **HelpMum** (Ibadan): [`HelpMum-Personal/MamaBench`](https://huggingface.co/datasets/HelpMum-Personal/MamaBench) ([arXiv 2607.14385](https://arxiv.org/abs/2607.14385)); MamaBot-Llama ([arXiv 2609.22110](https://arxiv.org/abs/2609.22110)) | MamaBench: 217 counterfactual **maternal and child health vignette pairs** (CC-BY-4.0, gated with automatic approval: accepting the terms gives access immediately). MamaBot was trained on **36k Nigerian maternal-health QA pairs**, rated by Nigerian physicians | Maternal diagnostic reasoning tuned to Nigeria. Their QA data could be a training source, and they are an obvious partner | Accept the MamaBench terms on HF. Ask HelpMum about the 36k QA set |
+| **St Luke's Anua MNCH records** ([F1000 11:166](https://f1000research.com/articles/11-166/v2); data at [OSF j9zh8](https://doi.org/10.17605/OSF.IO/J9ZH8)) | **538 real maternal records** (plus 720 neonatal, 425 child) from a Nigerian hospital, 2014–2019. Structured, for spatiotemporal analysis | Real Nigerian distributions (age, parity, complications) to seed realistic ANC case cards | Download from OSF (open part). Check the licence. GPS data is by request only |
+| Indaba 2025 posters (seen via search) | "Ensembled-Based Model for Predicting Maternal Health Risk in Southwest Nigeria"; "UlizaMama: Maternal Health LLMs" (Kenya); "Safe mom" risk prediction; DS4Health workshop (Intron, Jacaranda, Google) | Southwest Nigeria maternal-risk data (probably tabular) | Find the authors or the dataset from the posters page |
+| Indaba 2026 posters (Nigeria) | "Triaging Maternal Health LLMs With Hierarchical Intent Models"; Nigerian TB and stunting ML | Maternal triage-intent data | Same |
+
+**Masakhane:** no clinical or maternal dataset in its HF org (`AfriADR` is diacritic restoration, not adverse drug reactions). Useful side resource: [`masakhane/AfriDocMT`](https://huggingface.co/datasets/masakhane/AfriDocMT) (334 health documents human-translated into Yoruba and Hausa), for Yoruba medical terms. **ML Collective:** a research community with no dataset catalogue; nothing health-specific found. **Lacuna Fund:** the 2023 maternal-health awards include a prenatal risk-categorisation dataset (country unconfirmed) and ABreast (Nigeria/Uganda ultrasound). Nothing note-shaped. **Kaggle:** tabular or QA only (e.g. Naija Health Q&A, Rivers State). Nothing note-shaped. **Excluded:** `Ajisco/redacted-clinical-notes` (US-style synthetic notes, not Nigerian); `electricsheepafrica/*` (catalogue/synthetic).
+
+### What changes
+- The benchmark design stays **clinician-constructed ANC notes anchored in real data**. The anchors are now stronger: real maternal distributions (St Luke's MNCH), real PHC vignette structure (IyàwóBench), real maternal phrasing (NigBench-MAMAI) and Nigerian maternal QA (HelpMum).
+- **Partnership route (highest upside):** the Iyàwó team (Oyo PHCs) and HelpMum (Ibadan) both hold real Nigerian primary-care or maternal data, near UCH. An evaluation-only data-use agreement or collaboration could give real items before 12 Oct; that timing is not guaranteed. Ask now, in parallel with the constructed benchmark.
+
 ## Actions
-- Malik: request access on HF to `NigBench-MAMAI-Speech-QA`, `nig-bench` and `med-convo-nig` (manual approval can take days, so do it today).
+- Malik: request access on HF to `NigBench-MAMAI-Speech-QA`, `nig-bench` and `med-convo-nig` (manual approval can take days, so do it today). Accept the MamaBench terms (instant access).
+- Malik: email the IyàwóBench authors and HelpMum about evaluation-only access or collaboration. Download the St Luke's MNCH data from OSF.
+- Malik: open the Indaba 2025/2026 Posters and African Datasets pages in a browser, and flag anything with clinical text.
 - Then re-run the survey access checks and run the audit tooling over the accessible sets.
