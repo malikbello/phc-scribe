@@ -25,14 +25,18 @@ def main() -> int:
     parser.add_argument("--seed", type=int, default=20261002)
     parser.add_argument("--danger-share", type=float, default=0.4)
     parser.add_argument("--out-dir", type=Path, default=ROOT / "data" / "bench")
+    parser.add_argument(
+        "--stratum", choices=["G", "pilot"], default="G", help="pilot = dev items, never test"
+    )
     args = parser.parse_args()
-    items, report = generate(args.n, args.seed, args.danger_share)
-    out = args.out_dir / f"g.{args.seed}.jsonl"
+    items, report = generate(args.n, args.seed, args.danger_share, args.stratum)
+    prefix = "g" if args.stratum == "G" else "pilot"
+    out = args.out_dir / f"{prefix}.{args.seed}.jsonl"
     write_jsonl(out, items)
     out.with_suffix(".report.json").write_text(report.model_dump_json(indent=2) + "\n")
     lex_share = report.evidence_in_baseline_lexicon / max(1, report.evidence_quotes)
     print(
-        f"{report.items} items -> {out.relative_to(ROOT)}; "
+        f"{report.items} items -> {out}; "
         f"{report.with_positive_danger} with a present danger sign; "
         f"{len(report.rejected)} rejected; finding evidence in rung-1 lexicon: {lex_share:.0%}; "
         f"baseline extra concepts: {report.baseline_extra_concepts}"

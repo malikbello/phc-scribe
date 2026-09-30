@@ -27,7 +27,13 @@ RUNS = [
     ("llama31-fewshot", "unsloth/Llama-3.1-8B-Instruct", "fewshot"),
     ("natlas-zeroshot", "NCAIR1/N-ATLaS", "zeroshot"),
 ]
-ITEM_SETS = ["tests/fixtures/smoke_items.jsonl", "data/bench/g.20261002.jsonl"]
+# Which items to run. "baseline": smoke + stratum G. "pilot": the 30 dev items used to set
+# the guardrail margins before the freeze (docs/eval-plan.md, section 6).
+PLAN = "pilot"
+ITEM_SETS = {
+    "baseline": ["tests/fixtures/smoke_items.jsonl", "data/bench/g.20261002.jsonl"],
+    "pilot": ["data/bench/pilot.20261004.jsonl"],
+}[PLAN]
 LIMIT = int(os.environ.get("PHC_LIMIT", "0"))  # 0 = all items
 
 

@@ -1,6 +1,6 @@
 # ADR-0016: The counted benchmark is real, consented, CC-BY speech data; generated notes are a labelled supplement
 
-- **Status:** Proposed (awaiting Malik)
+- **Status:** Accepted by Malik, 30 Sept 2026
 - **Date:** 2026-09-29 (revised the same day, after reading the NAIC build requirements)
 - **Changes:** `docs/eval-plan.md` §3 (test data strata). The plan is still a draft with no thresholds frozen, so this is a pre-freeze revision, recorded here and in the plan.
 
@@ -44,6 +44,10 @@
    - Email Intron Health directly.
    - Meanwhile build S4 tooling and the G stratum.
    - If there is still no access by 5 Oct, the counted benchmark becomes MamaBench (434, clinician-authored) plus G, and the report states plainly that it is **not** real patient data.
+
+## Notes at acceptance (30 Sept)
+- Labelling runs in the review app (`review-app/`) instead of the local tool. The same rules apply: evidence is selected from the text, hints are never pre-ticked. The clinical adviser is Rahmat Adebayo (registered nurse). Oseni Abdullah (medical student) also labels.
+- MAMAI access is still pending. The 2 Oct / 5 Oct fallback in §6 stands.
 
 ## Consequences
 - The counted 500 are real, consented and licence-clean. That meets "real data … not simulated" and keeps the Track B product path open (CC-BY allows commercial use with attribution).

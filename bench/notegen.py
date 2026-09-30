@@ -23,7 +23,7 @@ from typing import Any
 import yaml
 from pydantic import BaseModel, Field
 
-from bench.items import BenchItem
+from bench.items import BenchItem, Stratum
 from phc_scribe.encounter import (
     Anc,
     Assertion,
@@ -220,7 +220,9 @@ def _evidence_quotes(gold: Encounter) -> list[str]:
     return quotes
 
 
-def generate(n: int, seed: int, danger_share: float = 0.4) -> tuple[list[BenchItem], GenReport]:
+def generate(
+    n: int, seed: int, danger_share: float = 0.4, stratum: Stratum = "G"
+) -> tuple[list[BenchItem], GenReport]:
     from bench.baselines.keyword import extract, load_lexicon
     from phc_scribe.rules import check
     from phc_scribe.text import fold_text
@@ -235,7 +237,7 @@ def generate(n: int, seed: int, danger_share: float = 0.4) -> tuple[list[BenchIt
         k += 1
         want_danger = rng.random() < danger_share
         note, gold = render_note(rng, bank, want_danger)
-        item_id = f"g-{seed}-{k:04d}"
+        item_id = f"{'g' if stratum == 'G' else 'pilot'}-{seed}-{k:04d}"
         missing = [q for q in _evidence_quotes(gold) if locate(note, q) is None]
         if missing:
             report.rejected.append(f"{item_id}: evidence not found {missing}")
@@ -258,7 +260,7 @@ def generate(n: int, seed: int, danger_share: float = 0.4) -> tuple[list[BenchIt
             BenchItem(
                 item_id=item_id,
                 group_id=item_id,
-                stratum="G",
+                stratum=stratum,
                 language="en",
                 origin="generated",
                 transcript=note,

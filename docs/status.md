@@ -37,8 +37,8 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 
 ## Team
 - Malik Bello: lead, ML/engineering, native Yoruba reviewer
-- Registered nurse, UCH Ibadan: clinical adviser/adjudicator (**to confirm as a named member**)
-- Medical student: annotator (**to confirm as a named member**)
+- Rahmat Adebayo, registered nurse, UCH Ibadan: clinical adviser/adjudicator (**to confirm as a named member**)
+- Oseni Abdullah, medical student: annotator (**to confirm as a named member**)
 
 ## Open items
 | Item | Owner | Status |
@@ -52,7 +52,7 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 | Faster cloud serving (card / Lightning / ZeroGPU) | Malik | Modal account now available; ADR + spend limit + tokens in environment pending |
 | **Gate 1 data-source decision:** AMR has 62 records and ~1 ANC note (`docs/data-audit.md` §4, options a–d) | Malik | **Blocking Gate 1** |
 | HF access: MamaBench ✅ granted. NigBench-MAMAI, nig-bench, med-convo-nig still show **"awaiting review"** for account `malikbello`. Confirm the approval was for this account | Malik | Pending |
-| **Accept or reject ADR-0016** (revised: counted 500 = real NigBench-MAMAI speech, labelled by Malik; generated notes as a supplement) | Malik | **Blocking the benchmark build** |
+| Accept or reject ADR-0016 | Malik | ✅ Accepted 30 Sept |
 | **Email Intron Health (tobi@intron.io)** to ask for approval of the pending access requests; fallback in ADR-0016 §6 (2 Oct / 5 Oct) | Malik | **Today** |
 | Nurse: about 1 h (double-label 50 items) + 1.5 h (rules/vocabulary review) + optional demo test. Confirm her and the student as named team members (Track B needs 2–5) | Malik | Pending |
 | Before submission: remove day/gate wording from public docs (see Submission conventions) | Malik + Claude | From now |
