@@ -1,4 +1,5 @@
 import hashlib
+import secrets
 
 import pytest
 from fastapi.testclient import TestClient
@@ -8,7 +9,7 @@ from phc_scribe.api.extractors import ExtractorError
 from phc_scribe.api.settings import Settings
 from phc_scribe.encounter import Encounter
 
-KEY = "test-key-0123456789"
+KEY = secrets.token_urlsafe(16)  # generated per run: no key-like literal in the repo
 AUTH = {"Authorization": f"Bearer {KEY}"}
 NOTE = "G2P1 at 32 weeks. Complains of severe headache and blurred vision. BP 160/110. No bleeding."
 
@@ -102,7 +103,7 @@ def test_records_are_idempotent_and_append_only(tmp_path):
 
 
 def test_records_are_private_to_each_key(tmp_path):
-    other = "another-key-9876543210"
+    other = secrets.token_urlsafe(16)
     s = Settings(
         api_key_hashes=frozenset(hashlib.sha256(k.encode()).hexdigest() for k in (KEY, other)),
         db_path=str(tmp_path / "db"),
