@@ -33,17 +33,22 @@ jobs:
         run: |
           python - <<'PY'
           import hashlib, os, subprocess, sys
+          missing = [v for v in ("MODAL_TOKEN_ID", "MODAL_TOKEN_SECRET", "HF_READ_TOKEN")
+                     if not os.environ.get(v)]
+          if missing:
+              sys.exit(f"missing repository secrets: {', '.join(missing)}")
           key = os.environ.get("PHC_API_KEY", "").strip()
           if len(key) < 32:
               sys.exit("PHC_API_KEY must be set and at least 32 characters")
-          if not os.environ.get("HF_READ_TOKEN"):
-              sys.exit("HF_READ_TOKEN is not set")
           digest = hashlib.sha256(key.encode()).hexdigest()
-          subprocess.run(
+          print(f"::add-mask::{digest}")  # keep even the hash out of the logs
+          r = subprocess.run(
               ["modal", "secret", "create", "phc-scribe-api", "--force",
                f"HF_TOKEN={os.environ['HF_READ_TOKEN']}", f"PHC_API_KEY_HASHES={digest}"],
-              check=True, stdout=subprocess.DEVNULL,
+              stdout=subprocess.DEVNULL, check=False,
           )
+          if r.returncode:
+              sys.exit("modal secret create failed (see Modal's error above)")
           print("secret phc-scribe-api updated")
           PY
       - name: Deploy
