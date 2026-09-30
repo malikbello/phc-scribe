@@ -42,10 +42,13 @@ jobs:
               sys.exit("PHC_API_KEY must be set and at least 32 characters")
           digest = hashlib.sha256(key.encode()).hexdigest()
           print(f"::add-mask::{digest}")  # keep even the hash out of the logs
+          env = {**os.environ}
+          for v in ("MODAL_TOKEN_ID", "MODAL_TOKEN_SECRET"):  # pasted values may carry newlines
+              env[v] = "".join(env[v].split())
           r = subprocess.run(
               ["modal", "secret", "create", "phc-scribe-api", "--force",
                f"HF_TOKEN={os.environ['HF_READ_TOKEN']}", f"PHC_API_KEY_HASHES={digest}"],
-              stdout=subprocess.DEVNULL, check=False,
+              stdout=subprocess.DEVNULL, check=False, env=env,
           )
           if r.returncode:
               sys.exit("modal secret create failed (see Modal's error above)")
@@ -55,4 +58,7 @@ jobs:
         env:
           MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
           MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
-        run: modal deploy deploy/modal_app.py
+        run: |
+          export MODAL_TOKEN_ID="$(printf %s "$MODAL_TOKEN_ID" | tr -d '[:space:]')"
+          export MODAL_TOKEN_SECRET="$(printf %s "$MODAL_TOKEN_SECRET" | tr -d '[:space:]')"
+          modal deploy deploy/modal_app.py
