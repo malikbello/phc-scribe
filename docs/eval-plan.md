@@ -16,7 +16,7 @@ Does fine-tuning N-ATLaS on primary-care documentation improve structured extrac
 ## 2. Systems compared (baseline ladder)
 All rungs use the same schema-constrained decoding and the same grounding/validation pipeline.
 1. Rules/keyword baseline (no ML)
-2. Llama-3-8B-Instruct (N-ATLaS's parent), few-shot
+2. Llama-3.1-8B-Instruct (N-ATLaS's parent; weights from the ungated mirror `unsloth/Llama-3.1-8B-Instruct`), few-shot
 3. Base N-ATLaS, zero-shot
 4. Base N-ATLaS, few-shot (**primary comparator**)
 5. Fine-tuned N-ATLaS, full precision

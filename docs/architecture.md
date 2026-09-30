@@ -25,7 +25,7 @@ v1 had the right shape but was light on all six. v2 fixes that. The changes from
 | 3 | Grounding | "Evidence spans" | Spans are **machine-verified** against the transcript. Any ungrounded field is dropped and the record is flagged "needs review". Grounding rate is a tracked metric. |
 | 4 | Statistics | Single scores | **95% confidence intervals** (bootstrap) and **paired significance tests** (paired bootstrap; McNemar for danger-sign detection), plus effect sizes. |
 | 5 | Gold labels | Double annotation | Written **annotation guidelines**, **inter-annotator agreement** (Cohen's κ) on an overlap set, and a nurse-adjudication protocol |
-| 6 | Baselines | Base N-ATLaS | A **baseline ladder**: rules/keyword baseline → Llama-3-8B-Instruct (N-ATLaS's own parent) → base N-ATLaS zero-shot → few-shot → **our fine-tune**. The parent comparison shows what N-ATLaS itself contributes. |
+| 6 | Baselines | Base N-ATLaS | A **baseline ladder**: rules/keyword baseline → Llama-3.1-8B-Instruct (N-ATLaS's own parent) → base N-ATLaS zero-shot → few-shot → **our fine-tune**. The parent comparison shows what N-ATLaS itself contributes. |
 | 7 | What ships | Evaluate the adapter | **Evaluate the quantized Q4 model that actually ships**, plus the full-precision one, and report the quantization loss |
 | 8 | Leakage | Frozen test split | **Group-wise splits by source note**, so an English note and its Yoruba translation never land on different sides. Train/test dedupe and near-duplicate checks. |
 | 9 | Safety eval | Not in v1 | A **red-team set**: negations, hedges, history vs current, another person's symptoms, mixed-language numbers, ASR noise, and instructions hidden inside a transcript |
@@ -152,7 +152,7 @@ Scope is decided by the **data audit** (Gate 1). The target is **antenatal care 
 ### 4.4 Baseline ladder
 All rungs get the same schema-constrained decoding, so the comparison measures content, not formatting.
 1. Rules/keyword baseline (no ML)
-2. Llama-3-8B-Instruct (N-ATLaS's parent), few-shot
+2. Llama-3.1-8B-Instruct (N-ATLaS's parent; weights from the ungated mirror `unsloth/Llama-3.1-8B-Instruct`), few-shot
 3. Base N-ATLaS zero-shot
 4. Base N-ATLaS few-shot
 5. **Fine-tuned N-ATLaS, full precision**
