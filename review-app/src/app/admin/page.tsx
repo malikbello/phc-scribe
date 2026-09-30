@@ -30,6 +30,16 @@ const fmt = (x: number | null, d = 2) => (x === null ? "–" : x.toFixed(d));
 export default function Admin() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [toast, showToast, tone] = useToast();
+  async function removeSet(id: string, title: string) {
+    if (!window.confirm(`Delete "${title}"? Nobody has labelled it yet, so nothing is lost.`)) return;
+    try {
+      await api(`/api/admin/queues/${encodeURIComponent(id)}`, { method: "DELETE" });
+      showToast("Set deleted");
+      load();
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : "Delete failed", "error");
+    }
+  }
   const load = useCallback(() => api<Stats>("/api/admin/stats").then(setStats).catch((e) => showToast(e.message, "error")), [showToast]);
   useEffect(() => { load(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
 
@@ -66,7 +76,12 @@ export default function Admin() {
                 <h2 className="text-lg font-bold">{q.title}</h2>
                 <p className="muted text-sm">{q.total} items · {q.doubleTotal} double-labelled · {q.complete} complete</p>
               </div>
-              <a className="btn-ghost min-h-[40px] px-3 text-sm" href={`/api/admin/export?kind=labels&queue=${encodeURIComponent(q.id)}`}><Icon.Download /> Labels (JSONL)</a>
+              <div className="flex gap-2">
+                {q.labelledItems === 0 && (
+                  <button className="btn-ghost min-h-[40px] px-3 text-sm text-clay-400" onClick={() => removeSet(q.id, q.title)}>Delete set</button>
+                )}
+                <a className="btn-ghost min-h-[40px] px-3 text-sm" href={`/api/admin/export?kind=labels&queue=${encodeURIComponent(q.id)}`}><Icon.Download /> Labels (JSONL)</a>
+              </div>
             </div>
             <Bar value={q.total ? q.complete / q.total : 0} className="mt-3" />
             <div className="mt-4 grid grid-cols-3 gap-2 text-center">
@@ -164,8 +179,8 @@ function Upload({ onDone, onError }: { onDone: () => void; onError: (m: string) 
           <input className="input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title people will see" maxLength={80} />
           <label className="block text-sm">
             <span className="font-medium">Double-labelled share: {share}%</span>
-            <input type="range" min={0} max={50} step={5} value={share} onChange={(e) => setShare(Number(e.target.value))} className="mt-2 w-full accent-leaf-600" />
-            <span className="faint text-xs">These items get two independent labels, for the agreement statistics.</span>
+            <input type="range" min={0} max={100} step={5} value={share} onChange={(e) => setShare(Number(e.target.value))} className="mt-2 w-full accent-leaf-600" />
+            <span className="faint text-xs">These items get two independent labels, for the agreement statistics. Use 100% for a calibration round.</span>
           </label>
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" checked={hints} onChange={(e) => setHints(e.target.checked)} className="h-4 w-4 accent-leaf-600" />

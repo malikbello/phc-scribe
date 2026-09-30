@@ -16,6 +16,7 @@ export interface Store {
   hdel(key: string, field: string): Promise<void>;
   hincrby(key: string, field: string, by: number): Promise<number>;
   sadd(key: string, member: string): Promise<void>;
+  srem(key: string, member: string): Promise<void>;
   smembers(key: string): Promise<string[]>;
   incrWithTtl(key: string, ttlSeconds: number): Promise<number>;
   ping(): Promise<boolean>;
@@ -62,6 +63,9 @@ class UpstashStore implements Store {
   }
   async sadd(key: string, member: string) {
     await this.r.sadd(key, member);
+  }
+  async srem(key: string, member: string) {
+    await this.r.srem(key, member);
   }
   async smembers(key: string) {
     return (await this.r.smembers(key)).map(String);
@@ -138,6 +142,10 @@ export class MemoryStore implements Store {
     const s = new Set<string>((e?.v as string[]) ?? []);
     s.add(member);
     this.m.set(key, { v: [...s] });
+  }
+  async srem(key: string, member: string) {
+    const e = this.live(key);
+    if (e) this.m.set(key, { v: (e.v as string[]).filter((x) => x !== member) });
   }
   async smembers(key: string) {
     return [...((this.live(key)?.v as string[]) ?? [])];

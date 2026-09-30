@@ -1,6 +1,6 @@
 # Project status and working agreement
 
-_Last updated: 29 Sept 2026. Keep this file current; it is the handoff between work sessions._
+_Last updated: 30 Sept 2026. Keep this file current; it is the handoff between work sessions._
 
 ## Snapshot
 - **What:** PHC Scribe. An offline-first AI scribe and safety net for Nigerian primary-health-care workers, built on a fine-tuned N-ATLaS.
@@ -59,9 +59,17 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 | Gate 1 decision rules (`docs/data-audit.md` §3): committed before the audit ran and applied as written. Confirm | Malik | Pending |
 | Review annotation guidelines v0, finding vocabulary, danger-sign rules v0 (open questions in guidelines §9) | Nurse | Pending |
 | Review/extend the draft Yoruba forms in `bench/baselines/lexicon.v0.yaml` | Malik | Pending |
+| **Attach a Kaggle secret `HF_TOKEN` to the notebook `bellomalik/phc-scribe-baseline`** (Add-ons → Secrets), then *Save Version → Run*. Without it only the ungated Llama comparator runs | Malik | **Blocking the base N-ATLaS numbers** |
 | Merge branch `day1-2-gate1` into `main` | Claude | ✅ Done 29 Sept (fast-forward; `main` is the Vercel production branch) |
 
 ## Progress log
+**30 Sept, session 4, base-model runner:**
+- `bench/prompts.py` (prompt-v0.1: one system prompt with the vocabulary, few-shot from 2 constructed smoke items) and `bench/runners/llm.py` (transformers + xgrammar JSON-schema-constrained greedy decoding; schema violations are scored, not crashes). Works on transformers 4.x and 5.x.
+- Kaggle GPU job `kaggle/baseline/` (private notebook `bellomalik/phc-scribe-baseline`, T4). `scripts/kaggle_push.py` publishes the code as a private dataset `bellomalik/phc-scribe-code` from `git archive HEAD` (no private data) and pushes the notebook. Runs, in priority order: N-ATLaS few-shot, Llama-3.1-8B-Instruct few-shot, N-ATLaS zero-shot, on the smoke items and G.
+- Comparator corrected to **Llama-3.1-8B-Instruct** (N-ATLaS's actual parent), from the ungated mirror `unsloth/Llama-3.1-8B-Instruct`; ledger row added.
+- Cloud sessions cannot download Kaggle output files (`kaggleusercontent.com` is outside the proxy allowlist), but the run log is readable through the API, and the job prints each score report into it.
+- First GPU run (v2) failed on every item: transformers 5 returns a dict from `apply_chat_template`. Fixed; v3 running.
+
 **29 Sept, session 2** (branch `day1-2-gate1`; not merged yet). What changed:
 - **Access check** `scripts/check_access.py`: HF identity, gated N-ATLaS listing, dataset reachability, Kaggle auth. Output passes through a mask for any secret-like env value. Ran it: both tokens are set; HF and Kaggle are **blocked by the network policy**.
 - **Data audit tooling** `scripts/audit_amr.py` + `bench/data_audit.py`: streams the dataset, pins its revision, and writes aggregate counts only to `data/audit/amr_audit.json`. Scrubbed samples go to the git-ignored `data/private/`. **Not run yet (blocked).** The protocol and proposed decision rules are in `docs/data-audit.md`.
@@ -114,6 +122,6 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 1. ✅ Access verified (HF, Kaggle). Modal: verify from the laptop.
 2. ✅ Audit run; results are in `docs/data-audit.md` §4. ⛔ **Malik: choose the data source (options a–d)**, then read the 30 scrubbed samples. Option (b) or (c) needs an ADR that changes the "constructed notes never count" rule.
 3. ✅ Drafted: schema v0.1, vocabulary, annotation guidelines v0, danger-sign rules v0. All need nurse review before gold labelling.
-4. Pick 30 pilot items (after the audit). Rung 1 (keyword baseline) runs anywhere now via `python -m bench.harness`. Still to build: the model runner for rungs 2–4 (Llama-3-8B-Instruct, base N-ATLaS zero-/few-shot) with schema-constrained decoding on a Kaggle GPU (or Modal, if an ADR approves it). Also measure Q4 GGUF latency on CPU.
+4. Pick 30 pilot items (after the audit). Rung 1 (keyword baseline) runs anywhere now via `python -m bench.harness`. ✅ Model runner for rungs 2–4 built (Llama-3.1-8B-Instruct, base N-ATLaS zero-/few-shot) and running on a Kaggle T4; see the 30 Sept log with schema-constrained decoding on a Kaggle GPU (or Modal, if an ADR approves it). Also measure Q4 GGUF latency on CPU.
 5. **Gate 1 decision:** does base N-ATLaS show clear, fixable failures, and does the data support ANC scope (or the general-PHC fallback, ADR-0013)?
 6. In parallel: ✅ repo skeleton + CI. Still to do: API contract (`/v1` OpenAPI) and the design-tokens + clickable-prototype draft (after the name is picked).

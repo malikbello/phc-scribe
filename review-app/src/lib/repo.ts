@@ -67,6 +67,20 @@ export async function createQueue(up: QueueUpload, createdBy: string): Promise<Q
   return meta;
 }
 
+/** Delete a set that nobody has labelled yet (e.g. to re-upload with other settings). */
+export async function deleteQueue(queueId: string): Promise<void> {
+  const s = store();
+  await getMeta(queueId);
+  const counts = await s.hgetall<number>(k.counts(queueId));
+  if (Object.values(counts).some((n) => Number(n) > 0)) {
+    throw new HttpError(409, "This set already has labels. Export them; sets with labels can't be deleted.");
+  }
+  await s.srem("queues", queueId);
+  await s.del(k.items(queueId));
+  await s.del(k.counts(queueId));
+  await s.del(k.meta(queueId));
+}
+
 export async function getMeta(queueId: string): Promise<QueueMeta> {
   const meta = await store().get<QueueMeta>(k.meta(queueId));
   if (!meta) throw new HttpError(404, "Queue not found");

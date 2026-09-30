@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { createQueue, itemForReviewer, listQueues, nextItem, queueStats, saveLabel, saveReview, myReview } from "@/lib/repo";
+import { createQueue, deleteQueue, itemForReviewer, listQueues, nextItem, queueStats, saveLabel, saveReview, myReview } from "@/lib/repo";
 import { MemoryStore } from "@/lib/store";
 
 const g = globalThis as unknown as { __phcStore?: unknown };
@@ -66,5 +66,17 @@ describe("repo flow", () => {
     expect(Object.keys(r).sort()).toEqual(["question:1", "rule:DS-001"]);
     expect(r["question:1"].note).toBe("Yes, add pallor");
     expect(await myReview("doctor")).toEqual({});
+  });
+
+  it("deletes only sets with no labels", async () => {
+    const empty = await createQueue({ title: "Empty", items, doubleShare: 1, showHints: false }, "admin");
+    expect(empty.double).toHaveLength(items.length);
+    await deleteQueue(empty.id);
+    expect((await listQueues("a")).map((q) => q.id)).not.toContain(empty.id);
+
+    const used = await createQueue({ title: "Used", items, doubleShare: 0.2, showHints: false }, "admin");
+    const n = await nextItem(used.id, "a");
+    await saveLabel(used.id, "a", { itemId: n!.itemId, status: "labelled", findings: [] });
+    await expect(deleteQueue(used.id)).rejects.toThrow(/already has labels/);
   });
 });

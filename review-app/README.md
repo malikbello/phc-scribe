@@ -41,6 +41,7 @@ Roles: `admin` sees everything, uploads and exports; `clinician` does sign-off a
 
 ## Day-to-day
 - **Add a set:** *Admin → Add a labelling set*, then upload a queue file (`data/private/label_queue.*.jsonl`).
+- **Fix a set before anyone starts:** *Delete set* appears on a set until its first label; re-upload with new settings (use a 100% double-labelled share for a calibration round).
 - **Export labels:** *Admin → Labels (JSONL)*, then `python scripts/build_s4_items.py <file>` builds gold items (use `--labeller` for each annotator's set).
 - **Review content:** after changing the vocabulary, rules or phrase bank, run `python scripts/export_review_data.py` (CI fails if you forget).
 - **Add someone:** *Admin → Team → Invite*, then send them the code privately.
