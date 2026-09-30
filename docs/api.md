@@ -12,6 +12,7 @@ The API drafts a structured antenatal-care (ANC) record from what was said or wr
 |---|---|
 | `GET /v1/health` | Liveness. No key needed. |
 | `GET /v1/version` | API, service, schema, vocabulary, rules and model versions |
+| `POST /v1/transcribe?language=yo` | Recording (WAV body) → transcript, with the N-ATLaS ASR model for that language |
 | `POST /v1/extract` | Visit text → draft record, danger-sign flags, grounding report |
 | `POST /v1/check` | A record → danger-sign flags (the rules engine alone) |
 | `POST /v1/records` | Save a draft record. Needs an `Idempotency-Key` header |
@@ -19,7 +20,17 @@ The API drafts a structured antenatal-care (ANC) record from what was said or wr
 | `POST /v1/records/{id}/confirm` | A health worker confirms the record |
 | `POST /v1/records/{id}/amend` | Correct a record; the old version is kept, and the record needs confirming again |
 
-Speech input (`/v1/transcribe`, N-ATLaS ASR) and the monthly NHMIS summary are the next endpoints.
+The monthly NHMIS summary is the next endpoint.
+
+## Speech input
+`/v1/transcribe` runs the official N-ATLaS ASR models (NCAIR1 Whisper-Small fine-tunes): `NCAIR1/Yoruba-ASR`, `NCAIR1/Hausa-ASR`, `NCAIR1/Igbo-ASR`, and `NCAIR1/NigerianAccentedEnglish` for English and Pidgin (there is no Pidgin model). Send the recording as the raw body, `Content-Type: audio/wav`, 16- or 32-bit PCM at any sample rate, up to about 5 minutes. Then send the `text` to `/v1/extract`.
+
+```bash
+curl -s "https://<host>/v1/transcribe?language=pcm" -H "Authorization: Bearer $PHC_API_KEY" \
+  -H "Content-Type: audio/wav" --data-binary @visit.wav
+```
+
+Measured on a 4-core CPU with no GPU: a 6-second clip takes about 8 seconds once the model is loaded (the first request also loads it). On a real WazobiaSpeech Pidgin health clip the model returned standard English ("…about their spiritual needs" for "…about dia spiritual needs"), so Pidgin evidence quotes come from the English-normalised transcript.
 
 ## Example
 
@@ -64,9 +75,11 @@ Every error has the same shape, and every response carries an `X-Request-ID` hea
 | 401 | `unauthorized` | Missing or wrong API key |
 | 404 | `not_found` | No such record for this client |
 | 409 | `idempotency_conflict` | Idempotency key reused with a different body |
-| 413 | `too_large` | Text longer than 8,000 characters |
+| 413 | `too_large` | Text longer than 8,000 characters, or audio longer than about 5 minutes |
+| 415 | `unsupported_audio` | The body is not PCM WAV |
 | 422 | `invalid_request` | The body does not match the contract |
 | 429 | `rate_limited` | More than the per-key limit per minute (default 60) |
+| 501 | `asr_not_enabled` | Speech recognition is off on this server |
 | 502 | `model_unavailable` | The model backend failed; nothing was saved |
 
 ## Security and privacy
@@ -92,3 +105,4 @@ PHC_API_KEY_HASHES=<hash> PHC_EXTRACTOR=llamacpp \
 | `PHC_LLAMACPP_URL` | `http://127.0.0.1:8080` | llama.cpp server with the GGUF model |
 | `PHC_DB` | `phc_scribe.sqlite3` | SQLite file for records |
 | `PHC_RATE_LIMIT_PER_MINUTE` | `60` | Requests per key per minute |
+| `PHC_ASR` | `off` | `hf` switches on `/v1/transcribe` (needs `torch` and `transformers`, and an HF token with N-ATLaS access) |

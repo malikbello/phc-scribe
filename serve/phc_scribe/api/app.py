@@ -21,6 +21,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from phc_scribe import __version__
+from phc_scribe.api.asr import AudioError, HfWhisperTranscriber, Transcriber, read_wav
 from phc_scribe.api.extractors import (
     Extractor,
     ExtractorError,
@@ -103,6 +104,14 @@ class ExtractOut(BaseModel):
     latency_ms: float
 
 
+class TranscribeOut(BaseModel):
+    text: str = Field(description="The transcript. Send it to /v1/extract for a record.")
+    language: str
+    model: str = Field(description="The N-ATLaS ASR model used.")
+    duration_s: float
+    latency_ms: float
+
+
 class CheckIn(BaseModel):
     model_config = ConfigDict(extra="forbid")
     record: Encounter
@@ -151,7 +160,7 @@ class RecordOut(BaseModel):
 
 
 ERRORS: dict[int | str, dict[str, Any]] = {
-    s: {"model": ErrorEnvelope} for s in (400, 401, 404, 409, 413, 422, 429, 502)
+    s: {"model": ErrorEnvelope} for s in (400, 401, 404, 409, 413, 415, 422, 429, 501, 502)
 }
 
 
@@ -181,7 +190,11 @@ Client = Annotated[str, Depends(client)]
 # ---------- app ----------
 
 
-def create_app(settings: Settings | None = None, extractor: Extractor | None = None) -> FastAPI:
+def create_app(
+    settings: Settings | None = None,
+    extractor: Extractor | None = None,
+    transcriber: Transcriber | None = None,
+) -> FastAPI:
     settings = settings or Settings.from_env()
     settings.validate()
     if extractor is None:
@@ -190,6 +203,8 @@ def create_app(settings: Settings | None = None, extractor: Extractor | None = N
             if settings.extractor == "llamacpp"
             else KeywordExtractor()
         )
+    if transcriber is None and settings.asr == "hf":
+        transcriber = HfWhisperTranscriber()
     store = RecordStore(settings.db_path)
 
     app = FastAPI(
@@ -302,6 +317,47 @@ def create_app(settings: Settings | None = None, extractor: Extractor | None = N
                 ],
             ),
             versions=versions(),
+            latency_ms=round((time.perf_counter() - t0) * 1000, 1),
+        )
+
+    @app.post(
+        "/v1/transcribe",
+        tags=["documentation"],
+        summary="Speech to text with the N-ATLaS ASR models",
+        description="Send the recording as the raw request body (Content-Type: audio/wav,"
+        " 16- or 32-bit PCM, any sample rate, up to about 5 minutes). Yoruba, Hausa and Igbo use"
+        " their own NCAIR1 models; English and Pidgin use the Nigerian-accented English model.",
+        openapi_extra={
+            "requestBody": {
+                "required": True,
+                "content": {"audio/wav": {"schema": {"type": "string", "format": "binary"}}},
+            }
+        },
+    )
+    async def transcribe(
+        request: Request,
+        _: Client,
+        language: Literal["en", "yo", "pcm", "ha", "ig"],
+    ) -> TranscribeOut:
+        if transcriber is None:
+            raise ApiError(501, "asr_not_enabled", "Speech recognition is off on this server")
+        data = await request.body()
+        if len(data) > settings.max_audio_bytes:
+            raise ApiError(413, "too_large", "audio is longer than about 5 minutes")
+        try:
+            samples, duration = read_wav(data)
+        except AudioError as e:
+            raise ApiError(415, "unsupported_audio", str(e)) from e
+        t0 = time.perf_counter()
+        try:
+            text = transcriber.transcribe(samples, language)
+        except Exception as e:  # model download or inference failure
+            raise ApiError(502, "model_unavailable", f"ASR failed ({type(e).__name__})") from e
+        return TranscribeOut(
+            text=text,
+            language=language,
+            model=transcriber.model_for(language),
+            duration_s=round(duration, 2),
             latency_ms=round((time.perf_counter() - t0) * 1000, 1),
         )
 
