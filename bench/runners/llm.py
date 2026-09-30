@@ -48,6 +48,8 @@ def run(
             record, error = parse_record(raw)
         except Exception as e:
             raw, prompt_tokens, record, error = None, None, None, f"{type(e).__name__}: {e}"
+            if not any(p.error and p.raw_output is None for p in preds):
+                print(f"  {system}: generation failed on {item.item_id}: {error}", file=sys.stderr)
         preds.append(
             Prediction(
                 item_id=item.item_id,
@@ -109,10 +111,11 @@ def hf_generator(
     ]
 
     def generate(messages: list[dict[str, str]]) -> tuple[str, int]:
-        ids = tok.apply_chat_template(messages, add_generation_prompt=True, return_tensors="pt").to(
-            model.device
-        )
-        mask = torch.ones_like(ids)
+        # return_dict=True gives the same shape on transformers 4.x and 5.x.
+        enc = tok.apply_chat_template(
+            messages, add_generation_prompt=True, return_tensors="pt", return_dict=True
+        ).to(model.device)
+        ids, mask = enc["input_ids"], enc["attention_mask"]
         processor = xgr.contrib.hf.LogitsProcessor(grammar)  # fresh state per request
         with torch.no_grad():
             out = model.generate(

@@ -14,10 +14,12 @@ import shutil
 import subprocess
 import sys
 import tarfile
+import tempfile
 from pathlib import Path
 
 WORK = Path("/kaggle/working")
-REPO = WORK / "phc-scribe"
+SRC = Path(tempfile.mkdtemp())  # code lives outside /kaggle/working so outputs stay clean
+REPO = SRC / "phc-scribe"
 
 # (name, model id, mode). Order = priority, so the primary comparator finishes first.
 RUNS = [
@@ -35,7 +37,7 @@ def unpack() -> None:
     bundles = glob.glob("/kaggle/input/**/phc-scribe.tar.gz", recursive=True)
     if bundles:
         with tarfile.open(bundles[0]) as tar:
-            tar.extractall(WORK, filter="data")
+            tar.extractall(SRC, filter="data")
         return
     trees = glob.glob("/kaggle/input/**/phc-scribe/pyproject.toml", recursive=True)
     if not trees:
@@ -104,6 +106,10 @@ def main() -> None:
                 "--out",
                 str(out / f"{name}.{tag}.report.json"),
             )
+            # Output files may not be downloadable everywhere; the log always is.
+            report = out / f"{name}.{tag}.report.json"
+            if report.exists():
+                print(f"=== REPORT {name}.{tag} ===\n{report.read_text()}", flush=True)
 
 
 if __name__ == "__main__":
