@@ -56,7 +56,7 @@ What this does and does not show:
 | Review app | https://phc-scribe-review.vercel.app; source `review-app/`; env vars `SESSION_SECRET`, `REVIEWERS` (Malik's admin code is in `REVIEWERS` in the Vercel dashboard) |
 | Modal deploy | `deploy/modal_app.py` (set `PRIVATE = False` on submission day), workflow `.github/workflows/deploy-modal.yml` (manual: Actions → deploy-modal → Run workflow) |
 | GitHub secrets (Actions) | `MODAL_TOKEN_ID`, `MODAL_TOKEN_SECRET`, `HF_WRITE_TOKEN` (spare; was for the HF Space), `HF_READ_TOKEN`, `PHC_API_KEY` (Malik keeps the key in his password manager; services only ever get its SHA-256 hash) |
-| Decisions | `docs/adr/0001`–`0017` (0016 accepted 30 Sept; 0017 proposed) |
+| Decisions | `docs/adr/0001`–`0018` (0016 accepted 30 Sept; 0017 and 0018 proposed) |
 | Benchmark data | `data/bench/g.20261002.jsonl` (300, test supplement G), `data/bench/pilot.20261004.jsonl` (30, dev), `tests/fixtures/smoke_items.jsonl` (6, constructed); private queues in `data/private/` (git-ignored) |
 
 ## Next steps, in order
@@ -105,6 +105,7 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 | Invite Rahmat (Clinician) and Oseni (Annotator) in the review app; label the calibration set | Pending |
 | Confirm Rahmat and Oseni as named team members (Track B needs 2–5) | Pending |
 | Follow up with Intron on NigBench-MAMAI access (2 Oct); fallback 5 Oct | Pending |
+| Accept or reject ADR-0018 (WazobiaSpeech as the real-data fallback, replacing MamaBench + G) | Pending |
 | Accept ADR-0017 (Modal) after the first successful deploy | Pending |
 | Ask the WazobiaSpeech authors (EqualyzAI / DSN) about the Yoruba licence | Pending |
 | Agent name: Àkọsílẹ̀ / Olùgbọ́ / Magatakarda (Akọ̀wé and Ìtọ́jú are taken) | Pending |
