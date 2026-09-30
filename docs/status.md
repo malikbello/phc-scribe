@@ -1,14 +1,52 @@
 # Project status and working agreement
 
-_Last updated: 30 Sept 2026. Keep this file current; it is the handoff between work sessions._
+_Last updated: 30 Sept 2026, ~15:30 WAT (end of session 4). Keep this file current; it is the handoff between work sessions._
+
+## Resume prompt (paste this into a new session)
+> Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`, branch `main`; `day1-2-gate1` mirrors it) and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution, no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results. Then: (1) check the Kaggle notebook `bellomalik/phc-scribe-baseline` (read its log through the Kaggle API as described under "Kaggle" below; output files can't be downloaded from the cloud session), record the three baseline score reports in this file and commit; (2) push the 30-item pilot run; (3) continue with "Next steps, in order". Ask me before anything outward-facing or irreversible.
 
 ## Snapshot
 - **What:** PHC Scribe. An offline-first AI scribe and safety net for Nigerian primary-health-care workers, built on a fine-tuned N-ATLaS.
 - **Challenge:** NAIC 2026, **PS3 Sectoral Fine-Tuning: primary healthcare and community health**. Track B (Innovation & Enterprise), individual applicant with ID.
 - **Deadline:** **12 Oct 2026, 23:59 WAT.** Target submission is **11 Oct** (one day of buffer).
-- **Validation required:** a 500+ example benchmark vs base N-ATLaS, plus a documented API.
-- **Architecture:** approved 29 Sept. See `docs/architecture.md` and the decision records in `docs/adr/`.
-- **Evaluation:** `docs/eval-plan.md`. Thresholds are frozen after the 30-item pilot, **before any training**.
+- **Validation required:** a 500+ example benchmark vs base N-ATLaS on real data, plus a documented API.
+- **Architecture:** approved 29 Sept (`docs/architecture.md`, ADRs in `docs/adr/`). **Evaluation:** `docs/eval-plan.md` (thresholds frozen after the pilot, before any training).
+
+## Where things stand (30 Sept, end of session 4)
+| Area | State |
+|---|---|
+| Benchmark design | **ADR-0016 accepted:** counted 500 = real NigBench-MAMAI speech (test split), labelled in the review app. Supplements: 300 generated notes (G), MamaBench, AMR. MAMAI access **still pending** (Intron emailed 29 Sept; follow up 2 Oct; fallback 5 Oct per ADR-0016 §6). |
+| Baseline runs | Kaggle notebook running since 08:04 UTC on 30 Sept: N-ATLaS few-shot → Llama-3.1-8B few-shot → N-ATLaS zero-shot, each on smoke (6) + G (300). HF_TOKEN secret attached (confirmed: the N-ATLaS runs started). Smoke N-ATLaS few-shot: rule-flag recall 1.0 on 2 items (pipeline check only; 2 of the smoke items are the few-shot examples). **No G results yet.** Risk: Kaggle's 12 h limit (~20:04 UTC); each finished run's files are already saved. |
+| Pilot | 30 dev items ready (`data/bench/pilot.20261004.jsonl`, stratum `pilot`). The Kaggle job is set to `PLAN = "pilot"` for its next push. After it: propose G1/G2 margins → Malik approves → freeze. **G2 needs a general-Yoruba regression set (not chosen yet).** |
+| Fine-tuning | Pipeline built and CPU-smoke-tested; **nothing trained.** Order: pilot → freeze thresholds → `scripts/freeze_test_set.py` → generate training G with a **new** seed → `scripts/build_train_set.py` → `bench/train_qlora.py` on Kaggle. |
+| API | `/v1` built (extract, check, records, transcribe with NCAIR1 ASR). Contract `docs/openapi.v1.json`, guide `docs/api.md`. 160 tests pass; CI green. |
+| Cloud deploy | **ADR-0017 (Proposed): Modal**, private (proxy auth + API key) until submission, deployed from GitHub Actions. Modal: Starter, $30/month credits, **spend limit $0** (stops instead of charging). All five GitHub secrets reported added; **first successful deploy not yet run.** |
+| Review app | Live at https://phc-scribe-review.vercel.app (Vercel project `phc-scribe-review`, Upstash Redis). Set "Calibration · MamaBench ANC": 20 items, **all** double-labelled. Admin can now delete an unlabelled set; share slider goes to 100%. Rahmat (clinician) and Oseni (annotator) **to be invited by Malik** in Admin → Team. |
+| Data survey | WazobiaSpeech (`Africanvoice/*`): real consented health speech, CC-BY-4.0 for Pidgin/Igbo/Hausa, **Yoruba licence missing** (ask authors). Uses: ASR test, phrase mining, possible hard-negative stratum (needs an ADR). Kitala AI: paid service, not usable. |
+
+## Where everything lives
+| Thing | Location |
+|---|---|
+| Code | GitHub `malikbello/phc-scribe` (private), branch `main` (production). Local clone in the cloud session: `/home/user/phc-scribe` |
+| Kaggle notebook (baseline + pilot runs) | https://www.kaggle.com/code/bellomalik/phc-scribe-baseline (private). Output files: notebook → **Output** tab → `preds/*.jsonl` and `*.report.json` |
+| Kaggle code bundle | private dataset https://www.kaggle.com/datasets/bellomalik/phc-scribe-code (built from `git archive HEAD` by `scripts/kaggle_push.py`; no private data) |
+| Kaggle job source | `kaggle/baseline/run.py` (`PLAN` switch) + `kernel-metadata.json` (T4, internet on, private) |
+| Reading the Kaggle log from a cloud session | Kaggle API `list_kernel_session_output` (helper written in session 4 at the scratchpad `klog.py`; recreate if gone: `KaggleApi().authenticate()`, `ApiListKernelSessionOutputRequest(user_name="bellomalik", kernel_slug=...)`, read `.log`). The log is only complete after the run ends. |
+| Review app | https://phc-scribe-review.vercel.app; source `review-app/`; env vars `SESSION_SECRET`, `REVIEWERS` (Malik's admin code is in `REVIEWERS` in the Vercel dashboard) |
+| Modal deploy | `deploy/modal_app.py` (set `PRIVATE = False` on submission day), workflow `.github/workflows/deploy-modal.yml` (manual: Actions → deploy-modal → Run workflow) |
+| GitHub secrets (Actions) | `MODAL_TOKEN_ID`, `MODAL_TOKEN_SECRET`, `HF_WRITE_TOKEN` (spare; was for the HF Space), `HF_READ_TOKEN`, `PHC_API_KEY` (Malik keeps the key in his password manager; services only ever get its SHA-256 hash) |
+| Decisions | `docs/adr/0001`–`0017` (0016 accepted 30 Sept; 0017 proposed) |
+| Benchmark data | `data/bench/g.20261002.jsonl` (300, test supplement G), `data/bench/pilot.20261004.jsonl` (30, dev), `tests/fixtures/smoke_items.jsonl` (6, constructed); private queues in `data/private/` (git-ignored) |
+
+## Next steps, in order
+1. **Baseline results:** read the Kaggle log when the run ends; put the three reports (N-ATLaS few-shot, Llama-3.1 few-shot, N-ATLaS zero-shot on G) in this file. If the 12 h limit cut the last run, re-run only what is missing.
+2. **Pilot:** `python scripts/kaggle_push.py` (the job is already `PLAN = "pilot"`), read the log, propose G1 (false-alarm margin) and G2 (general-Yoruba regression margin, after choosing a licensed general-Yoruba set) in `docs/eval-plan.md` §6 → Malik approves → commit the freeze.
+3. **Freeze the test set** (`scripts/freeze_test_set.py data/bench/g.20261002.jsonl` plus S4 once MAMAI arrives; the script never overwrites an existing freeze, so decide the file list first).
+4. **Training data and QLoRA run** on Kaggle (split long jobs so each stays well under 12 h).
+5. **Modal:** run `deploy-modal`, check `/v1/health` and that requests without proxy auth and without the API key are refused; Malik accepts ADR-0017.
+6. **MAMAI:** when access arrives, `scripts/fetch_mamai.py` → upload the S4 queue in the review app → Malik labels (~9–10 h for 500).
+7. Optional, CPU only: ASR word-error rate on ~100 WazobiaSpeech health clips (greedy vs beam search).
+8. Submission package (last 2 days): README, benchmark report, model card, dataset card, demo video; set `PRIVATE = False` and redeploy; grep public docs for day/gate wording.
 
 ## Working agreement (non-negotiable)
 1. **Malik Bello is the sole contributor.** Every commit is authored and committed as `malikbello <139644523+malikbello@users.noreply.github.com>`. **No co-author trailers, session links, or AI attribution** in commits, PRs, code, comments or docs.
@@ -18,15 +56,15 @@ _Last updated: 30 Sept 2026. Keep this file current; it is the handoff between w
 5. **Honesty:** results are reported as measured, including failures against the pre-registered criteria.
 
 ## Environment (cloud dev sessions)
-- Environment variables: `HF_TOKEN` (HF read token), `KAGGLE_API_TOKEN` (Kaggle `KGAT_…` token). The Kaggle CLI/API reads `KAGGLE_API_TOKEN` directly, so no token file needs to be written. For Modal: `MODAL_TOKEN_ID` and `MODAL_TOKEN_SECRET` (not added yet).
-- Intended network allowlist: `huggingface.co`, `*.huggingface.co`, `hf.co`, `*.hf.co`, `kaggle.com`, `*.kaggle.com`, `storage.googleapis.com` (+ `api.modal.com`, `modal.com`, `*.modal.run` if Modal is adopted).
+- Environment variables: `HF_TOKEN` (HF read token), `KAGGLE_API_TOKEN` (Kaggle `KGAT_…` token). The Kaggle CLI/API reads `KAGGLE_API_TOKEN` directly, so no token file needs to be written. Modal tokens are **GitHub secrets** only (see Where everything lives); this session cannot reach Modal.
+- Network: `kaggleusercontent.com` (Kaggle output files) and `kitala.ai` are blocked; `api.modal.com` is unreachable (gRPC). Intended allowlist: `huggingface.co`, `*.huggingface.co`, `hf.co`, `*.hf.co`, `kaggle.com`, `*.kaggle.com`, `storage.googleapis.com` (+ `api.modal.com`, `modal.com`, `*.modal.run` if Modal is adopted).
 - ✅ **29 Sept, session 3:** HF and Kaggle are reachable. `python scripts/check_access.py` passes: HF identity, the gated `NCAIR1/N-ATLaS` listing (12 files, 4 weight files, no GGUF), the AMR dataset and Kaggle auth.
-- **Modal:** tokens **verified on the laptop** on 29 Sept (`modal app list` works; no apps yet; profile `malikbello`). The cloud dev sessions cannot reach Modal, because its client uses gRPC, which the egress proxy blocks. So Modal jobs are launched from the laptop, or from a Kaggle notebook. Adopting Modal still needs an ADR superseding ADR-0015, plus a spend limit.
+- **Modal:** used only through GitHub Actions (`deploy-modal.yml`), because the cloud session cannot reach it.
 - Local dev: `pip install -e ".[dev,data]"` (or `pip install --require-hashes -r requirements/ci.lock && pip install --no-deps -e .`), then `ruff check . && ruff format --check . && pyright && pytest`.
 - N-ATLaS gated access: granted on all 5 NCAIR1 repos (N-ATLaS, Hausa/Yoruba/Igbo ASR, NigerianAccentedEnglish).
 - Dev container: 4 CPU, ~15 GB RAM, ~30 GB free disk, no GPU.
 - **Malik's laptop (offline node):** Dell Latitude 5400, i7-8665U, 16 GB RAM, no usable GPU, Windows 11 + WSL2, Ollama installed. **Disk must be freed to at least 25 GB.**
-- **Cloud serving:** Modal was dropped because the virtual card was rejected (ADR-0015). The fallback is a free Hugging Face Space (CPU). **29 Sept: Malik now has a Modal account.** Using it needs a new ADR superseding ADR-0015 and a spend limit so usage stays within free credits ($0 rule). Tokens: create in the Modal dashboard (Settings → API Tokens) and add as environment variables; never paste them in chat. Laptop CLI note: `modal token new` fails on the laptop's Windows Python 3.9 (a `typing` bug hit by recent `aiohttp`). Use WSL2 or Python ≥ 3.11.
+- **Cloud serving:** Modal, private behind proxy auth until submission (ADR-0017, Proposed). The free HF Space (ADR-0015) is closed: Docker Spaces now need PRO.
 
 ## Submission conventions (decided 29 Sept; apply from now)
 Judges see the repo, the benchmark report, the API docs and the demo. They don't see our schedule.
@@ -40,30 +78,30 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 - Rahmat Adebayo, registered nurse, UCH Ibadan: clinical adviser/adjudicator (**to confirm as a named member**)
 - Oseni Abdullah, medical student: annotator (**to confirm as a named member**)
 
-## Open items
-| Item | Owner | Status |
-|---|---|---|
-| Agent name: Àkọsílẹ̀ / Olùgbọ́ / Magatakarda (Akọ̀wé and Ìtọ́jú are taken) | Malik | Pending |
-| Confirm the nurse and the student as team members | Malik | Pending |
-| Email organisers about the team-size mismatch (track cards say 2–5, FAQ says 1–6) | Malik | Pending |
-| Free ≥25 GB of laptop disk | Malik | Pending |
-| Revoke the HF/Kaggle tokens pasted in chat on 29 Sept; create new ones in the environment | Malik | Reported done; confirm the old ones are revoked |
-| UI/UCH ethics route for real Yoruba dictations (S2, acceleration phase) | Nurse | Not started |
-| Faster cloud serving (card / Lightning / ZeroGPU) | Malik | Modal account now available; ADR + spend limit + tokens in environment pending |
-| **Gate 1 data-source decision:** AMR has 62 records and ~1 ANC note (`docs/data-audit.md` §4, options a–d) | Malik | **Blocking Gate 1** |
-| HF access: MamaBench ✅ granted. NigBench-MAMAI, nig-bench, med-convo-nig still show **"awaiting review"** for account `malikbello`. Confirm the approval was for this account | Malik | Pending |
-| Accept or reject ADR-0016 | Malik | ✅ Accepted 30 Sept |
-| **ADR-0017 (Modal replaces the HF Space, which now needs PRO):** check the Modal credit balance, set a budget limit, add `MODAL_TOKEN_ID` / `MODAL_TOKEN_SECRET` as GitHub secrets, then accept | Malik | Pending |
-| **Email Intron Health (tobi@intron.io)** to ask for approval of the pending access requests; fallback in ADR-0016 §6 (2 Oct / 5 Oct) | Malik | **Today** |
-| Nurse: about 1 h (double-label 50 items) + 1.5 h (rules/vocabulary review) + optional demo test. Confirm her and the student as named team members (Track B needs 2–5) | Malik | Pending |
-| Before submission: remove day/gate wording from public docs (see Submission conventions) | Malik + Claude | From now |
-| Gate 1 decision rules (`docs/data-audit.md` §3): committed before the audit ran and applied as written. Confirm | Malik | Pending |
-| Review annotation guidelines v0, finding vocabulary, danger-sign rules v0 (open questions in guidelines §9) | Nurse | Pending |
-| Review/extend the draft Yoruba forms in `bench/baselines/lexicon.v0.yaml` | Malik | Pending |
-| **Attach a Kaggle secret `HF_TOKEN` to the notebook `bellomalik/phc-scribe-baseline`** (Add-ons → Secrets), then *Save Version → Run*. Without it only the ungated Llama comparator runs | Malik | **Blocking the base N-ATLaS numbers** |
-| Merge branch `day1-2-gate1` into `main` | Claude | ✅ Done 29 Sept (fast-forward; `main` is the Vercel production branch) |
+## Open items (Malik unless noted)
+| Item | Status |
+|---|---|
+| Invite Rahmat (Clinician) and Oseni (Annotator) in the review app; label the calibration set | Pending |
+| Confirm Rahmat and Oseni as named team members (Track B needs 2–5) | Pending |
+| Follow up with Intron on NigBench-MAMAI access (2 Oct); fallback 5 Oct | Pending |
+| Accept ADR-0017 (Modal) after the first successful deploy | Pending |
+| Ask the WazobiaSpeech authors (EqualyzAI / DSN) about the Yoruba licence | Pending |
+| Agent name: Àkọsílẹ̀ / Olùgbọ́ / Magatakarda (Akọ̀wé and Ìtọ́jú are taken) | Pending |
+| Email organisers about the team-size mismatch (track cards say 2–5, FAQ says 1–6) | Pending |
+| Free ≥25 GB of laptop disk (offline node, demo video) | Pending |
+| Nurse review of annotation guidelines, vocabulary and rules (now done in the review app's sign-off) | Pending |
+| Review/extend the draft Yoruba forms in `bench/baselines/lexicon.v0.yaml` | Pending |
+| Remove day/gate wording from public docs before submission (Claude) | From now |
+| Optional: delete the unused `HF_WRITE_TOKEN` on Hugging Face and GitHub | Optional |
 
 ## Progress log
+**30 Sept, session 4 (later):**
+- **Review app:** Rahmat/Oseni are invited by Malik in Admin → Team (bootstrap entries in Vercel were tried and removed). New admin *Delete set* (only before the first label) and a 0–100% double-label slider. Calibration set re-uploaded with every item double-labelled.
+- **ADR-0016 accepted.** 30-item pilot set generated (`pilot.20261004`); G regenerates byte-identically.
+- **Data survey round 4:** WazobiaSpeech and Kitala AI (`docs/data-sources-survey.md`, ledger row).
+- **CI:** the secret scan flagged a literal test key in `tests/test_api.py`; test keys are now generated at runtime.
+- **Cloud:** HF Docker Spaces now need PRO, so ADR-0015 is closed. ADR-0017 proposes Modal (deploy from GitHub Actions, private behind proxy auth, spend limit $0). The deploy workflow masks the key hash and strips whitespace from pasted tokens; one early failed run printed the key's SHA-256 hash (not the key) and its log was deleted.
+
 **30 Sept, session 4, base-model runner:**
 - `bench/prompts.py` (prompt-v0.1: one system prompt with the vocabulary, few-shot from 2 constructed smoke items) and `bench/runners/llm.py` (transformers + xgrammar JSON-schema-constrained greedy decoding; schema violations are scored, not crashes). Works on transformers 4.x and 5.x.
 - Kaggle GPU job `kaggle/baseline/` (private notebook `bellomalik/phc-scribe-baseline`, T4). `scripts/kaggle_push.py` publishes the code as a private dataset `bellomalik/phc-scribe-code` from `git archive HEAD` (no private data) and pushes the notebook. Runs, in priority order: N-ATLaS few-shot, Llama-3.1-8B-Instruct few-shot, N-ATLaS zero-shot, on the smoke items and G.
@@ -122,10 +160,3 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 - **Operations:** a health endpoint and batched Redis reads for scale; CI job `review-app`; `main` is production.
 - **Data:** med-convo-nig access granted; NigBench-MAMAI and nig-bench still pending.
 
-## Next steps: days 1–2 (Gate 1)
-1. ✅ Access verified (HF, Kaggle). Modal: verify from the laptop.
-2. ✅ Audit run; results are in `docs/data-audit.md` §4. ⛔ **Malik: choose the data source (options a–d)**, then read the 30 scrubbed samples. Option (b) or (c) needs an ADR that changes the "constructed notes never count" rule.
-3. ✅ Drafted: schema v0.1, vocabulary, annotation guidelines v0, danger-sign rules v0. All need nurse review before gold labelling.
-4. Pick 30 pilot items (after the audit). Rung 1 (keyword baseline) runs anywhere now via `python -m bench.harness`. ✅ Model runner for rungs 2–4 built (Llama-3.1-8B-Instruct, base N-ATLaS zero-/few-shot) and running on a Kaggle T4; see the 30 Sept log with schema-constrained decoding on a Kaggle GPU (or Modal, if an ADR approves it). Also measure Q4 GGUF latency on CPU.
-5. **Gate 1 decision:** does base N-ATLaS show clear, fixable failures, and does the data support ANC scope (or the general-PHC fallback, ADR-0013)?
-6. In parallel: ✅ repo skeleton + CI. Still to do: API contract (`/v1` OpenAPI) and the design-tokens + clickable-prototype draft (after the name is picked).
