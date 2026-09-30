@@ -70,3 +70,12 @@ _Scope: Indaba 2025 (Kigali) and 2026 (Nigeria) posters, papers, DS4Health works
 - Malik: email the IyàwóBench authors and HelpMum about evaluation-only access or collaboration. Download the St Luke's MNCH data from OSF.
 - Malik: open the Indaba 2025/2026 Posters and African Datasets pages in a browser, and flag anything with clinical text.
 - Then re-run the survey access checks and run the audit tooling over the accessible sets.
+
+## Round 4 (30 Sept): WazobiaSpeech, Kitala AI
+
+**WazobiaSpeech** (EqualyzAI / Data Science Nigeria, Interspeech 2026): about 2,500 h of transcribed speech in Pidgin, Yoruba, Igbo and Hausa on Hugging Face under `Africanvoice/` (the repos with data are `African_voices_naija`, `african_voice_yoruba`, `African_voices_igbo`, `hausa_african_voices`). Ungated. The Pidgin, Igbo and Hausa cards say CC-BY-4.0; the Yoruba card states no licence (to confirm with the authors). Clips carry a `domain` tag, and **`HE` (health) is a large share**: in the Pidgin dev + dev_test splits, 5,591 of 35,061 clips are health, and 421 of those mention pregnancy or danger-sign terms (for example "syphilis fit pass through mama to pikin when she get belle"). About half the clips in the first Yoruba dev shard are health, mostly spontaneous speech ("ó ti ń dà nù fún nǹkan bí oṣù kan").
+
+- **What it is:** real, consented, unscripted single-sentence speech about health. It is not visit narratives and has no clinical labels.
+- **Useful for:** (1) a real-speech ASR test of the N-ATLaS Yoruba/Pidgin ASR on health talk; (2) mining real Pidgin/Yoruba wordings for the phrase bank and lexicon (open question 7); (3) a candidate **hard-negative stratum**: real sentences that mention danger-sign words but are general statements, not a patient's findings, which tests false alarms. Using (3) in the counted benchmark would change ADR-0016, so it needs a new ADR and Malik's OK.
+
+**Kitala AI** (kitala.ai, by YUX Design): a commercial data-collection and LLM-testing service using field surveyors. It publishes no open datasets. It would be a paid service, so it is out under the $0 budget. The site itself is blocked from the cloud session.
