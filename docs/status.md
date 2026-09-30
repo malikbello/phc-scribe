@@ -1,6 +1,6 @@
 # Project status and working agreement
 
-_Last updated: 30 Sept 2026, ~15:30 WAT (end of session 4). Keep this file current; it is the handoff between work sessions._
+_Last updated: 30 Sept 2026, ~17:00 WAT (session 5). Keep this file current; it is the handoff between work sessions._
 
 ## Resume prompt (paste this into a new session)
 > Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`, branch `main`; `day1-2-gate1` mirrors it) and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution, no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results. Then: (1) check the Kaggle notebook `bellomalik/phc-scribe-baseline` (read its log through the Kaggle API as described under "Kaggle" below; output files can't be downloaded from the cloud session), record the three baseline score reports in this file and commit; (2) push the 30-item pilot run; (3) continue with "Next steps, in order". Ask me before anything outward-facing or irreversible.
@@ -20,7 +20,7 @@ _Last updated: 30 Sept 2026, ~15:30 WAT (end of session 4). Keep this file curre
 | Pilot | 30 dev items ready (`data/bench/pilot.20261004.jsonl`, stratum `pilot`). The Kaggle job is set to `PLAN = "pilot"` for its next push. After it: propose G1/G2 margins → Malik approves → freeze. **G2 needs a general-Yoruba regression set (not chosen yet).** |
 | Fine-tuning | Pipeline built and CPU-smoke-tested; **nothing trained.** Order: pilot → freeze thresholds → `scripts/freeze_test_set.py` → generate training G with a **new** seed → `scripts/build_train_set.py` → `bench/train_qlora.py` on Kaggle. |
 | API | `/v1` built (extract, check, records, transcribe with NCAIR1 ASR). Contract `docs/openapi.v1.json`, guide `docs/api.md`. 160 tests pass; CI green. |
-| Cloud deploy | **ADR-0017 (Proposed): Modal**, private (proxy auth + API key) until submission, deployed from GitHub Actions. Modal: Starter, $30/month credits, **spend limit $0** (stops instead of charging). Four of five GitHub secrets reach the workflow; **`MODAL_TOKEN_SECRET` still arrives empty** (checked 14:34 UTC), so no deploy has run yet. |
+| Cloud deploy | **ADR-0017 (Proposed): Modal**, private (proxy auth + API key) until submission, deployed from GitHub Actions. Modal: Starter, $30/month credits, **spend limit $0**. **First successful deploy: 30 Sept 15:21 UTC** (`deploy-modal` run #4, `main` @ `26906eb`) → `https://malikbello--phc-scribe-api-api.modal.run` (keyword extractor, HF ASR). Checked from the cloud session: `/v1/health` and `/v1/extract` without proxy auth return **401**. Still to check (Malik, needs the proxy token + API key): `/v1/health` returns 200 with both, and 401 with proxy auth but no key. Then accept ADR-0017. |
 | Review app | Live at https://phc-scribe-review.vercel.app (Vercel project `phc-scribe-review`, Upstash Redis). Set "Calibration · MamaBench ANC": 20 items, **all** double-labelled. Admin can now delete an unlabelled set; share slider goes to 100%. Rahmat (clinician) and Oseni (annotator) **to be invited by Malik** in Admin → Team. |
 | Data survey | WazobiaSpeech (`Africanvoice/*`): real consented health speech, CC-BY-4.0 for Pidgin/Igbo/Hausa, **Yoruba licence missing** (ask authors). Uses: ASR test, phrase mining, possible hard-negative stratum (needs an ADR). Kitala AI: paid service, not usable. |
 
@@ -43,7 +43,7 @@ _Last updated: 30 Sept 2026, ~15:30 WAT (end of session 4). Keep this file curre
 2. **Pilot:** `python scripts/kaggle_push.py` (the job is already `PLAN = "pilot"`), read the log, propose G1 (false-alarm margin) and G2 (general-Yoruba regression margin, after choosing a licensed general-Yoruba set) in `docs/eval-plan.md` §6 → Malik approves → commit the freeze.
 3. **Freeze the test set** (`scripts/freeze_test_set.py data/bench/g.20261002.jsonl` plus S4 once MAMAI arrives; the script never overwrites an existing freeze, so decide the file list first).
 4. **Training data and QLoRA run** on Kaggle (split long jobs so each stays well under 12 h).
-5. **Modal:** run `deploy-modal`, check `/v1/health` and that requests without proxy auth and without the API key are refused; Malik accepts ADR-0017.
+5. **Modal:** ~~run `deploy-modal`~~ (done 30 Sept 15:21 UTC; unauthenticated requests refused), check `/v1/health` and that requests without proxy auth and without the API key are refused; Malik accepts ADR-0017.
 6. **MAMAI:** when access arrives, `scripts/fetch_mamai.py` → upload the S4 queue in the review app → Malik labels (~9–10 h for 500).
 7. Optional, CPU only: ASR word-error rate on ~100 WazobiaSpeech health clips (greedy vs beam search).
 8. Submission package (last 2 days): README, benchmark report, model card, dataset card, demo video; set `PRIVATE = False` and redeploy; grep public docs for day/gate wording.
@@ -95,6 +95,10 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 | Optional: delete the unused `HF_WRITE_TOKEN` on Hugging Face and GitHub | Optional |
 
 ## Progress log
+**30 Sept, session 5:**
+- **Modal deployed** (run #4, 15:21 UTC) after the `MODAL_TOKEN_SECRET` fix; unauthenticated `/v1/health` and `/v1/extract` return 401.
+- **Blocked:** `KAGGLE_API_TOKEN` and `HF_TOKEN` are not set in this session's environment, so the baseline log could not be read and the pilot was not pushed.
+
 **30 Sept, session 4 (later):**
 - **Review app:** Rahmat/Oseni are invited by Malik in Admin → Team (bootstrap entries in Vercel were tried and removed). New admin *Delete set* (only before the first label) and a 0–100% double-label slider. Calibration set re-uploaded with every item double-labelled.
 - **ADR-0016 accepted.** 30-item pilot set generated (`pilot.20261004`); G regenerates byte-identically.
