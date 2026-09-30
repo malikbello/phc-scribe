@@ -1,0 +1,138 @@
+{
+  "system": [
+    "llama-3.1-8b-instruct-fewshot-prompt-v0.1"
+  ],
+  "n_items": 300,
+  "overall": {
+    "danger_recall": {
+      "point": 0.8757,
+      "low": 0.8235,
+      "high": 0.9243,
+      "n_items": 300,
+      "n_groups": 300
+    },
+    "micro_f1": {
+      "point": 0.8133,
+      "low": 0.785,
+      "high": 0.8415,
+      "n_items": 300,
+      "n_groups": 300
+    },
+    "false_alarm_rate": {
+      "point": 0.02,
+      "low": 0.0,
+      "high": 0.0455,
+      "n_items": 300,
+      "n_groups": 300
+    },
+    "item_danger_detection": {
+      "point": 0.86,
+      "low": 0.8028,
+      "high": 0.9133,
+      "n_items": 300,
+      "n_groups": 300
+    },
+    "bp_exact": {
+      "point": 0.99,
+      "low": 0.9767,
+      "high": 1.0,
+      "n_items": 300,
+      "n_groups": 300
+    },
+    "ga_exact": {
+      "point": 0.99,
+      "low": 0.9767,
+      "high": 1.0,
+      "n_items": 300,
+      "n_groups": 300
+    },
+    "schema_valid_rate": {
+      "point": 0.99,
+      "low": 0.9767,
+      "high": 1.0,
+      "n_items": 300,
+      "n_groups": 300
+    },
+    "ungrounded_rate": {
+      "point": 0.0079,
+      "low": 0.0034,
+      "high": 0.0136,
+      "n_items": 300,
+      "n_groups": 300
+    },
+    "rule_flag_recall": {
+      "point": 0.9035,
+      "low": 0.8615,
+      "high": 0.9424,
+      "n_items": 300,
+      "n_groups": 300
+    }
+  },
+  "by_language": {
+    "en": {
+      "danger_recall": {
+        "point": 0.8757,
+        "low": 0.8235,
+        "high": 0.9243,
+        "n_items": 300,
+        "n_groups": 300
+      },
+      "micro_f1": {
+        "point": 0.8133,
+        "low": 0.785,
+        "high": 0.8415,
+        "n_items": 300,
+        "n_groups": 300
+      },
+      "false_alarm_rate": {
+        "point": 0.02,
+        "low": 0.0,
+        "high": 0.0455,
+        "n_items": 300,
+        "n_groups": 300
+      },
+      "item_danger_detection": {
+        "point": 0.86,
+        "low": 0.8028,
+        "high": 0.9133,
+        "n_items": 300,
+        "n_groups": 300
+      },
+      "bp_exact": {
+        "point": 0.99,
+        "low": 0.9767,
+        "high": 1.0,
+        "n_items": 300,
+        "n_groups": 300
+      },
+      "ga_exact": {
+        "point": 0.99,
+        "low": 0.9767,
+        "high": 1.0,
+        "n_items": 300,
+        "n_groups": 300
+      },
+      "schema_valid_rate": {
+        "point": 0.99,
+        "low": 0.9767,
+        "high": 1.0,
+        "n_items": 300,
+        "n_groups": 300
+      },
+      "ungrounded_rate": {
+        "point": 0.0079,
+        "low": 0.0034,
+        "high": 0.0136,
+        "n_items": 300,
+        "n_groups": 300
+      },
+      "rule_flag_recall": {
+        "point": 0.9035,
+        "low": 0.8615,
+        "high": 0.9424,
+        "n_items": 300,
+        "n_groups": 300
+      }
+    }
+  }
+}

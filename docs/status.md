@@ -16,13 +16,34 @@ _Last updated: 30 Sept 2026, ~17:00 WAT (session 5). Keep this file current; it 
 | Area | State |
 |---|---|
 | Benchmark design | **ADR-0016 accepted:** counted 500 = real NigBench-MAMAI speech (test split), labelled in the review app. Supplements: 300 generated notes (G), MamaBench, AMR. MAMAI access **still pending** (Intron emailed 29 Sept; follow up 2 Oct; fallback 5 Oct per ADR-0016 §6). |
-| Baseline runs | Kaggle notebook running since 08:04 UTC on 30 Sept: N-ATLaS few-shot → Llama-3.1-8B few-shot → N-ATLaS zero-shot, each on smoke (6) + G (300). HF_TOKEN secret attached (confirmed: the N-ATLaS runs started). Smoke N-ATLaS few-shot: rule-flag recall 1.0 on 2 items (pipeline check only; 2 of the smoke items are the few-shot examples). **No G results yet.** Risk: Kaggle's 12 h limit (~20:04 UTC); each finished run's files are already saved. |
+| Baseline runs | **Done 30 Sept** (Kaggle run 08:04 UTC → finished between 16:01 and 16:11 UTC, all six runs complete). Results below and in `results/baseline-20260930/`. **Llama-3.1-8B few-shot beats N-ATLaS few-shot on every metric on G**; N-ATLaS few-shot is schema-invalid on 57/300. |
 | Pilot | 30 dev items ready (`data/bench/pilot.20261004.jsonl`, stratum `pilot`). The Kaggle job is set to `PLAN = "pilot"` for its next push. After it: propose G1/G2 margins → Malik approves → freeze. **G2 needs a general-Yoruba regression set (not chosen yet).** |
 | Fine-tuning | Pipeline built and CPU-smoke-tested; **nothing trained.** Order: pilot → freeze thresholds → `scripts/freeze_test_set.py` → generate training G with a **new** seed → `scripts/build_train_set.py` → `bench/train_qlora.py` on Kaggle. |
 | API | `/v1` built (extract, check, records, transcribe with NCAIR1 ASR). Contract `docs/openapi.v1.json`, guide `docs/api.md`. 160 tests pass; CI green. |
 | Cloud deploy | **ADR-0017 (Proposed): Modal**, private (proxy auth + API key) until submission, deployed from GitHub Actions. Modal: Starter, $30/month credits, **spend limit $0**. **First successful deploy: 30 Sept 15:21 UTC** (`deploy-modal` run #4, `main` @ `26906eb`) → `https://malikbello--phc-scribe-api-api.modal.run` (keyword extractor, HF ASR). Checked from the cloud session: `/v1/health` and `/v1/extract` without proxy auth return **401**. Still to check (Malik, needs the proxy token + API key): `/v1/health` returns 200 with both, and 401 with proxy auth but no key. Then accept ADR-0017. |
 | Review app | Live at https://phc-scribe-review.vercel.app (Vercel project `phc-scribe-review`, Upstash Redis). Set "Calibration · MamaBench ANC": 20 items, **all** double-labelled. Admin can now delete an unlabelled set; share slider goes to 100%. Rahmat (clinician) and Oseni (annotator) **to be invited by Malik** in Admin → Team. |
 | Data survey | WazobiaSpeech (`Africanvoice/*`): real consented health speech, CC-BY-4.0 for Pidgin/Igbo/Hausa, **Yoruba licence missing** (ask authors). Uses: ASR test, phrase mining, possible hard-negative stratum (needs an ADR). Kitala AI: paid service, not usable. |
+
+## Baseline results (G, 300 generated English notes; 30 Sept)
+Point estimate [95% group-bootstrap CI]. Prompt-v0.1, greedy, JSON-schema-constrained, `max_new_tokens = 768`. Reports: `results/baseline-20260930/`.
+
+| Metric | N-ATLaS few-shot | Llama-3.1-8B few-shot | N-ATLaS zero-shot |
+|---|---|---|---|
+| Danger-sign recall | 0.735 [0.667, 0.800] | **0.876** [0.824, 0.924] | 0.565 [0.491, 0.643] |
+| Micro-F1 | 0.466 [0.427, 0.506] | **0.813** [0.785, 0.842] | 0.318 [0.278, 0.358] |
+| False-alarm rate (lower is better) | 0.187 [0.127, 0.250] | **0.020** [0.000, 0.045] | 0.100 [0.054, 0.151] |
+| Item danger detection | 0.707 [0.634, 0.778] | **0.860** [0.803, 0.913] | 0.553 [0.475, 0.634] |
+| Rule-flag recall | 0.741 [0.676, 0.805] | **0.903** [0.862, 0.942] | 0.444 [0.388, 0.502] |
+| Schema-valid rate | 0.810 [0.763, 0.853] (243/300) | **0.990** [0.977, 1.000] | 0.920 [0.890, 0.950] |
+| Ungrounded rate (lower is better) | 0.058 [0.047, 0.071] | **0.008** [0.003, 0.014] | 0.041 [0.019, 0.069] |
+| BP exact | 0.810 | 0.990 | 0.283 |
+| GA exact | 0.793 | 0.990 | 0.007 |
+
+What this does and does not show:
+- **G is generated and English-only**, so these are supplement results, not the counted benchmark (real MAMAI speech, ADR-0016), and there is **no Yoruba number yet**. Smoke (6 items, en + yo) is a pipeline check only.
+- **N-ATLaS few-shot loses most on schema validity.** Its BP-exact rate equals its schema-valid rate (0.810), so every valid output had the right BP and every loss came from an invalid one. **Hypothesis (unverified):** outputs hit the 768-token cap and were cut mid-JSON (constrained decoding only guarantees a valid prefix). Checking needs the `error` field in `preds/natlas-fewshot.g.jsonl` (Kaggle Output tab), or a log print in the next job.
+- Zero-shot N-ATLaS almost never gets GA right (0.007): without examples it does not use the expected format.
+- **Decision for Malik before the freeze:** P1/P2 compare against *base N-ATLaS few-shot*. If the invalid outputs are truncation, raising `max_new_tokens` is a fairer baseline and must be decided **before** thresholds are frozen, not after. Llama-3.1 few-shot is a strong reference point that the fine-tuned model should be reported against too.
 
 ## Where everything lives
 | Thing | Location |
@@ -39,7 +60,7 @@ _Last updated: 30 Sept 2026, ~17:00 WAT (session 5). Keep this file current; it 
 | Benchmark data | `data/bench/g.20261002.jsonl` (300, test supplement G), `data/bench/pilot.20261004.jsonl` (30, dev), `tests/fixtures/smoke_items.jsonl` (6, constructed); private queues in `data/private/` (git-ignored) |
 
 ## Next steps, in order
-1. **Baseline results:** read the Kaggle log when the run ends; put the three reports (N-ATLaS few-shot, Llama-3.1 few-shot, N-ATLaS zero-shot on G) in this file. If the 12 h limit cut the last run, re-run only what is missing.
+1. ~~**Baseline results**~~ **(done 30 Sept; see Baseline results):** read the Kaggle log when the run ends; put the three reports (N-ATLaS few-shot, Llama-3.1 few-shot, N-ATLaS zero-shot on G) in this file. If the 12 h limit cut the last run, re-run only what is missing.
 2. **Pilot:** `python scripts/kaggle_push.py` (the job is already `PLAN = "pilot"`), read the log, propose G1 (false-alarm margin) and G2 (general-Yoruba regression margin, after choosing a licensed general-Yoruba set) in `docs/eval-plan.md` §6 → Malik approves → commit the freeze.
 3. **Freeze the test set** (`scripts/freeze_test_set.py data/bench/g.20261002.jsonl` plus S4 once MAMAI arrives; the script never overwrites an existing freeze, so decide the file list first).
 4. **Training data and QLoRA run** on Kaggle (split long jobs so each stays well under 12 h).
@@ -97,7 +118,8 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 ## Progress log
 **30 Sept, session 5:**
 - **Modal deployed** (run #4, 15:21 UTC) after the `MODAL_TOKEN_SECRET` fix; unauthenticated `/v1/health` and `/v1/extract` return 401.
-- **Blocked:** `KAGGLE_API_TOKEN` and `HF_TOKEN` are not set in this session's environment, so the baseline log could not be read and the pilot was not pushed.
+- Tokens restored mid-session. **Baselines finished** (all six runs); reports recorded above and committed to `results/baseline-20260930/`.
+- Session-start identity guard added (`.claude/settings.json`, `.githooks/commit-msg`).
 
 **30 Sept, session 4 (later):**
 - **Review app:** Rahmat/Oseni are invited by Malik in Admin → Team (bootstrap entries in Vercel were tried and removed). New admin *Delete set* (only before the first label) and a 0–100% double-label slider. Calibration set re-uploaded with every item double-labelled.
