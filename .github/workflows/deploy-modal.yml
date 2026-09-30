@@ -1,0 +1,53 @@
+name: deploy-modal
+
+# Manual only: deploys the /v1 API to Modal (ADR-0017), private behind Modal proxy auth.
+# Repository secrets: MODAL_TOKEN_ID, MODAL_TOKEN_SECRET, HF_READ_TOKEN, PHC_API_KEY
+# (the API key; Modal only ever receives its SHA-256 hash).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-modal
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: pip install "modal>=1.0,<2"
+      - name: Set the app's secrets
+        env:
+          MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+          HF_READ_TOKEN: ${{ secrets.HF_READ_TOKEN }}
+          PHC_API_KEY: ${{ secrets.PHC_API_KEY }}
+        run: |
+          python - <<'PY'
+          import hashlib, os, subprocess, sys
+          key = os.environ.get("PHC_API_KEY", "").strip()
+          if len(key) < 32:
+              sys.exit("PHC_API_KEY must be set and at least 32 characters")
+          if not os.environ.get("HF_READ_TOKEN"):
+              sys.exit("HF_READ_TOKEN is not set")
+          digest = hashlib.sha256(key.encode()).hexdigest()
+          subprocess.run(
+              ["modal", "secret", "create", "phc-scribe-api", "--force",
+               f"HF_TOKEN={os.environ['HF_READ_TOKEN']}", f"PHC_API_KEY_HASHES={digest}"],
+              check=True, stdout=subprocess.DEVNULL,
+          )
+          print("secret phc-scribe-api updated")
+          PY
+      - name: Deploy
+        env:
+          MODAL_TOKEN_ID: ${{ secrets.MODAL_TOKEN_ID }}
+          MODAL_TOKEN_SECRET: ${{ secrets.MODAL_TOKEN_SECRET }}
+        run: modal deploy deploy/modal_app.py
