@@ -16,7 +16,7 @@ from bench.items import BenchItem, read_jsonl
 from phc_scribe.encounter import Encounter
 from phc_scribe.vocab import load_vocabulary
 
-Mode = Literal["zeroshot", "fewshot"]
+Mode = Literal["zeroshot", "fewshot", "finetuned"]
 FEWSHOT_PATH = Path(__file__).resolve().parents[1] / "tests" / "fixtures" / "smoke_items.jsonl"
 FEWSHOT_IDS = ("smoke-001-en", "smoke-003-yo")
 PROMPT_VERSION = "prompt-v0.1"
@@ -45,8 +45,21 @@ Rules:
 Output only the JSON record."""
 
 
-def system_prompt() -> str:
+# The fine-tune learns the vocabulary and the rules from its training data, so its
+# prompt is short (docs/architecture.md, section 6): on a CPU, reading the prompt is the
+# slow part, so a short prompt is a measurable latency benefit of fine-tuning.
+FINETUNED_SYSTEM = "You are an ANC documentation assistant. Turn the visit text into the PHC Scribe JSON record (schema v0.1). Record only what is stated, with exact evidence quotes. Output only the JSON record."
+
+
+def system_prompt(mode: Mode = "fewshot") -> str:
+    if mode == "finetuned":
+        return FINETUNED_SYSTEM
     return SYSTEM_TEMPLATE.format(vocabulary=_vocabulary_block())
+
+
+def record_json(record: Encounter) -> str:
+    """The assistant target: the gold record as compact JSON, without character offsets."""
+    return _record_json(record)
 
 
 def _record_json(record: Encounter) -> str:
@@ -72,7 +85,7 @@ def user_prompt(transcript: str) -> str:
 
 
 def build_messages(transcript: str, mode: Mode) -> list[dict[str, str]]:
-    messages = [{"role": "system", "content": system_prompt()}]
+    messages = [{"role": "system", "content": system_prompt(mode)}]
     if mode == "fewshot":
         for ex in _fewshot_examples():
             messages.append({"role": "user", "content": user_prompt(ex.transcript)})

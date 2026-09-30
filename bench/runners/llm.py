@@ -75,6 +75,7 @@ def hf_generator(
     load_in_4bit: bool = False,
     max_new_tokens: int = 768,
     revision: str | None = None,
+    adapter: str | None = None,
 ) -> Generate:
     """Greedy, schema-constrained generation with transformers + xgrammar."""
     # Optional GPU-side dependencies: not installed in CI.
@@ -98,6 +99,10 @@ def hf_generator(
     else:
         kwargs["dtype"] = torch.float16 if torch.cuda.is_available() else torch.float32
     model = AutoModelForCausalLM.from_pretrained(model_id, **kwargs)
+    if adapter:
+        from peft import PeftModel  # pyright: ignore[reportMissingImports]
+
+        model = PeftModel.from_pretrained(model, adapter)
     model.eval()
 
     vocab_size = AutoConfig.from_pretrained(model_id, revision=revision).vocab_size
@@ -137,8 +142,9 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", required=True)
     parser.add_argument("--revision")
+    parser.add_argument("--adapter", help="LoRA adapter directory to apply (fine-tuned rungs)")
     parser.add_argument("--system", help="system name in reports (default: derived from model)")
-    parser.add_argument("--mode", choices=["zeroshot", "fewshot"], default="fewshot")
+    parser.add_argument("--mode", choices=["zeroshot", "fewshot", "finetuned"], default="fewshot")
     parser.add_argument("--items", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--limit", type=int, default=0)
@@ -155,6 +161,7 @@ def main() -> int:
         load_in_4bit=args.load_in_4bit,
         max_new_tokens=args.max_new_tokens,
         revision=args.revision,
+        adapter=args.adapter,
     )
     preds = run(items, generate, system, args.mode)
     write_jsonl(args.out, preds)
