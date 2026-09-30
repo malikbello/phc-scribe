@@ -1,0 +1,36 @@
+name: deploy-space
+
+# Manual only: deploys the /v1 API to a PRIVATE Hugging Face Space. Needs three
+# repository secrets: HF_WRITE_TOKEN, HF_READ_TOKEN and PHC_API_KEY_HASHES.
+on:
+  workflow_dispatch:
+    inputs:
+      space:
+        description: "Hugging Face Space id"
+        default: "malikbello/phc-scribe-api"
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-space
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: pip install "huggingface_hub>=0.25"
+      - name: Deploy (private only)
+        env:
+          HF_WRITE_TOKEN: ${{ secrets.HF_WRITE_TOKEN }}
+          HF_READ_TOKEN: ${{ secrets.HF_READ_TOKEN }}
+          PHC_API_KEY_HASHES: ${{ secrets.PHC_API_KEY_HASHES }}
+        run: python scripts/deploy_space.py --space "${{ inputs.space }}"
