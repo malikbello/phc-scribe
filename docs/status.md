@@ -52,6 +52,7 @@ What this does and does not show:
 | Kaggle notebook (baseline + pilot runs) | https://www.kaggle.com/code/bellomalik/phc-scribe-baseline (private). Output files: notebook → **Output** tab → `preds/*.jsonl` and `*.report.json` |
 | Kaggle code bundle | private dataset https://www.kaggle.com/datasets/bellomalik/phc-scribe-code (built from `git archive HEAD` by `scripts/kaggle_push.py`; no private data) |
 | Kaggle job source | `kaggle/baseline/run.py` (`PLAN` switch) + `kernel-metadata.json` (T4, internet on, private) |
+| Kaggle secrets | **Runs started through the API (`scripts/kaggle_push.py`) do not receive the `HF_TOKEN` secret** (pilot versions 5–7 on 30 Sept all reported it missing, including one pushed after Malik switched it on). Push the code with `kaggle_push.py`, then **start the run from the notebook editor**: Edit → Add-ons → Secrets (HF_TOKEN on) → Save Version → Save & Run All. In `pilot` mode the job exits within a minute if the token is missing. |
 | Reading the Kaggle log from a cloud session | Kaggle API `list_kernel_session_output` (helper written in session 4 at the scratchpad `klog.py`; recreate if gone: `KaggleApi().authenticate()`, `ApiListKernelSessionOutputRequest(user_name="bellomalik", kernel_slug=...)`, read `.log`). The log is only complete after the run ends. |
 | Review app | https://phc-scribe-review.vercel.app; source `review-app/`; env vars `SESSION_SECRET`, `REVIEWERS` (Malik's admin code is in `REVIEWERS` in the Vercel dashboard) |
 | Modal deploy | `deploy/modal_app.py` (set `PRIVATE = False` on submission day), workflow `.github/workflows/deploy-modal.yml` (manual: Actions → deploy-modal → Run workflow) |
@@ -120,6 +121,8 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 **30 Sept, session 5:**
 - **Modal deployed** (run #4, 15:21 UTC) after the `MODAL_TOKEN_SECRET` fix; unauthenticated `/v1/health` and `/v1/extract` return 401.
 - Tokens restored mid-session. **Baselines finished** (all six runs); reports recorded above and committed to `results/baseline-20260930/`.
+- Pilot: versions 5 and 6 ran Llama only (29/30 valid; the 1 invalid output was cut off mid-JSON); version 7 stopped early. N-ATLaS never received `HF_TOKEN` through API-started runs.
+- ADR-0018 proposed (WazobiaSpeech as the real-data fallback). Data survey round 5.
 - Session-start identity guard added (`.claude/settings.json`, `.githooks/commit-msg`).
 
 **30 Sept, session 4 (later):**
