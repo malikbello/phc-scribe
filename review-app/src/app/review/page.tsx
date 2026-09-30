@@ -76,6 +76,19 @@ export default function ReviewPage() {
           })}
         </nav>
 
+        {section === 0 && done === 0 && (
+          <div className="card mt-4 animate-rise p-4 text-[15px] leading-relaxed">
+            <p className="font-semibold">How this works</p>
+            <ol className="muted mt-1 list-decimal space-y-0.5 pl-5">
+              <li><b className="text-sand-100">Danger-sign rules</b>: when the app raises a flag.</li>
+              <li><b className="text-sand-100">Findings list</b>: the symptoms those rules use.</li>
+              <li><b className="text-sand-100">Open questions</b>: 7 edge cases about the rules and findings.</li>
+              <li><b className="text-sand-100">How notes are worded</b>: wordings in the practice notes.</li>
+            </ol>
+            <p className="muted mt-2">Tap <b className="text-leaf-400">Looks right</b> or <b className="text-sun-400">Needs change</b>. Everything saves as you tap, so you can stop and continue any time.</p>
+          </div>
+        )}
+
         <div className="mt-5 flex items-end justify-between gap-4">
           <div>
             <h2 className="gradient-text text-2xl font-bold tracking-tight">{sec.title}</h2>
@@ -144,6 +157,19 @@ function ReviewCard({
         <div className="min-w-0 flex-1">
           <p className="font-semibold">{row.title}</p>
           <p className="mt-1 text-[15px] leading-relaxed">{row.detail}</p>
+          {row.context && (
+            <div className="mt-3 space-y-2">
+              <div className="flex flex-wrap gap-1.5">
+                <span className="eyebrow self-center text-night-500">About</span>
+                {row.context.about.map((a) => (
+                  <span key={a} className="rounded-full bg-cyan-400/10 px-2.5 py-0.5 text-xs font-medium text-cyan-200 ring-1 ring-cyan-300/25">{a}</span>
+                ))}
+              </div>
+              <p className="rounded-2xl bg-white/[.05] px-3 py-2 text-[15px] leading-relaxed ring-1 ring-white/10">
+                <span className="eyebrow mr-1 text-night-500">Today</span> {row.context.today}
+              </p>
+            </div>
+          )}
           {row.list && (
             <div className="mt-3 rounded-2xl bg-clay-500/[.07] p-3 ring-1 ring-clay-400/20">
               <p className="eyebrow text-clay-400">{row.list.title}</p>

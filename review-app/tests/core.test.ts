@@ -107,3 +107,12 @@ describe("display names", () => {
     expect(displayName("Malik")).toBe("Malik");
   });
 });
+
+describe("review content", () => {
+  it("frames every open question and orders the tabs rules-first", async () => {
+    const { QUESTIONS, QUESTION_CONTEXT, REVIEW_SECTIONS } = await import("@/lib/content");
+    expect(QUESTIONS.length).toBe(Object.keys(QUESTION_CONTEXT).length);
+    QUESTIONS.forEach((_, i) => expect(QUESTION_CONTEXT[i + 1]?.ask).toBeTruthy());
+    expect(REVIEW_SECTIONS.map((s) => s.id)).toEqual(["rule", "concept", "question", "phrase"]);
+  });
+});
