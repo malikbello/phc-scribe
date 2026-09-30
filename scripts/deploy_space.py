@@ -1,6 +1,6 @@
 """Deploy the /v1 API to a PRIVATE Hugging Face Docker Space (run by CI, not by hand).
 
-    HF_WRITE_TOKEN=... HF_READ_TOKEN=... PHC_API_KEY_HASHES=... \
+    HF_WRITE_TOKEN=... HF_READ_TOKEN=... PHC_API_KEY=... \
         python scripts/deploy_space.py --space malikbello/phc-scribe-api
 
 Creates the Space as private if it does not exist, sets its secrets, uploads the app,
@@ -12,6 +12,7 @@ the environment and never printed.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import os
 import shutil
 import sys
@@ -29,9 +30,14 @@ def main() -> int:
     args = parser.parse_args()
     from huggingface_hub import HfApi
 
-    for var in ("HF_WRITE_TOKEN", "HF_READ_TOKEN", "PHC_API_KEY_HASHES"):
+    for var in ("HF_WRITE_TOKEN", "HF_READ_TOKEN", "PHC_API_KEY"):
         if not os.environ.get(var):
             sys.exit(f"{var} is not set")
+    key = os.environ["PHC_API_KEY"].strip()
+    if len(key) < 32:
+        sys.exit("PHC_API_KEY must be at least 32 characters")
+    # The Space gets only the key's hash; the key itself stays with its owner.
+    key_hash = hashlib.sha256(key.encode()).hexdigest()
     api = HfApi(token=os.environ["HF_WRITE_TOKEN"])
 
     api.create_repo(args.space, repo_type="space", space_sdk="docker", private=True, exist_ok=True)
@@ -40,7 +46,7 @@ def main() -> int:
 
     # The Space needs a read token for the gated N-ATLaS ASR models, and the key hashes.
     api.add_space_secret(args.space, "HF_TOKEN", os.environ["HF_READ_TOKEN"])
-    api.add_space_secret(args.space, "PHC_API_KEY_HASHES", os.environ["PHC_API_KEY_HASHES"])
+    api.add_space_secret(args.space, "PHC_API_KEY_HASHES", key_hash)
 
     with tempfile.TemporaryDirectory() as tmp:
         stage = Path(tmp)

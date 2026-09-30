@@ -1,7 +1,8 @@
 name: deploy-space
 
 # Manual only: deploys the /v1 API to a PRIVATE Hugging Face Space. Needs three
-# repository secrets: HF_WRITE_TOKEN, HF_READ_TOKEN and PHC_API_KEY_HASHES.
+# repository secrets: HF_WRITE_TOKEN, HF_READ_TOKEN and PHC_API_KEY (the API key; the
+# Space only ever receives its SHA-256 hash).
 on:
   workflow_dispatch:
     inputs:
@@ -32,5 +33,5 @@ jobs:
         env:
           HF_WRITE_TOKEN: ${{ secrets.HF_WRITE_TOKEN }}
           HF_READ_TOKEN: ${{ secrets.HF_READ_TOKEN }}
-          PHC_API_KEY_HASHES: ${{ secrets.PHC_API_KEY_HASHES }}
+          PHC_API_KEY: ${{ secrets.PHC_API_KEY }}
         run: python scripts/deploy_space.py --space "${{ inputs.space }}"
