@@ -93,6 +93,9 @@ def main() -> None:
     token = hf_token()
     if token:
         os.environ["HF_TOKEN"] = token
+    elif PLAN == "pilot":
+        # The pilot exists to measure N-ATLaS; fail fast instead of spending GPU time without it.
+        sys.exit("HF_TOKEN secret not attached: attach it (Add-ons -> Secrets) and re-run")
     else:
         print("HF_TOKEN secret not attached: skipping gated N-ATLaS runs", flush=True)
     out = WORK / "preds"
