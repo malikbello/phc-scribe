@@ -21,6 +21,12 @@ dev = [
     "pyright>=1.1.380",
     "types-PyYAML",
 ]
+# The /v1 service (serve/phc_scribe/api).
+api = [
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
+    "httpx>=0.27",
+]
 # Only needed for the access check and the data audit (network + tokens).
 data = [
     "huggingface_hub>=0.25",
