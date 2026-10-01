@@ -2,6 +2,7 @@
 
     python scripts/kaggle_log.py                       # status + report summary
     python scripts/kaggle_log.py --save results/pilot  # also save each report JSON there
+                                                       # (data files -> data/private/kaggle/)
 
 Cloud sessions cannot download Kaggle output files (kaggleusercontent.com is outside
 the proxy allowlist), but the run log is readable through the API, and the job
@@ -54,6 +55,17 @@ def reports(text: str) -> dict[str, dict]:
     return found
 
 
+def files(text: str) -> dict[str, bytes]:
+    """Files the job put into the log (=== FILE name === base64-gzip lines === END FILE ===)."""
+    import base64
+    import gzip
+
+    found = {}
+    for m in re.finditer(r"=== FILE (\S+) ===\n(.*?)\n=== END FILE ===", text, re.S):
+        found[m.group(1)] = gzip.decompress(base64.b64decode("".join(m.group(2).split())))
+    return found
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--slug", default=KERNEL_SLUG)
@@ -64,7 +76,7 @@ def main() -> int:
     print(f"status: {status}")
     for line in text.splitlines():
         if (
-            line.startswith(("=== INVALID", "=== BELEBELE"))
+            line.startswith(("=== INVALID", "=== BELEBELE", "=== TEACHER"))
             or "secret not attached" in line
             or line.startswith("run failed")
         ):
@@ -79,6 +91,17 @@ def main() -> int:
         for name, rep in found.items():
             (args.save / f"{name}.report.json").write_text(json.dumps(rep, indent=2) + "\n")
         print(f"saved {len(found)} reports to {args.save}")
+    blobs = files(text)
+    for fname, data in blobs.items():
+        lines = data.count(b"\n")
+        if args.save:
+            # Data files (real transcripts) go under data/private, never into results/.
+            dest = Path("data/private/kaggle") / fname
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.write_bytes(data)
+            print(f"file {fname}: {lines} lines -> {dest}")
+        else:
+            print(f"file {fname}: {lines} lines (use --save to write it)")
     if not found and "COMPLETE" not in status:
         print("no reports yet: the log is only complete after the run ends", file=sys.stderr)
     return 0

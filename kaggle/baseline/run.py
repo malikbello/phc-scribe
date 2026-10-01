@@ -32,15 +32,22 @@ RUNS: list[tuple[str, str, str, list[str]]] = [
 # the guardrail margins before the freeze (docs/eval-plan.md, section 6). "prefreeze": the
 # last runs before the freeze: Belebele yor_Latn for N-ATLaS and Llama-3.1 (G2 base and the
 # 50% rule) and the unconstrained base comparator on the pilot items (proposal B).
-PLAN = "prefreeze"
+# "trainprep": teacher labels for real Yoruba/Pidgin training speech (ADR-0021), then base
+# N-ATLaS few-shot on the Adeola hard negatives (stratum H; a base run, allowed before the
+# label freeze, ADR-0022).
+PLAN = "trainprep"
 ITEM_SETS = {
     "baseline": ["tests/fixtures/smoke_items.jsonl", "data/bench/g.20261002.jsonl"],
     "pilot": ["data/bench/pilot.20261004.jsonl"],
     "prefreeze": ["data/bench/pilot.20261004.jsonl"],
+    "trainprep": ["data/bench/h.adeola.jsonl"],
 }[PLAN]
+TEACHER = ("llama31-fewshot", "unsloth/Llama-3.1-8B-Instruct")
 BELEBELE_MODELS = [("natlas", "NCAIR1/N-ATLaS"), ("llama31", "unsloth/Llama-3.1-8B-Instruct")]
 if PLAN == "prefreeze":
     RUNS[:] = [("natlas-fewshot-unconstrained", "NCAIR1/N-ATLaS", "fewshot", ["--unconstrained"])]
+if PLAN == "trainprep":
+    RUNS[:] = [("natlas-fewshot", "NCAIR1/N-ATLaS", "fewshot", [])]
 if PLAN == "pilot":
     # Dev-only check: are N-ATLaS's schema-invalid outputs cut off at the 768-token cap?
     RUNS.append(("natlas-fewshot-1536", "NCAIR1/N-ATLaS", "fewshot", ["--max-new-tokens", "1536"]))
@@ -93,19 +100,67 @@ def invalid_summary(pred: Path) -> None:
         print(f"  raw output chars: median {lens[len(lens) // 2]}, max {lens[-1]}", flush=True)
 
 
+def emit_file(path: Path) -> None:
+    """Put a small output file into the log (gzip + base64): cloud sessions can read the
+    log but not Kaggle's output files. scripts/kaggle_log.py --save writes it back out."""
+    import base64
+    import gzip
+
+    data = base64.b64encode(gzip.compress(path.read_bytes())).decode()
+    print(f"=== FILE {path.name} ===", flush=True)
+    for i in range(0, len(data), 4000):
+        print(data[i : i + 4000], flush=True)
+    print("=== END FILE ===", flush=True)
+
+
+def teacher(out: Path) -> None:
+    """ADR-0021: Llama-3.1 few-shot labels real train-split health speech; keep only
+    schema-valid, verbatim-grounded labels (bench/teacher.py)."""
+    items = out / "teacher.items.jsonl"
+    pred = out / "teacher.preds.jsonl"
+    kept = out / "teacher.kept.jsonl"
+    if sh(sys.executable, "-m", "bench.teacher", "fetch", "--out", str(items)) != 0:
+        print("run failed: teacher fetch", flush=True)
+        return
+    name, model = TEACHER
+    cmd = [sys.executable, "-m", "bench.runners.llm", "--model", model, "--mode", "fewshot"]
+    cmd += ["--items", str(items), "--out", str(pred)]
+    if LIMIT:
+        cmd += ["--limit", str(LIMIT)]
+    if sh(*cmd) != 0:
+        print(f"run failed: teacher {name}", flush=True)
+        return
+    invalid_summary(pred)
+    if (
+        sh(
+            *[sys.executable, "-m", "bench.teacher", "filter"],
+            "--items",
+            str(items),
+            "--pred",
+            str(pred),
+            "--out",
+            str(kept),
+        )
+        == 0
+    ):
+        emit_file(kept)
+
+
 def main() -> None:
     unpack()
     sh(sys.executable, "-m", "pip", "install", "-q", "xgrammar")
     token = hf_token()
     if token:
         os.environ["HF_TOKEN"] = token
-    elif PLAN in ("pilot", "prefreeze"):
+    elif PLAN in ("pilot", "prefreeze", "trainprep"):
         # The pilot exists to measure N-ATLaS; fail fast instead of spending GPU time without it.
         sys.exit("HF_TOKEN secret not attached: attach it (Add-ons -> Secrets) and re-run")
     else:
         print("HF_TOKEN secret not attached: skipping gated N-ATLaS runs", flush=True)
     out = WORK / "preds"
     out.mkdir(exist_ok=True)
+    if PLAN == "trainprep":
+        teacher(out)
     if PLAN == "prefreeze":
         for name, model in BELEBELE_MODELS:
             dest = out / f"belebele.{name}.json"

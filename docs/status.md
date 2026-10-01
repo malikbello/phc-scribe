@@ -157,6 +157,17 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 | Optional: delete the unused `HF_WRITE_TOKEN` on Hugging Face and GitHub | Optional |
 
 ## Progress log
+**1 Oct, session 5 (Kaggle prep job):**
+- `PLAN = "trainprep"` in `kaggle/baseline/run.py`, in this order:
+  1. **Teacher labels (ADR-0021):** `bench/teacher.py` fetches 300 Yoruba + 300 Pidgin WazobiaSpeech `train` health clips (40 evenly spaced shards, 80% enriched, seed 20261006), and Llama-3.1-8B few-shot labels them.
+     - Only schema-valid labels with every quote found verbatim are kept; no-finding items are at most half.
+     - The kept file is written into the log; `python scripts/kaggle_log.py --save results/trainprep` restores it to `data/private/kaggle/teacher.kept.jsonl`, and the counts print as `=== TEACHER`.
+  2. **Base N-ATLaS few-shot on the 454 Adeola hard negatives (stratum H)**, scored as usual.
+- **Malik starts it from the notebook editor** (Save Version → Save & Run All); expect ~6–8 h.
+- After it: Oseni spot-checks 50 kept teacher labels (ADR-0021 §4).
+- Deferred: ASR WER on the Adeola recordings, which needs the audio on Kaggle.
+- `scripts/fetch_wazobia.py` now reads through `bench/wazobia.py` (shared with the teacher fetch).
+
 **1 Oct, session 5 (settling disagreements):**
 - Malik: keep only truly human tasks human. The review app now settles labels by rule (single, agreed, majority with no danger-sign split) and sends only clinical disagreements to Rahmat (`review-app/src/lib/adjudicate.ts`, `/adjudicate/[queueId]`, home-screen step, admin *Gold labels* panel with causes, `kind=gold` export).
 - `scripts/build_s4_items.py --set s4w --strict` builds the S4-W gold file and its exclusion list. 31 app tests and the Python suite pass.

@@ -31,7 +31,7 @@ sys.path[:0] = [str(ROOT / "serve"), str(ROOT), str(ROOT / "scripts")]
 
 from _safe_output import fail, say  # noqa: E402
 
-from bench.items import Language, write_jsonl  # noqa: E402
+from bench.items import write_jsonl  # noqa: E402
 from bench.label_queue import (  # noqa: E402
     ENRICH_TERMS,
     SourceRow,
@@ -39,76 +39,15 @@ from bench.label_queue import (  # noqa: E402
     keyword_hints,
     sample_enriched_queue,
 )
+from bench.wazobia import (  # noqa: E402
+    DATASETS,
+    HEALTH_DOMAIN,
+    read_health_rows,
+    speaker_overlap,
+)
 
-# Our language code -> dataset repo. Revisions pinned when the cards were read
-# (1 Oct 2026, 08:12 UTC). CC-BY-4.0 confirmed on both cards at these revisions.
-DATASETS: dict[Language, tuple[str, str]] = {
-    "yo": ("Africanvoice/yoruba_african_voices", "353ea9f10a1f67cda131ebb90f3205114be8ae58"),
-    "pcm": ("Africanvoice/naija_african_voices", "2bb56186c314ea1f9c83951af3ae55b1703580a3"),
-}
-HEALTH_DOMAIN = "HE"
 OUT_DIR = ROOT / "data" / "private" / "wazobia"
 QUEUE_PATH = ROOT / "data" / "private" / "label_queue.s4w.jsonl"
-
-
-def _shards(fs, repo: str, revision: str, split: str) -> list[str]:
-    ref = f"datasets/{repo}@{revision}"
-    names = [str(p) for p in fs.ls(f"{ref}/data", detail=False)]
-    return sorted(p for p in names if Path(p).name.startswith(f"{split}-"))
-
-
-def read_health_rows(lang: Language, split: str) -> list[SourceRow]:
-    import pyarrow.parquet as pq
-    from huggingface_hub import HfFileSystem
-
-    repo, revision = DATASETS[lang]
-    fs = HfFileSystem()
-    paths = _shards(fs, repo, revision, split)
-    if not paths:
-        raise FileNotFoundError(f"no {split} shards for {repo}")
-    rows: list[SourceRow] = []
-    for path in paths:
-        with fs.open(path, "rb", block_size=2**20) as f:
-            table = pq.ParquetFile(f).read(
-                columns=["transcript", "audio_id", "speaker_id", "domain"]
-            )
-        for rec in table.to_pylist():
-            if rec.get("domain") != HEALTH_DOMAIN:
-                continue
-            rows.append(
-                SourceRow(
-                    source="wazobia",
-                    source_id=str(rec["audio_id"]),
-                    speaker_id=str(rec.get("speaker_id") or "unknown"),
-                    language=lang,
-                    split=split,
-                    transcript=str(rec.get("transcript") or ""),
-                )
-            )
-    return rows
-
-
-def speaker_overlap(lang: Language, test_splits: list[str], workers: int = 16) -> int:
-    """Number of speakers in both the train split and the test pool, over all shards."""
-    from concurrent.futures import ThreadPoolExecutor
-
-    import pyarrow.parquet as pq
-    from huggingface_hub import HfFileSystem
-
-    repo, revision = DATASETS[lang]
-    fs = HfFileSystem()
-
-    def speakers_in(path: str) -> set[str]:
-        with fs.open(path, "rb", block_size=2**20) as f:
-            col = pq.ParquetFile(f).read(columns=["speaker_id"]).column(0)
-        return {str(s) for s in col.to_pylist()}
-
-    def speakers(splits: list[str]) -> set[str]:
-        paths = [p for split in splits for p in _shards(fs, repo, revision, split)]
-        with ThreadPoolExecutor(max_workers=workers) as pool:
-            return set().union(*pool.map(speakers_in, paths))
-
-    return len(speakers(["train"]) & speakers(test_splits))
 
 
 def main() -> int:
