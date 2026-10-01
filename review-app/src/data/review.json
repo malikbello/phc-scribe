@@ -756,6 +756,280 @@
    ]
   }
  ],
+ "visit_guide": {
+  "items": [
+   {
+    "id": "ask-bleeding",
+    "ask": "Any bleeding or spotting from the vagina?",
+    "group": "Danger signs (every visit)",
+    "when": "every visit"
+   },
+   {
+    "id": "ask-fits",
+    "ask": "Any fits or convulsions, or fainting?",
+    "group": "Danger signs (every visit)",
+    "when": "every visit"
+   },
+   {
+    "id": "ask-headache-vision",
+    "ask": "Any headache, or problems seeing (blurred vision, flashing lights)?",
+    "group": "Danger signs (every visit)",
+    "when": "every visit"
+   },
+   {
+    "id": "ask-fever",
+    "ask": "Any fever or hot body?",
+    "group": "Danger signs (every visit)",
+    "when": "every visit"
+   },
+   {
+    "id": "ask-belly-pain",
+    "ask": "Any pain in the belly?",
+    "group": "Danger signs (every visit)",
+    "when": "every visit"
+   },
+   {
+    "id": "ask-breathing",
+    "ask": "Any difficulty breathing?",
+    "group": "Danger signs (every visit)",
+    "when": "every visit"
+   },
+   {
+    "id": "ask-swelling",
+    "ask": "Any swelling of the face, hands or feet?",
+    "group": "Danger signs (every visit)",
+    "when": "every visit"
+   },
+   {
+    "id": "ask-fluid",
+    "ask": "Any water or fluid leaking from the vagina?",
+    "group": "Danger signs (every visit)",
+    "when": "every visit"
+   },
+   {
+    "id": "ask-vomiting",
+    "ask": "Any vomiting? Can she keep food and water down?",
+    "group": "Danger signs (every visit)",
+    "when": "every visit"
+   },
+   {
+    "id": "ask-movement",
+    "ask": "Is the baby moving as usual?",
+    "group": "Danger signs (every visit)",
+    "when": "from 20 weeks"
+   },
+   {
+    "id": "ask-lmp",
+    "ask": "When was her last menstrual period (to date the pregnancy)?",
+    "group": "This pregnancy",
+    "when": "first visit"
+   },
+   {
+    "id": "ask-ga",
+    "ask": "How many weeks pregnant is she?",
+    "group": "This pregnancy",
+    "when": "every visit"
+   },
+   {
+    "id": "ask-obstetric-history",
+    "ask": "How many times has she been pregnant, and how many births? Any problems before (bleeding, fits, caesarean, stillbirth, miscarriage)?",
+    "group": "Past pregnancies and health",
+    "when": "first visit"
+   },
+   {
+    "id": "ask-medical-history",
+    "ask": "Any long-term illness (high blood pressure, diabetes, sickle cell, asthma, HIV)?",
+    "group": "Past pregnancies and health",
+    "when": "first visit"
+   },
+   {
+    "id": "ask-common-complaints",
+    "ask": "Any other complaints (heartburn, cramps, constipation, back pain, discharge, pain passing urine, cough)?",
+    "group": "Common complaints",
+    "when": "every visit"
+   },
+   {
+    "id": "check-bp",
+    "ask": "Measure and record the blood pressure.",
+    "group": "Measurements",
+    "when": "every visit"
+   },
+   {
+    "id": "check-weight",
+    "ask": "Measure and record her weight.",
+    "group": "Measurements",
+    "when": "every visit"
+   },
+   {
+    "id": "check-temperature",
+    "ask": "Check her temperature if she feels hot or unwell.",
+    "group": "Measurements",
+    "when": "every visit"
+   },
+   {
+    "id": "test-hb",
+    "ask": "Check haemoglobin (or PCV) for anaemia.",
+    "group": "Tests",
+    "when": "first visit"
+   },
+   {
+    "id": "test-urine",
+    "ask": "Test urine for protein.",
+    "group": "Tests",
+    "when": "first visit"
+   },
+   {
+    "id": "test-hiv-syphilis",
+    "ask": "Test for HIV and syphilis (and hepatitis B), with consent.",
+    "group": "Tests",
+    "when": "first visit"
+   },
+   {
+    "id": "test-malaria",
+    "ask": "Test for malaria if she has fever.",
+    "group": "Tests",
+    "when": "every visit"
+   },
+   {
+    "id": "med-iron",
+    "ask": "Is she taking iron and folic acid every day?",
+    "group": "Medicines and prevention",
+    "when": "every visit"
+   },
+   {
+    "id": "med-iptp",
+    "ask": "Is her malaria prevention (IPTp-SP) due today?",
+    "group": "Medicines and prevention",
+    "when": "from 13 weeks"
+   },
+   {
+    "id": "med-td",
+    "ask": "Is she up to date with tetanus–diphtheria (Td) vaccine?",
+    "group": "Medicines and prevention",
+    "when": "every visit"
+   },
+   {
+    "id": "med-net",
+    "ask": "Does she sleep under an insecticide-treated net?",
+    "group": "Medicines and prevention",
+    "when": "every visit"
+   },
+   {
+    "id": "plan-birth",
+    "ask": "Discuss where she will give birth and how she will get there in an emergency.",
+    "group": "Plan and counselling",
+    "when": "from 28 weeks"
+   },
+   {
+    "id": "plan-danger-education",
+    "ask": "Remind her of the danger signs and to come at once if any appear.",
+    "group": "Plan and counselling",
+    "when": "every visit"
+   },
+   {
+    "id": "plan-next-visit",
+    "ask": "Agree the date of the next visit.",
+    "group": "Plan and counselling",
+    "when": "every visit"
+   }
+  ],
+  "follow_ups": [
+   {
+    "id": "fu-headache",
+    "if": "Headache (not described as severe)",
+    "why": "Headache: ask about vision and check BP (pre-eclampsia warning signs).",
+    "asks": [
+     "Any headache, or problems seeing (blurred vision, flashing lights)?",
+     "Measure and record the blood pressure."
+    ]
+   },
+   {
+    "id": "fu-severe-headache",
+    "if": "Severe headache",
+    "why": "Severe headache is a danger sign: check BP and urine protein, ask about vision.",
+    "asks": [
+     "Any headache, or problems seeing (blurred vision, flashing lights)?",
+     "Measure and record the blood pressure.",
+     "Test urine for protein."
+    ]
+   },
+   {
+    "id": "fu-blurred-vision",
+    "if": "Blurred vision / visual disturbance",
+    "why": "Vision problems: check BP, urine protein and swelling.",
+    "asks": [
+     "Measure and record the blood pressure.",
+     "Test urine for protein.",
+     "Any swelling of the face, hands or feet?"
+    ]
+   },
+   {
+    "id": "fu-swelling",
+    "if": "Swelling of face or hands",
+    "why": "Swelling of face or hands: check BP and urine protein, ask about headache and vision.",
+    "asks": [
+     "Measure and record the blood pressure.",
+     "Test urine for protein.",
+     "Any headache, or problems seeing (blurred vision, flashing lights)?"
+    ]
+   },
+   {
+    "id": "fu-fever",
+    "if": "Fever",
+    "why": "Fever: measure the temperature and test for malaria.",
+    "asks": [
+     "Check her temperature if she feels hot or unwell.",
+     "Test for malaria if she has fever."
+    ]
+   },
+   {
+    "id": "fu-bleeding",
+    "if": "Vaginal bleeding",
+    "why": "Bleeding is a danger sign: ask about pain and check BP before referral.",
+    "asks": [
+     "Any pain in the belly?",
+     "Measure and record the blood pressure."
+    ]
+   },
+   {
+    "id": "fu-fatigue",
+    "if": "Tiredness / weakness",
+    "why": "Tiredness: check for anaemia and iron intake.",
+    "asks": [
+     "Check haemoglobin (or PCV) for anaemia.",
+     "Is she taking iron and folic acid every day?"
+    ]
+   },
+   {
+    "id": "fu-dizziness",
+    "if": "Dizziness",
+    "why": "Dizziness: check BP and haemoglobin.",
+    "asks": [
+     "Measure and record the blood pressure.",
+     "Check haemoglobin (or PCV) for anaemia."
+    ]
+   },
+   {
+    "id": "fu-urine",
+    "if": "Painful or burning urination",
+    "why": "Pain passing urine: ask about fever and belly pain.",
+    "asks": [
+     "Any fever or hot body?",
+     "Any pain in the belly?"
+    ]
+   },
+   {
+    "id": "fu-movement",
+    "if": "Reduced or absent fetal movement",
+    "why": "Reduced movement is a danger sign: ask about pain, bleeding and fluid.",
+    "asks": [
+     "Any pain in the belly?",
+     "Any bleeding or spotting from the vagina?",
+     "Any water or fluid leaking from the vagina?"
+    ]
+   }
+  ]
+ },
  "medications": [
   {
    "id": "iron_folic_acid",

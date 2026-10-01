@@ -1,0 +1,3662 @@
+{
+ "content_sha256": "5349d06e845ba6791fa270f05ff08e050c86a58dafe1c64fb38ce1b740047f45",
+ "format": "takada-clinical-bundle",
+ "format_version": 1,
+ "lexicon": {
+  "concepts": {
+   "abdominal_pain": {
+    "en": [
+     "abdominal pain",
+     "lower abdominal pain",
+     "stomach pain",
+     "stomach ache",
+     "tummy pain",
+     "belly pain",
+     "epigastric pain"
+    ],
+    "yo": [
+     "inú rírun",
+     "inú ń run",
+     "ikùn ń dùn",
+     "inú ń dùn"
+    ]
+   },
+   "abnormal_vaginal_discharge": {
+    "en": [
+     "abnormal vaginal discharge",
+     "abnormal discharge",
+     "smelly discharge",
+     "itchy discharge",
+     "vaginal discharge",
+     "offensive discharge"
+    ],
+    "yo": []
+   },
+   "blurred_vision": {
+    "en": [
+     "blurred vision",
+     "blurry vision",
+     "blurring of vision",
+     "vision is blurry",
+     "vision is blurred",
+     "dim vision",
+     "seeing stars",
+     "flashing lights",
+     "cannot see clearly",
+     "can't see clearly"
+    ],
+    "yo": [
+     "ojú ń ṣókùnkùn",
+     "ojú mi ò ríran",
+     "kò ríran dáadáa"
+    ]
+   },
+   "breathing_difficulty": {
+    "en": [
+     "difficulty breathing",
+     "difficulty in breathing",
+     "shortness of breath",
+     "short of breath",
+     "breathlessness",
+     "cannot breathe",
+     "can't breathe",
+     "hard to breathe"
+    ],
+    "yo": [
+     "mímí ṣòro",
+     "èémí kúkúrú",
+     "kò lè mí"
+    ]
+   },
+   "constipation": {
+    "en": [
+     "constipation",
+     "constipated",
+     "hard stool",
+     "hard stools"
+    ],
+    "yo": [
+     "ìgbẹ́ le"
+    ]
+   },
+   "convulsions": {
+    "en": [
+     "convulsion",
+     "convulsions",
+     "convulsing",
+     "convulsed",
+     "fits",
+     "fitting",
+     "seizure",
+     "seizures"
+    ],
+    "yo": [
+     "gìrì",
+     "wárápá"
+    ]
+   },
+   "cough": {
+    "en": [
+     "cough",
+     "coughing"
+    ],
+    "yo": [
+     "ikọ́"
+    ]
+   },
+   "dizziness": {
+    "en": [
+     "dizziness",
+     "dizzy",
+     "light headed",
+     "lightheaded",
+     "light-headed"
+    ],
+    "yo": [
+     "òòyì",
+     "orí ń yí"
+    ]
+   },
+   "fatigue": {
+    "en": [
+     "tiredness",
+     "tired",
+     "fatigue",
+     "weakness",
+     "body weakness",
+     "weak"
+    ],
+    "yo": [
+     "àárẹ̀",
+     "ó rẹ̀ mí",
+     "ara ń rẹ̀ mí"
+    ]
+   },
+   "fever": {
+    "en": [
+     "fever",
+     "feverish",
+     "pyrexia",
+     "hot body",
+     "feeling hot",
+     "body is hot"
+    ],
+    "yo": [
+     "ibà",
+     "ara gbígbóná",
+     "ara ń gbóná",
+     "ara mi gbóná"
+    ]
+   },
+   "headache": {
+    "en": [
+     "headache",
+     "headaches",
+     "head ache",
+     "head pain"
+    ],
+    "yo": [
+     "orí fífọ́",
+     "orí ń fọ́",
+     "orí ń dùn"
+    ]
+   },
+   "heartburn": {
+    "en": [
+     "heartburn",
+     "heart burn",
+     "indigestion",
+     "dyspepsia",
+     "chest burning"
+    ],
+    "yo": [
+     "àyà ń jó"
+    ]
+   },
+   "leaking_amniotic_fluid": {
+    "en": [
+     "leaking fluid",
+     "leaking water",
+     "water broke",
+     "waters broke",
+     "water has broken",
+     "draining liquor",
+     "liquor drainage",
+     "gush of fluid",
+     "rupture of membranes",
+     "watery discharge"
+    ],
+    "yo": [
+     "omi ń dà",
+     "omi ń jáde",
+     "omi ọmọ"
+    ]
+   },
+   "leg_cramps": {
+    "en": [
+     "leg cramps",
+     "leg cramp",
+     "cramps in her legs",
+     "cramps in my legs"
+    ],
+    "yo": []
+   },
+   "leg_oedema": {
+    "en": [
+     "swollen legs",
+     "swollen feet",
+     "swollen ankles",
+     "leg swelling",
+     "ankle swelling",
+     "feet are swollen",
+     "legs are swollen",
+     "pedal oedema",
+     "pedal edema",
+     "leg oedema",
+     "leg edema"
+    ],
+    "yo": [
+     "ẹsẹ̀ wú",
+     "ẹsẹ̀ mi wú",
+     "ẹsẹ̀ rẹ̀ wú",
+     "ẹsẹ̀ wíwú"
+    ]
+   },
+   "looks_very_ill": {
+    "en": [
+     "looks very ill",
+     "very ill looking",
+     "critically ill"
+    ],
+    "yo": []
+   },
+   "low_back_pain": {
+    "en": [
+     "low back pain",
+     "lower back pain",
+     "back pain",
+     "backache",
+     "back ache",
+     "waist pain"
+    ],
+    "yo": [
+     "ìbàdí ń dùn",
+     "ẹ̀yìn ń dùn"
+    ]
+   },
+   "nausea_vomiting": {
+    "en": [
+     "nausea",
+     "vomiting",
+     "vomits",
+     "vomited",
+     "morning sickness"
+    ],
+    "yo": [
+     "èébì",
+     "ń bì"
+    ]
+   },
+   "painful_urination": {
+    "en": [
+     "painful urination",
+     "pain when urinating",
+     "pain passing urine",
+     "burning urine",
+     "burning when urinating",
+     "dysuria"
+    ],
+    "yo": [
+     "ìtọ̀ ń ta"
+    ]
+   },
+   "pelvic_pain": {
+    "en": [
+     "pelvic pain",
+     "pain in the pelvis",
+     "pubic pain"
+    ],
+    "yo": []
+   },
+   "reduced_fetal_movement": {
+    "en": [
+     "reduced fetal movement",
+     "reduced fetal movements",
+     "reduced foetal movement",
+     "poor fetal movement",
+     "no fetal movement",
+     "baby not moving",
+     "baby is not moving",
+     "baby has stopped moving",
+     "baby is moving less",
+     "baby moving less",
+     "not feeling the baby"
+    ],
+    "yo": [
+     "ọmọ kò mira",
+     "ọmọ inú kò mira",
+     "ọmọ kò yíra"
+    ]
+   },
+   "severe_abdominal_pain": {
+    "en": [
+     "severe abdominal pain",
+     "severe stomach pain",
+     "severe lower abdominal pain",
+     "severe epigastric pain",
+     "severe belly pain",
+     "serious stomach pain"
+    ],
+    "yo": [
+     "inú rírun gidigidi",
+     "inú ń run mi gidigidi",
+     "ikùn ń dùn mi gidigidi"
+    ]
+   },
+   "severe_headache": {
+    "en": [
+     "severe headache",
+     "severe headaches",
+     "serious headache",
+     "very bad headache",
+     "terrible headache",
+     "persistent headache",
+     "headache that will not go",
+     "severe head pain"
+    ],
+    "yo": [
+     "orí fífọ́ gidigidi",
+     "orí ń fọ́ mi gidigidi",
+     "orí ń fọ́ mi gan"
+    ]
+   },
+   "severe_pallor": {
+    "en": [
+     "severe pallor",
+     "very pale",
+     "markedly pale",
+     "severely pale"
+    ],
+    "yo": []
+   },
+   "severe_vomiting": {
+    "en": [
+     "severe vomiting",
+     "persistent vomiting",
+     "vomiting everything",
+     "cannot keep food down",
+     "can't keep food down",
+     "cannot keep anything down",
+     "hyperemesis"
+    ],
+    "yo": [
+     "èébì gidigidi",
+     "ń bì gidigidi"
+    ]
+   },
+   "swelling_face_hands": {
+    "en": [
+     "swollen face",
+     "facial swelling",
+     "face is swollen",
+     "swelling of the face",
+     "swelling of face",
+     "puffy face",
+     "facial puffiness",
+     "swollen hands",
+     "hands are swollen",
+     "swelling of the hands",
+     "generalised swelling",
+     "generalized swelling",
+     "generalised oedema",
+     "generalized edema"
+    ],
+    "yo": [
+     "ojú wú",
+     "ojú mi wú",
+     "ojú rẹ̀ wú",
+     "ọwọ́ wú",
+     "ọwọ́ mi wú",
+     "ọwọ́ rẹ̀ wú"
+    ]
+   },
+   "unconscious": {
+    "en": [
+     "unconscious",
+     "unresponsive",
+     "loss of consciousness",
+     "passed out",
+     "collapsed"
+    ],
+    "yo": [
+     "dákú"
+    ]
+   },
+   "vaginal_bleeding": {
+    "en": [
+     "vaginal bleeding",
+     "pv bleeding",
+     "bleeding per vagina",
+     "blood per vagina",
+     "bleeding",
+     "bled",
+     "spotting",
+     "passing blood"
+    ],
+    "yo": [
+     "ẹ̀jẹ̀ ń jáde",
+     "ẹ̀jẹ̀ ń bọ̀",
+     "ẹ̀jẹ̀ dídà",
+     "ń ṣe ẹ̀jẹ̀"
+    ]
+   },
+   "varicose_veins": {
+    "en": [
+     "varicose veins",
+     "varicose vein"
+    ],
+    "yo": []
+   }
+  },
+  "version": "0.1.0"
+ },
+ "rules": {
+  "module": "anc",
+  "rules": [
+   {
+    "id": "DS-001",
+    "message_en": "Vaginal bleeding in pregnancy: refer now.",
+    "name": "Vaginal bleeding",
+    "severity": "urgent_referral",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Quick check: danger signs",
+     "verified": false
+    },
+    "tests": [
+     {
+      "facts": {
+       "findings": {
+        "vaginal_bleeding": [
+         "present"
+        ]
+       }
+      },
+      "fires": true,
+      "name": "present fires"
+     },
+     {
+      "facts": {
+       "findings": {
+        "vaginal_bleeding": [
+         "possible"
+        ]
+       }
+      },
+      "fires": true,
+      "name": "possible fires"
+     },
+     {
+      "facts": {
+       "findings": {
+        "vaginal_bleeding": [
+         "absent"
+        ]
+       }
+      },
+      "fires": false,
+      "name": "absent is silent"
+     },
+     {
+      "facts": {
+       "findings": {
+        "vaginal_bleeding": [
+         "historical"
+        ]
+       }
+      },
+      "fires": false,
+      "name": "past pregnancy is silent"
+     }
+    ],
+    "when": {
+     "finding": "vaginal_bleeding"
+    }
+   },
+   {
+    "id": "DS-002",
+    "message_en": "Convulsions in pregnancy (possible eclampsia): refer now.",
+    "name": "Convulsions",
+    "severity": "urgent_referral",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Quick check: danger signs",
+     "verified": false
+    },
+    "tests": [
+     {
+      "facts": {
+       "findings": {
+        "convulsions": [
+         "present"
+        ]
+       }
+      },
+      "fires": true,
+      "name": "present fires"
+     },
+     {
+      "facts": {
+       "findings": {
+        "convulsions": [
+         "absent"
+        ]
+       }
+      },
+      "fires": false,
+      "name": "absent is silent"
+     }
+    ],
+    "when": {
+     "finding": "convulsions"
+    }
+   },
+   {
+    "id": "DS-003",
+    "message_en": "Severe headache: check BP and refer now.",
+    "name": "Severe headache",
+    "severity": "urgent_referral",
+    "source": {
+     "ref": "NG-NSO",
+     "section": "Danger signs in pregnancy (to locate)",
+     "verified": false
+    },
+    "tests": [
+     {
+      "facts": {
+       "findings": {
+        "severe_headache": [
+         "present"
+        ]
+       }
+      },
+      "fires": true,
+      "name": "present fires"
+     },
+     {
+      "facts": {
+       "findings": {
+        "headache": [
+         "present"
+        ]
+       }
+      },
+      "fires": false,
+      "name": "mild headache is silent"
+     }
+    ],
+    "when": {
+     "finding": "severe_headache"
+    }
+   },
+   {
+    "id": "DS-004",
+    "message_en": "Blurred vision in pregnancy: check BP and refer now.",
+    "name": "Blurred vision",
+    "severity": "urgent_referral",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Quick check: danger signs",
+     "verified": false
+    },
+    "tests": [
+     {
+      "facts": {
+       "findings": {
+        "blurred_vision": [
+         "present"
+        ]
+       }
+      },
+      "fires": true,
+      "name": "present fires"
+     }
+    ],
+    "when": {
+     "finding": "blurred_vision"
+    }
+   },
+   {
+    "id": "DS-005",
+    "message_en": "Fever in pregnancy: test for malaria and refer.",
+    "name": "Fever",
+    "severity": "refer",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Quick check: danger signs",
+     "verified": false
+    },
+    "tests": [
+     {
+      "facts": {
+       "findings": {
+        "fever": [
+         "present"
+        ]
+       }
+      },
+      "fires": true,
+      "name": "reported fever fires"
+     },
+     {
+      "facts": {
+       "vitals": {
+        "temperature_c": 38.0
+       }
+      },
+      "fires": true,
+      "name": "38.0 C fires"
+     },
+     {
+      "facts": {
+       "vitals": {
+        "temperature_c": 37.9
+       }
+      },
+      "fires": false,
+      "name": "37.9 C is silent"
+     },
+     {
+      "facts": {},
+      "fires": false,
+      "name": "no data is silent"
+     }
+    ],
+    "when": {
+     "any": [
+      {
+       "finding": "fever"
+      },
+      {
+       "vital": {
+        "gte": 38.0,
+        "name": "temperature_c"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "id": "DS-006",
+    "message_en": "Severe abdominal pain in pregnancy: refer now.",
+    "name": "Severe abdominal pain",
+    "severity": "urgent_referral",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Quick check: danger signs",
+     "verified": false
+    },
+    "tests": [
+     {
+      "facts": {
+       "findings": {
+        "severe_abdominal_pain": [
+         "present"
+        ]
+       }
+      },
+      "fires": true,
+      "name": "present fires"
+     },
+     {
+      "facts": {
+       "findings": {
+        "abdominal_pain": [
+         "present"
+        ]
+       }
+      },
+      "fires": false,
+      "name": "mild pain is silent"
+     }
+    ],
+    "when": {
+     "finding": "severe_abdominal_pain"
+    }
+   },
+   {
+    "id": "DS-007",
+    "message_en": "Baby moving less or not at all: refer now.",
+    "name": "Reduced fetal movement",
+    "severity": "urgent_referral",
+    "source": {
+     "ref": "NG-NSO",
+     "section": "Danger signs in pregnancy (to locate)",
+     "verified": false
+    },
+    "tests": [
+     {
+      "facts": {
+       "findings": {
+        "reduced_fetal_movement": [
+         "present"
+        ]
+       }
+      },
+      "fires": true,
+      "name": "present fires"
+     }
+    ],
+    "when": {
+     "finding": "reduced_fetal_movement"
+    }
+   },
+   {
+    "id": "DS-008",
+    "message_en": "Difficulty breathing in pregnancy: refer now.",
+    "name": "Difficulty breathing",
+    "severity": "urgent_referral",
+    "source": {
+     "ref": "NG-NSO",
+     "section": "Danger signs in pregnancy (to locate)",
+     "verified": false
+    },
+    "tests": [
+     {
+      "facts": {
+       "findings": {
+        "breathing_difficulty": [
+         "present"
+        ]
+       }
+      },
+      "fires": true,
+      "name": "present fires"
+     }
+    ],
+    "when": {
+     "finding": "breathing_difficulty"
+    }
+   },
+   {
+    "id": "DS-009",
+    "message_en": "Swelling of face or hands: check BP and urine protein, then refer.",
+    "name": "Swelling of face or hands",
+    "severity": "refer",
+    "source": {
+     "ref": "NG-NSO",
+     "section": "Danger signs in pregnancy (to locate)",
+     "verified": false
+    },
+    "tests": [
+     {
+      "facts": {
+       "findings": {
+        "swelling_face_hands": [
+         "present"
+        ]
+       }
+      },
+      "fires": true,
+      "name": "present fires"
+     },
+     {
+      "facts": {
+       "findings": {
+        "leg_oedema": [
+         "present"
+        ]
+       }
+      },
+      "fires": false,
+      "name": "ankle swelling alone is silent"
+     }
+    ],
+    "when": {
+     "finding": "swelling_face_hands"
+    }
+   },
+   {
+    "id": "DS-010",
+    "message_en": "Waters breaking or leaking fluid: refer now.",
+    "name": "Leaking fluid before labour",
+    "severity": "urgent_referral",
+    "source": {
+     "ref": "NG-NSO",
+     "section": "Danger signs in pregnancy (to locate)",
+     "verified": false
+    },
+    "tests": [
+     {
+      "facts": {
+       "findings": {
+        "leaking_amniotic_fluid": [
+         "present"
+        ]
+       }
+      },
+      "fires": true,
+      "name": "present fires"
+     }
+    ],
+    "when": {
+     "finding": "leaking_amniotic_fluid"
+    }
+   },
+   {
+    "id": "DS-011",
+    "message_en": "Severe vomiting: check for dehydration and refer.",
+    "name": "Severe vomiting",
+    "severity": "refer",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Quick check: danger signs",
+     "verified": false
+    },
+    "tests": [
+     {
+      "facts": {
+       "findings": {
+        "severe_vomiting": [
+         "present"
+        ]
+       }
+      },
+      "fires": true,
+      "name": "present fires"
+     },
+     {
+      "facts": {
+       "findings": {
+        "nausea_vomiting": [
+         "present"
+        ]
+       }
+      },
+      "fires": false,
+      "name": "morning sickness is silent"
+     }
+    ],
+    "when": {
+     "finding": "severe_vomiting"
+    }
+   },
+   {
+    "id": "DS-012",
+    "message_en": "Unconscious or unresponsive: emergency referral now.",
+    "name": "Unconscious",
+    "severity": "urgent_referral",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Quick check: danger signs",
+     "verified": false
+    },
+    "tests": [
+     {
+      "facts": {
+       "findings": {
+        "unconscious": [
+         "present"
+        ]
+       }
+      },
+      "fires": true,
+      "name": "present fires"
+     }
+    ],
+    "when": {
+     "finding": "unconscious"
+    }
+   },
+   {
+    "id": "DS-013",
+    "message_en": "Severe pallor (possible severe anaemia): check Hb/PCV and refer.",
+    "name": "Severe pallor",
+    "severity": "refer",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Physical examination: pallor",
+     "verified": false
+    },
+    "tests": [
+     {
+      "facts": {
+       "findings": {
+        "severe_pallor": [
+         "present"
+        ]
+       }
+      },
+      "fires": true,
+      "name": "present fires"
+     }
+    ],
+    "when": {
+     "finding": "severe_pallor"
+    }
+   },
+   {
+    "id": "DS-014",
+    "message_en": "Looks very ill: refer now.",
+    "name": "Looks very ill",
+    "severity": "urgent_referral",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Quick check: danger signs",
+     "verified": false
+    },
+    "tests": [
+     {
+      "facts": {
+       "findings": {
+        "looks_very_ill": [
+         "present"
+        ]
+       }
+      },
+      "fires": true,
+      "name": "present fires"
+     }
+    ],
+    "when": {
+     "finding": "looks_very_ill"
+    }
+   },
+   {
+    "id": "VS-001",
+    "message_en": "BP at or above 160/110: severe hypertension, refer now.",
+    "name": "Severe hypertension",
+    "severity": "urgent_referral",
+    "source": {
+     "ref": "WHO-ANC-2016",
+     "section": "Hypertension in pregnancy (to locate)",
+     "verified": false
+    },
+    "supersedes": [
+     "VS-002"
+    ],
+    "tests": [
+     {
+      "facts": {
+       "vitals": {
+        "bp_diastolic": 100,
+        "bp_systolic": 160
+       }
+      },
+      "fires": true,
+      "name": "160/100 fires"
+     },
+     {
+      "facts": {
+       "vitals": {
+        "bp_diastolic": 110,
+        "bp_systolic": 150
+       }
+      },
+      "fires": true,
+      "name": "150/110 fires"
+     },
+     {
+      "facts": {
+       "vitals": {
+        "bp_diastolic": 109,
+        "bp_systolic": 159
+       }
+      },
+      "fires": false,
+      "name": "159/109 is silent"
+     }
+    ],
+    "when": {
+     "any": [
+      {
+       "vital": {
+        "gte": 160,
+        "name": "bp_systolic"
+       }
+      },
+      {
+       "vital": {
+        "gte": 110,
+        "name": "bp_diastolic"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "id": "VS-002",
+    "message_en": "BP at or above 140/90: check urine protein and refer for assessment.",
+    "name": "Hypertension",
+    "severity": "refer",
+    "source": {
+     "ref": "WHO-ANC-2016",
+     "section": "Hypertension in pregnancy (to locate)",
+     "verified": false
+    },
+    "tests": [
+     {
+      "facts": {
+       "vitals": {
+        "bp_diastolic": 80,
+        "bp_systolic": 140
+       }
+      },
+      "fires": true,
+      "name": "140/80 fires"
+     },
+     {
+      "facts": {
+       "vitals": {
+        "bp_diastolic": 90,
+        "bp_systolic": 130
+       }
+      },
+      "fires": true,
+      "name": "130/90 fires"
+     },
+     {
+      "facts": {
+       "vitals": {
+        "bp_diastolic": 89,
+        "bp_systolic": 139
+       }
+      },
+      "fires": false,
+      "name": "139/89 is silent"
+     }
+    ],
+    "when": {
+     "any": [
+      {
+       "vital": {
+        "gte": 140,
+        "name": "bp_systolic"
+       }
+      },
+      {
+       "vital": {
+        "gte": 90,
+        "name": "bp_diastolic"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "id": "CB-001",
+    "message_en": "Raised BP with a pre-eclampsia sign: refer now.",
+    "name": "Possible pre-eclampsia",
+    "severity": "urgent_referral",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Pre-eclampsia decision logic (to locate)",
+     "verified": false
+    },
+    "supersedes": [
+     "VS-002"
+    ],
+    "tests": [
+     {
+      "facts": {
+       "findings": {
+        "severe_headache": [
+         "present"
+        ]
+       },
+       "vitals": {
+        "bp_diastolic": 95,
+        "bp_systolic": 145
+       }
+      },
+      "fires": true,
+      "name": "BP and severe headache fires"
+     },
+     {
+      "facts": {
+       "tests": {
+        "urine_protein": "2+"
+       },
+       "vitals": {
+        "bp_diastolic": 85,
+        "bp_systolic": 140
+       }
+      },
+      "fires": true,
+      "name": "BP and proteinuria fires"
+     },
+     {
+      "facts": {
+       "tests": {
+        "urine_protein": "trace"
+       },
+       "vitals": {
+        "bp_diastolic": 85,
+        "bp_systolic": 140
+       }
+      },
+      "fires": false,
+      "name": "BP with trace protein is silent"
+     },
+     {
+      "facts": {
+       "findings": {
+        "severe_headache": [
+         "present"
+        ]
+       }
+      },
+      "fires": false,
+      "name": "headache without BP is silent"
+     }
+    ],
+    "when": {
+     "all": [
+      {
+       "any": [
+        {
+         "vital": {
+          "gte": 140,
+          "name": "bp_systolic"
+         }
+        },
+        {
+         "vital": {
+          "gte": 90,
+          "name": "bp_diastolic"
+         }
+        }
+       ]
+      },
+      {
+       "any": [
+        {
+         "finding": "severe_headache"
+        },
+        {
+         "finding": "blurred_vision"
+        },
+        {
+         "finding": "severe_abdominal_pain"
+        },
+        {
+         "finding": "swelling_face_hands"
+        },
+        {
+         "test": {
+          "in": [
+           "2+",
+           "3+",
+           "4+"
+          ],
+          "name": "urine_protein"
+         }
+        }
+       ]
+      }
+     ]
+    }
+   },
+   {
+    "id": "LB-001",
+    "message_en": "Hb below 7 g/dL (or PCV below 21%): severe anaemia, refer now.",
+    "name": "Severe anaemia",
+    "severity": "urgent_referral",
+    "source": {
+     "ref": "WHO-ANC-2016",
+     "section": "Anaemia (to locate)",
+     "verified": false
+    },
+    "tests": [
+     {
+      "facts": {
+       "tests": {
+        "haemoglobin": 6.5
+       }
+      },
+      "fires": true,
+      "name": "Hb 6.5 fires"
+     },
+     {
+      "facts": {
+       "tests": {
+        "pcv": 20
+       }
+      },
+      "fires": true,
+      "name": "PCV 20 fires"
+     },
+     {
+      "facts": {
+       "tests": {
+        "haemoglobin": 7.0
+       }
+      },
+      "fires": false,
+      "name": "Hb 7.0 is silent"
+     },
+     {
+      "facts": {
+       "tests": {
+        "pcv": 30
+       }
+      },
+      "fires": false,
+      "name": "PCV 30 is silent"
+     }
+    ],
+    "when": {
+     "any": [
+      {
+       "test": {
+        "lt": 7.0,
+        "name": "haemoglobin"
+       }
+      },
+      {
+       "test": {
+        "lt": 21.0,
+        "name": "pcv"
+       }
+      }
+     ]
+    }
+   }
+  ],
+  "severities": {
+   "refer": "Refer for assessment; do not send home without a plan.",
+   "urgent_referral": "Refer now to a facility that can manage obstetric emergencies."
+  },
+  "sources": {
+   "NG-NSO": {
+    "title": "Federal Ministry of Health (Nigeria), National Standing Orders for CHEWs and JCHEWs (edition to confirm)",
+    "verified": false
+   },
+   "WHO-ANC-2016": {
+    "title": "WHO recommendations on antenatal care for a positive pregnancy experience (2016)",
+    "verified": false
+   },
+   "WHO-ANC-DAK-2021": {
+    "title": "WHO Digital adaptation kit for antenatal care: operational requirements for implementing WHO recommendations in digital systems (2021)",
+    "verified": false
+   }
+  },
+  "version": "0.1.0"
+ },
+ "status": "DRAFT: not for clinical use until every rule and guide item is signed off by the clinical adviser",
+ "vectors": {
+  "fold": [
+   {
+    "in": "Ẹ̀jẹ̀ ń jáde lára mi",
+    "out": "eje n jade lara mi"
+   },
+   {
+    "in": "  Orí   ń fọ́ mi\tgidigidi ",
+    "out": " ori n fo mi gidigidi "
+   },
+   {
+    "in": "BP 160/110 — “severe” headache",
+    "out": "bp 160/110 - \"severe\" headache"
+   },
+   {
+    "in": "Ọmọ ń mì; ṣé ara rẹ̀ dá?",
+    "out": "omo n mi; se ara re da?"
+   },
+   {
+    "in": "Pikin dey KICK well-well",
+    "out": "pikin dey kick well-well"
+   },
+   {
+    "in": "àwọ̀n ẹ̀fọn",
+    "out": "awon efon"
+   }
+  ],
+  "guide": [
+   {
+    "expect": {
+     "follow_ups": [],
+     "items": [
+      {
+       "covered": false,
+       "id": "ask-bleeding"
+      },
+      {
+       "covered": false,
+       "id": "ask-fits"
+      },
+      {
+       "covered": false,
+       "id": "ask-headache-vision"
+      },
+      {
+       "covered": false,
+       "id": "ask-fever"
+      },
+      {
+       "covered": false,
+       "id": "ask-belly-pain"
+      },
+      {
+       "covered": false,
+       "id": "ask-breathing"
+      },
+      {
+       "covered": false,
+       "id": "ask-swelling"
+      },
+      {
+       "covered": false,
+       "id": "ask-fluid"
+      },
+      {
+       "covered": false,
+       "id": "ask-vomiting"
+      },
+      {
+       "covered": false,
+       "id": "ask-movement"
+      },
+      {
+       "covered": false,
+       "id": "ask-lmp"
+      },
+      {
+       "covered": false,
+       "id": "ask-ga"
+      },
+      {
+       "covered": false,
+       "id": "ask-obstetric-history"
+      },
+      {
+       "covered": false,
+       "id": "ask-medical-history"
+      },
+      {
+       "covered": false,
+       "id": "ask-common-complaints"
+      },
+      {
+       "covered": false,
+       "id": "check-bp"
+      },
+      {
+       "covered": false,
+       "id": "check-weight"
+      },
+      {
+       "covered": false,
+       "id": "check-temperature"
+      },
+      {
+       "covered": false,
+       "id": "test-hb"
+      },
+      {
+       "covered": false,
+       "id": "test-urine"
+      },
+      {
+       "covered": false,
+       "id": "test-hiv-syphilis"
+      },
+      {
+       "covered": false,
+       "id": "test-malaria"
+      },
+      {
+       "covered": false,
+       "id": "med-iron"
+      },
+      {
+       "covered": false,
+       "id": "med-iptp"
+      },
+      {
+       "covered": false,
+       "id": "med-td"
+      },
+      {
+       "covered": false,
+       "id": "med-net"
+      },
+      {
+       "covered": false,
+       "id": "plan-birth"
+      },
+      {
+       "covered": false,
+       "id": "plan-danger-education"
+      },
+      {
+       "covered": false,
+       "id": "plan-next-visit"
+      }
+     ]
+    },
+    "facts": {},
+    "first_contact": null,
+    "transcript": "",
+    "weeks": null
+   },
+   {
+    "expect": {
+     "follow_ups": [],
+     "items": [
+      {
+       "covered": true,
+       "id": "ask-bleeding"
+      },
+      {
+       "covered": false,
+       "id": "ask-fits"
+      },
+      {
+       "covered": true,
+       "id": "ask-headache-vision"
+      },
+      {
+       "covered": false,
+       "id": "ask-fever"
+      },
+      {
+       "covered": false,
+       "id": "ask-belly-pain"
+      },
+      {
+       "covered": false,
+       "id": "ask-breathing"
+      },
+      {
+       "covered": false,
+       "id": "ask-swelling"
+      },
+      {
+       "covered": false,
+       "id": "ask-fluid"
+      },
+      {
+       "covered": false,
+       "id": "ask-vomiting"
+      },
+      {
+       "covered": false,
+       "id": "ask-movement"
+      },
+      {
+       "covered": false,
+       "id": "ask-ga"
+      },
+      {
+       "covered": false,
+       "id": "ask-common-complaints"
+      },
+      {
+       "covered": false,
+       "id": "check-bp"
+      },
+      {
+       "covered": false,
+       "id": "check-weight"
+      },
+      {
+       "covered": false,
+       "id": "check-temperature"
+      },
+      {
+       "covered": false,
+       "id": "test-malaria"
+      },
+      {
+       "covered": false,
+       "id": "med-iron"
+      },
+      {
+       "covered": false,
+       "id": "med-iptp"
+      },
+      {
+       "covered": false,
+       "id": "med-td"
+      },
+      {
+       "covered": false,
+       "id": "med-net"
+      },
+      {
+       "covered": false,
+       "id": "plan-birth"
+      },
+      {
+       "covered": false,
+       "id": "plan-danger-education"
+      },
+      {
+       "covered": false,
+       "id": "plan-next-visit"
+      }
+     ]
+    },
+    "facts": {},
+    "first_contact": false,
+    "transcript": "Any bleeding? No. No headache.",
+    "weeks": 30
+   },
+   {
+    "expect": {
+     "follow_ups": [],
+     "items": [
+      {
+       "covered": false,
+       "id": "ask-bleeding"
+      },
+      {
+       "covered": false,
+       "id": "ask-fits"
+      },
+      {
+       "covered": true,
+       "id": "ask-headache-vision"
+      },
+      {
+       "covered": false,
+       "id": "ask-fever"
+      },
+      {
+       "covered": false,
+       "id": "ask-belly-pain"
+      },
+      {
+       "covered": false,
+       "id": "ask-breathing"
+      },
+      {
+       "covered": false,
+       "id": "ask-swelling"
+      },
+      {
+       "covered": false,
+       "id": "ask-fluid"
+      },
+      {
+       "covered": false,
+       "id": "ask-vomiting"
+      },
+      {
+       "covered": true,
+       "id": "ask-movement"
+      },
+      {
+       "covered": false,
+       "id": "ask-lmp"
+      },
+      {
+       "covered": false,
+       "id": "ask-ga"
+      },
+      {
+       "covered": false,
+       "id": "ask-obstetric-history"
+      },
+      {
+       "covered": false,
+       "id": "ask-medical-history"
+      },
+      {
+       "covered": false,
+       "id": "ask-common-complaints"
+      },
+      {
+       "covered": false,
+       "id": "check-bp"
+      },
+      {
+       "covered": false,
+       "id": "check-weight"
+      },
+      {
+       "covered": false,
+       "id": "check-temperature"
+      },
+      {
+       "covered": false,
+       "id": "test-hb"
+      },
+      {
+       "covered": false,
+       "id": "test-urine"
+      },
+      {
+       "covered": false,
+       "id": "test-hiv-syphilis"
+      },
+      {
+       "covered": false,
+       "id": "test-malaria"
+      },
+      {
+       "covered": false,
+       "id": "med-iron"
+      },
+      {
+       "covered": false,
+       "id": "med-iptp"
+      },
+      {
+       "covered": false,
+       "id": "med-td"
+      },
+      {
+       "covered": false,
+       "id": "med-net"
+      },
+      {
+       "covered": false,
+       "id": "plan-danger-education"
+      },
+      {
+       "covered": false,
+       "id": "plan-next-visit"
+      }
+     ]
+    },
+    "facts": {},
+    "first_contact": true,
+    "transcript": "ori n fo mi, pikin dey move",
+    "weeks": 24
+   },
+   {
+    "expect": {
+     "follow_ups": [
+      {
+       "ask": [
+        "check-bp"
+       ],
+       "id": "fu-headache"
+      }
+     ],
+     "items": [
+      {
+       "covered": false,
+       "id": "ask-bleeding"
+      },
+      {
+       "covered": false,
+       "id": "ask-fits"
+      },
+      {
+       "covered": true,
+       "id": "ask-headache-vision"
+      },
+      {
+       "covered": false,
+       "id": "ask-fever"
+      },
+      {
+       "covered": false,
+       "id": "ask-belly-pain"
+      },
+      {
+       "covered": false,
+       "id": "ask-breathing"
+      },
+      {
+       "covered": false,
+       "id": "ask-swelling"
+      },
+      {
+       "covered": false,
+       "id": "ask-fluid"
+      },
+      {
+       "covered": false,
+       "id": "ask-vomiting"
+      },
+      {
+       "covered": false,
+       "id": "ask-movement"
+      },
+      {
+       "covered": false,
+       "id": "ask-ga"
+      },
+      {
+       "covered": false,
+       "id": "ask-common-complaints"
+      },
+      {
+       "covered": false,
+       "id": "check-bp"
+      },
+      {
+       "covered": false,
+       "id": "check-weight"
+      },
+      {
+       "covered": false,
+       "id": "check-temperature"
+      },
+      {
+       "covered": false,
+       "id": "test-malaria"
+      },
+      {
+       "covered": false,
+       "id": "med-iron"
+      },
+      {
+       "covered": false,
+       "id": "med-iptp"
+      },
+      {
+       "covered": false,
+       "id": "med-td"
+      },
+      {
+       "covered": false,
+       "id": "med-net"
+      },
+      {
+       "covered": false,
+       "id": "plan-birth"
+      },
+      {
+       "covered": false,
+       "id": "plan-danger-education"
+      },
+      {
+       "covered": false,
+       "id": "plan-next-visit"
+      }
+     ]
+    },
+    "facts": {
+     "findings": {
+      "headache": [
+       "present"
+      ]
+     }
+    },
+    "first_contact": false,
+    "transcript": "she has headache since morning",
+    "weeks": 32
+   },
+   {
+    "expect": {
+     "follow_ups": [
+      {
+       "ask": [
+        "check-temperature",
+        "test-malaria"
+       ],
+       "id": "fu-fever"
+      }
+     ],
+     "items": [
+      {
+       "covered": false,
+       "id": "ask-bleeding"
+      },
+      {
+       "covered": false,
+       "id": "ask-fits"
+      },
+      {
+       "covered": false,
+       "id": "ask-headache-vision"
+      },
+      {
+       "covered": true,
+       "id": "ask-fever"
+      },
+      {
+       "covered": false,
+       "id": "ask-belly-pain"
+      },
+      {
+       "covered": false,
+       "id": "ask-breathing"
+      },
+      {
+       "covered": false,
+       "id": "ask-swelling"
+      },
+      {
+       "covered": false,
+       "id": "ask-fluid"
+      },
+      {
+       "covered": false,
+       "id": "ask-vomiting"
+      },
+      {
+       "covered": false,
+       "id": "ask-movement"
+      },
+      {
+       "covered": false,
+       "id": "ask-ga"
+      },
+      {
+       "covered": false,
+       "id": "ask-common-complaints"
+      },
+      {
+       "covered": true,
+       "id": "check-bp"
+      },
+      {
+       "covered": true,
+       "id": "check-weight"
+      },
+      {
+       "covered": false,
+       "id": "check-temperature"
+      },
+      {
+       "covered": false,
+       "id": "test-malaria"
+      },
+      {
+       "covered": false,
+       "id": "med-iron"
+      },
+      {
+       "covered": false,
+       "id": "med-iptp"
+      },
+      {
+       "covered": false,
+       "id": "med-td"
+      },
+      {
+       "covered": false,
+       "id": "med-net"
+      },
+      {
+       "covered": false,
+       "id": "plan-danger-education"
+      },
+      {
+       "covered": false,
+       "id": "plan-next-visit"
+      }
+     ]
+    },
+    "facts": {
+     "findings": {
+      "fever": [
+       "present"
+      ]
+     },
+     "vitals": {
+      "bp_diastolic": 80,
+      "bp_systolic": 120,
+      "weight_kg": 70
+     }
+    },
+    "first_contact": false,
+    "transcript": "hot body, BP 120/80, weight 70",
+    "weeks": 20
+   },
+   {
+    "expect": {
+     "follow_ups": [
+      {
+       "ask": [
+        "ask-bleeding",
+        "ask-fluid"
+       ],
+       "id": "fu-movement"
+      }
+     ],
+     "items": [
+      {
+       "covered": false,
+       "id": "ask-bleeding"
+      },
+      {
+       "covered": false,
+       "id": "ask-fits"
+      },
+      {
+       "covered": false,
+       "id": "ask-headache-vision"
+      },
+      {
+       "covered": false,
+       "id": "ask-fever"
+      },
+      {
+       "covered": true,
+       "id": "ask-belly-pain"
+      },
+      {
+       "covered": false,
+       "id": "ask-breathing"
+      },
+      {
+       "covered": false,
+       "id": "ask-swelling"
+      },
+      {
+       "covered": false,
+       "id": "ask-fluid"
+      },
+      {
+       "covered": false,
+       "id": "ask-vomiting"
+      },
+      {
+       "covered": true,
+       "id": "ask-movement"
+      },
+      {
+       "covered": false,
+       "id": "ask-lmp"
+      },
+      {
+       "covered": false,
+       "id": "ask-ga"
+      },
+      {
+       "covered": false,
+       "id": "ask-obstetric-history"
+      },
+      {
+       "covered": false,
+       "id": "ask-medical-history"
+      },
+      {
+       "covered": false,
+       "id": "ask-common-complaints"
+      },
+      {
+       "covered": false,
+       "id": "check-bp"
+      },
+      {
+       "covered": false,
+       "id": "check-weight"
+      },
+      {
+       "covered": false,
+       "id": "check-temperature"
+      },
+      {
+       "covered": false,
+       "id": "test-hb"
+      },
+      {
+       "covered": false,
+       "id": "test-urine"
+      },
+      {
+       "covered": false,
+       "id": "test-hiv-syphilis"
+      },
+      {
+       "covered": false,
+       "id": "test-malaria"
+      },
+      {
+       "covered": false,
+       "id": "med-iron"
+      },
+      {
+       "covered": false,
+       "id": "med-iptp"
+      },
+      {
+       "covered": false,
+       "id": "med-td"
+      },
+      {
+       "covered": false,
+       "id": "med-net"
+      },
+      {
+       "covered": false,
+       "id": "plan-birth"
+      },
+      {
+       "covered": false,
+       "id": "plan-danger-education"
+      },
+      {
+       "covered": false,
+       "id": "plan-next-visit"
+      }
+     ]
+    },
+    "facts": {
+     "findings": {
+      "abdominal_pain": [
+       "present"
+      ],
+      "reduced_fetal_movement": [
+       "possible"
+      ]
+     }
+    },
+    "first_contact": null,
+    "transcript": "baby no dey move like before, belle dey pain me",
+    "weeks": 34
+   },
+   {
+    "expect": {
+     "follow_ups": [],
+     "items": [
+      {
+       "covered": false,
+       "id": "ask-bleeding"
+      },
+      {
+       "covered": false,
+       "id": "ask-fits"
+      },
+      {
+       "covered": false,
+       "id": "ask-headache-vision"
+      },
+      {
+       "covered": false,
+       "id": "ask-fever"
+      },
+      {
+       "covered": false,
+       "id": "ask-belly-pain"
+      },
+      {
+       "covered": false,
+       "id": "ask-breathing"
+      },
+      {
+       "covered": false,
+       "id": "ask-swelling"
+      },
+      {
+       "covered": false,
+       "id": "ask-fluid"
+      },
+      {
+       "covered": false,
+       "id": "ask-vomiting"
+      },
+      {
+       "covered": true,
+       "id": "ask-lmp"
+      },
+      {
+       "covered": false,
+       "id": "ask-ga"
+      },
+      {
+       "covered": false,
+       "id": "ask-obstetric-history"
+      },
+      {
+       "covered": false,
+       "id": "ask-medical-history"
+      },
+      {
+       "covered": false,
+       "id": "ask-common-complaints"
+      },
+      {
+       "covered": false,
+       "id": "check-bp"
+      },
+      {
+       "covered": false,
+       "id": "check-weight"
+      },
+      {
+       "covered": false,
+       "id": "check-temperature"
+      },
+      {
+       "covered": false,
+       "id": "test-hb"
+      },
+      {
+       "covered": false,
+       "id": "test-urine"
+      },
+      {
+       "covered": false,
+       "id": "test-hiv-syphilis"
+      },
+      {
+       "covered": false,
+       "id": "test-malaria"
+      },
+      {
+       "covered": true,
+       "id": "med-iron"
+      },
+      {
+       "covered": false,
+       "id": "med-td"
+      },
+      {
+       "covered": true,
+       "id": "med-net"
+      },
+      {
+       "covered": false,
+       "id": "plan-danger-education"
+      },
+      {
+       "covered": false,
+       "id": "plan-next-visit"
+      }
+     ]
+    },
+    "facts": {},
+    "first_contact": true,
+    "transcript": "Last period was in March. G3P2. She sleeps under a mosquito net, takes fefol.",
+    "weeks": 12
+   }
+  ],
+  "rules": [
+   {
+    "facts": {
+     "findings": {
+      "vaginal_bleeding": [
+       "present"
+      ]
+     },
+     "tests": {},
+     "vitals": {}
+    },
+    "flags": [
+     "DS-001"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {
+      "vaginal_bleeding": [
+       "possible"
+      ]
+     },
+     "tests": {},
+     "vitals": {}
+    },
+    "flags": [
+     "DS-001"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {
+      "vaginal_bleeding": [
+       "absent"
+      ]
+     },
+     "tests": {},
+     "vitals": {}
+    },
+    "flags": []
+   },
+   {
+    "facts": {
+     "findings": {
+      "vaginal_bleeding": [
+       "historical"
+      ]
+     },
+     "tests": {},
+     "vitals": {}
+    },
+    "flags": []
+   },
+   {
+    "facts": {
+     "findings": {
+      "convulsions": [
+       "present"
+      ]
+     },
+     "tests": {},
+     "vitals": {}
+    },
+    "flags": [
+     "DS-002"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {
+      "convulsions": [
+       "absent"
+      ]
+     },
+     "tests": {},
+     "vitals": {}
+    },
+    "flags": []
+   },
+   {
+    "facts": {
+     "findings": {
+      "severe_headache": [
+       "present"
+      ]
+     },
+     "tests": {},
+     "vitals": {}
+    },
+    "flags": [
+     "DS-003"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {
+      "headache": [
+       "present"
+      ]
+     },
+     "tests": {},
+     "vitals": {}
+    },
+    "flags": []
+   },
+   {
+    "facts": {
+     "findings": {
+      "blurred_vision": [
+       "present"
+      ]
+     },
+     "tests": {},
+     "vitals": {}
+    },
+    "flags": [
+     "DS-004"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {
+      "fever": [
+       "present"
+      ]
+     },
+     "tests": {},
+     "vitals": {}
+    },
+    "flags": [
+     "DS-005"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {},
+     "tests": {},
+     "vitals": {
+      "temperature_c": 38.0
+     }
+    },
+    "flags": [
+     "DS-005"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {},
+     "tests": {},
+     "vitals": {
+      "temperature_c": 37.9
+     }
+    },
+    "flags": []
+   },
+   {
+    "facts": {
+     "findings": {},
+     "tests": {},
+     "vitals": {}
+    },
+    "flags": []
+   },
+   {
+    "facts": {
+     "findings": {
+      "severe_abdominal_pain": [
+       "present"
+      ]
+     },
+     "tests": {},
+     "vitals": {}
+    },
+    "flags": [
+     "DS-006"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {
+      "abdominal_pain": [
+       "present"
+      ]
+     },
+     "tests": {},
+     "vitals": {}
+    },
+    "flags": []
+   },
+   {
+    "facts": {
+     "findings": {
+      "reduced_fetal_movement": [
+       "present"
+      ]
+     },
+     "tests": {},
+     "vitals": {}
+    },
+    "flags": [
+     "DS-007"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {
+      "breathing_difficulty": [
+       "present"
+      ]
+     },
+     "tests": {},
+     "vitals": {}
+    },
+    "flags": [
+     "DS-008"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {
+      "swelling_face_hands": [
+       "present"
+      ]
+     },
+     "tests": {},
+     "vitals": {}
+    },
+    "flags": [
+     "DS-009"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {
+      "leg_oedema": [
+       "present"
+      ]
+     },
+     "tests": {},
+     "vitals": {}
+    },
+    "flags": []
+   },
+   {
+    "facts": {
+     "findings": {
+      "leaking_amniotic_fluid": [
+       "present"
+      ]
+     },
+     "tests": {},
+     "vitals": {}
+    },
+    "flags": [
+     "DS-010"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {
+      "severe_vomiting": [
+       "present"
+      ]
+     },
+     "tests": {},
+     "vitals": {}
+    },
+    "flags": [
+     "DS-011"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {
+      "nausea_vomiting": [
+       "present"
+      ]
+     },
+     "tests": {},
+     "vitals": {}
+    },
+    "flags": []
+   },
+   {
+    "facts": {
+     "findings": {
+      "unconscious": [
+       "present"
+      ]
+     },
+     "tests": {},
+     "vitals": {}
+    },
+    "flags": [
+     "DS-012"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {
+      "severe_pallor": [
+       "present"
+      ]
+     },
+     "tests": {},
+     "vitals": {}
+    },
+    "flags": [
+     "DS-013"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {
+      "looks_very_ill": [
+       "present"
+      ]
+     },
+     "tests": {},
+     "vitals": {}
+    },
+    "flags": [
+     "DS-014"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {},
+     "tests": {},
+     "vitals": {
+      "bp_diastolic": 100.0,
+      "bp_systolic": 160.0
+     }
+    },
+    "flags": [
+     "VS-001"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {},
+     "tests": {},
+     "vitals": {
+      "bp_diastolic": 110.0,
+      "bp_systolic": 150.0
+     }
+    },
+    "flags": [
+     "VS-001"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {},
+     "tests": {},
+     "vitals": {
+      "bp_diastolic": 109.0,
+      "bp_systolic": 159.0
+     }
+    },
+    "flags": [
+     "VS-002"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {},
+     "tests": {},
+     "vitals": {
+      "bp_diastolic": 80.0,
+      "bp_systolic": 140.0
+     }
+    },
+    "flags": [
+     "VS-002"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {},
+     "tests": {},
+     "vitals": {
+      "bp_diastolic": 90.0,
+      "bp_systolic": 130.0
+     }
+    },
+    "flags": [
+     "VS-002"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {},
+     "tests": {},
+     "vitals": {
+      "bp_diastolic": 89.0,
+      "bp_systolic": 139.0
+     }
+    },
+    "flags": []
+   },
+   {
+    "facts": {
+     "findings": {
+      "severe_headache": [
+       "present"
+      ]
+     },
+     "tests": {},
+     "vitals": {
+      "bp_diastolic": 95.0,
+      "bp_systolic": 145.0
+     }
+    },
+    "flags": [
+     "CB-001",
+     "DS-003"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {},
+     "tests": {
+      "urine_protein": [
+       "2+"
+      ]
+     },
+     "vitals": {
+      "bp_diastolic": 85.0,
+      "bp_systolic": 140.0
+     }
+    },
+    "flags": [
+     "CB-001"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {},
+     "tests": {
+      "urine_protein": [
+       "trace"
+      ]
+     },
+     "vitals": {
+      "bp_diastolic": 85.0,
+      "bp_systolic": 140.0
+     }
+    },
+    "flags": [
+     "VS-002"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {
+      "severe_headache": [
+       "present"
+      ]
+     },
+     "tests": {},
+     "vitals": {}
+    },
+    "flags": [
+     "DS-003"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {},
+     "tests": {
+      "haemoglobin": [
+       6.5
+      ]
+     },
+     "vitals": {}
+    },
+    "flags": [
+     "LB-001"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {},
+     "tests": {
+      "pcv": [
+       20
+      ]
+     },
+     "vitals": {}
+    },
+    "flags": [
+     "LB-001"
+    ]
+   },
+   {
+    "facts": {
+     "findings": {},
+     "tests": {
+      "haemoglobin": [
+       7.0
+      ]
+     },
+     "vitals": {}
+    },
+    "flags": []
+   },
+   {
+    "facts": {
+     "findings": {},
+     "tests": {
+      "pcv": [
+       30
+      ]
+     },
+     "vitals": {}
+    },
+    "flags": []
+   }
+  ]
+ },
+ "visit_guide": {
+  "follow_ups": [
+   {
+    "ask": [
+     "ask-headache-vision",
+     "check-bp"
+    ],
+    "id": "fu-headache",
+    "if": "headache",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Quick check",
+     "verified": false
+    },
+    "why_en": "Headache: ask about vision and check BP (pre-eclampsia warning signs)."
+   },
+   {
+    "ask": [
+     "ask-headache-vision",
+     "check-bp",
+     "test-urine"
+    ],
+    "id": "fu-severe-headache",
+    "if": "severe_headache",
+    "source": {
+     "ref": "NG-NSO",
+     "section": "Danger signs in pregnancy",
+     "verified": false
+    },
+    "why_en": "Severe headache is a danger sign: check BP and urine protein, ask about vision."
+   },
+   {
+    "ask": [
+     "check-bp",
+     "test-urine",
+     "ask-swelling"
+    ],
+    "id": "fu-blurred-vision",
+    "if": "blurred_vision",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Quick check",
+     "verified": false
+    },
+    "why_en": "Vision problems: check BP, urine protein and swelling."
+   },
+   {
+    "ask": [
+     "check-bp",
+     "test-urine",
+     "ask-headache-vision"
+    ],
+    "id": "fu-swelling",
+    "if": "swelling_face_hands",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Quick check",
+     "verified": false
+    },
+    "why_en": "Swelling of face or hands: check BP and urine protein, ask about headache and vision."
+   },
+   {
+    "ask": [
+     "check-temperature",
+     "test-malaria"
+    ],
+    "id": "fu-fever",
+    "if": "fever",
+    "source": {
+     "ref": "NG-NSO",
+     "section": "Malaria in pregnancy",
+     "verified": false
+    },
+    "why_en": "Fever: measure the temperature and test for malaria."
+   },
+   {
+    "ask": [
+     "ask-belly-pain",
+     "check-bp"
+    ],
+    "id": "fu-bleeding",
+    "if": "vaginal_bleeding",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Quick check",
+     "verified": false
+    },
+    "why_en": "Bleeding is a danger sign: ask about pain and check BP before referral."
+   },
+   {
+    "ask": [
+     "test-hb",
+     "med-iron"
+    ],
+    "id": "fu-fatigue",
+    "if": "fatigue",
+    "source": {
+     "ref": "WHO-ANC-2016",
+     "section": "Maternal assessment: anaemia",
+     "verified": false
+    },
+    "why_en": "Tiredness: check for anaemia and iron intake."
+   },
+   {
+    "ask": [
+     "check-bp",
+     "test-hb"
+    ],
+    "id": "fu-dizziness",
+    "if": "dizziness",
+    "source": {
+     "ref": "WHO-ANC-2016",
+     "section": "Maternal assessment: anaemia",
+     "verified": false
+    },
+    "why_en": "Dizziness: check BP and haemoglobin."
+   },
+   {
+    "ask": [
+     "ask-fever",
+     "ask-belly-pain"
+    ],
+    "id": "fu-urine",
+    "if": "painful_urination",
+    "source": {
+     "ref": "WHO-ANC-2016",
+     "section": "Common physiological symptoms",
+     "verified": false
+    },
+    "why_en": "Pain passing urine: ask about fever and belly pain."
+   },
+   {
+    "ask": [
+     "ask-belly-pain",
+     "ask-bleeding",
+     "ask-fluid"
+    ],
+    "id": "fu-movement",
+    "if": "reduced_fetal_movement",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Quick check",
+     "verified": false
+    },
+    "why_en": "Reduced movement is a danger sign: ask about pain, bleeding and fluid."
+   }
+  ],
+  "groups": {
+   "danger": "Danger signs (every visit)",
+   "history": "Past pregnancies and health",
+   "measure": "Measurements",
+   "medicines": "Medicines and prevention",
+   "plan": "Plan and counselling",
+   "pregnancy": "This pregnancy",
+   "symptoms": "Common complaints",
+   "tests": "Tests"
+  },
+  "items": [
+   {
+    "ask_en": "Any bleeding or spotting from the vagina?",
+    "covered_by": {
+     "concepts": [
+      "vaginal_bleeding"
+     ]
+    },
+    "group": "danger",
+    "id": "ask-bleeding",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Quick check",
+     "verified": false
+    },
+    "when": "every"
+   },
+   {
+    "ask_en": "Any fits or convulsions, or fainting?",
+    "covered_by": {
+     "concepts": [
+      "convulsions",
+      "unconscious"
+     ]
+    },
+    "group": "danger",
+    "id": "ask-fits",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Quick check",
+     "verified": false
+    },
+    "when": "every"
+   },
+   {
+    "ask_en": "Any headache, or problems seeing (blurred vision, flashing lights)?",
+    "covered_by": {
+     "concepts": [
+      "severe_headache",
+      "headache",
+      "blurred_vision"
+     ]
+    },
+    "group": "danger",
+    "id": "ask-headache-vision",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Quick check",
+     "verified": false
+    },
+    "when": "every"
+   },
+   {
+    "ask_en": "Any fever or hot body?",
+    "covered_by": {
+     "concepts": [
+      "fever"
+     ]
+    },
+    "group": "danger",
+    "id": "ask-fever",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Quick check",
+     "verified": false
+    },
+    "when": "every"
+   },
+   {
+    "ask_en": "Any pain in the belly?",
+    "covered_by": {
+     "concepts": [
+      "severe_abdominal_pain",
+      "abdominal_pain",
+      "pelvic_pain"
+     ]
+    },
+    "group": "danger",
+    "id": "ask-belly-pain",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Quick check",
+     "verified": false
+    },
+    "when": "every"
+   },
+   {
+    "ask_en": "Any difficulty breathing?",
+    "covered_by": {
+     "concepts": [
+      "breathing_difficulty"
+     ]
+    },
+    "group": "danger",
+    "id": "ask-breathing",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Quick check",
+     "verified": false
+    },
+    "when": "every"
+   },
+   {
+    "ask_en": "Any swelling of the face, hands or feet?",
+    "covered_by": {
+     "concepts": [
+      "swelling_face_hands",
+      "leg_oedema"
+     ]
+    },
+    "group": "danger",
+    "id": "ask-swelling",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Quick check",
+     "verified": false
+    },
+    "when": "every"
+   },
+   {
+    "ask_en": "Any water or fluid leaking from the vagina?",
+    "covered_by": {
+     "concepts": [
+      "leaking_amniotic_fluid"
+     ]
+    },
+    "group": "danger",
+    "id": "ask-fluid",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Quick check",
+     "verified": false
+    },
+    "when": "every"
+   },
+   {
+    "ask_en": "Any vomiting? Can she keep food and water down?",
+    "covered_by": {
+     "concepts": [
+      "severe_vomiting",
+      "nausea_vomiting"
+     ]
+    },
+    "group": "danger",
+    "id": "ask-vomiting",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Quick check",
+     "verified": false
+    },
+    "when": "every"
+   },
+   {
+    "ask_en": "Is the baby moving as usual?",
+    "covered_by": {
+     "concepts": [
+      "reduced_fetal_movement"
+     ],
+     "terms": {
+      "en": [
+       "baby moving",
+       "baby is moving",
+       "baby movement",
+       "fetal movement",
+       "foetal movement",
+       "kicking",
+       "kicks"
+      ],
+      "pcm": [
+       "pikin dey move",
+       "pikin dey kick",
+       "belle dey move"
+      ],
+      "yo": [
+       "ọmọ ń mì",
+       "ọmọ ń gbé ara"
+      ]
+     }
+    },
+    "group": "danger",
+    "id": "ask-movement",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Quick check",
+     "verified": false
+    },
+    "when": {
+     "from_weeks": 20
+    }
+   },
+   {
+    "ask_en": "When was her last menstrual period (to date the pregnancy)?",
+    "covered_by": {
+     "terms": {
+      "en": [
+       "last period",
+       "last menstrual period",
+       "lmp",
+       "last menses",
+       "edd",
+       "due date"
+      ],
+      "pcm": [
+       "last time wey I see my period",
+       "my last period"
+      ],
+      "yo": [
+       "nǹkan oṣù tó kẹ́yìn",
+       "ìgbà tí mo rí nǹkan oṣù"
+      ]
+     }
+    },
+    "group": "pregnancy",
+    "id": "ask-lmp",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Profile: gestational age",
+     "verified": false
+    },
+    "when": "first"
+   },
+   {
+    "ask_en": "How many weeks pregnant is she?",
+    "covered_by": {
+     "terms": {
+      "en": [
+       "weeks pregnant",
+       "weeks gestation",
+       "gestational age",
+       "ega",
+       "ga",
+       "months pregnant"
+      ],
+      "pcm": [
+       "how many weeks",
+       "how many months"
+      ],
+      "yo": [
+       "ọ̀sẹ̀",
+       "oṣù oyún"
+      ]
+     }
+    },
+    "group": "pregnancy",
+    "id": "ask-ga",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Profile: gestational age",
+     "verified": false
+    },
+    "when": "every"
+   },
+   {
+    "ask_en": "How many times has she been pregnant, and how many births? Any problems before (bleeding, fits, caesarean, stillbirth, miscarriage)?",
+    "covered_by": {
+     "terms": {
+      "en": [
+       "gravida",
+       "para",
+       "primigravida",
+       "previous pregnancy",
+       "last pregnancy",
+       "caesarean",
+       "c-section",
+       "cs",
+       "stillbirth",
+       "miscarriage",
+       "abortion",
+       "children"
+      ],
+      "pcm": [
+       "how many pikin",
+       "how many belle",
+       "last belle"
+      ],
+      "yo": [
+       "oyún tó kọjá",
+       "ọmọ mélòó",
+       "ìṣẹ́yún"
+      ]
+     }
+    },
+    "group": "history",
+    "id": "ask-obstetric-history",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "History: obstetric history",
+     "verified": false
+    },
+    "when": "first"
+   },
+   {
+    "ask_en": "Any long-term illness (high blood pressure, diabetes, sickle cell, asthma, HIV)?",
+    "covered_by": {
+     "terms": {
+      "en": [
+       "hypertension",
+       "high blood pressure",
+       "diabetes",
+       "sugar",
+       "sickle cell",
+       "genotype",
+       "asthma",
+       "hiv status",
+       "medical history"
+      ],
+      "pcm": [
+       "BP dey high",
+       "sugar sickness"
+      ],
+      "yo": [
+       "ẹ̀jẹ̀ ríru",
+       "ìtọ̀ ṣúgà",
+       "àrùn ẹ̀jẹ̀"
+      ]
+     }
+    },
+    "group": "history",
+    "id": "ask-medical-history",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "History: medical history",
+     "verified": false
+    },
+    "when": "first"
+   },
+   {
+    "ask_en": "Any other complaints (heartburn, cramps, constipation, back pain, discharge, pain passing urine, cough)?",
+    "covered_by": {
+     "concepts": [
+      "heartburn",
+      "leg_cramps",
+      "constipation",
+      "low_back_pain",
+      "abnormal_vaginal_discharge",
+      "painful_urination",
+      "cough",
+      "dizziness",
+      "fatigue",
+      "varicose_veins"
+     ],
+     "terms": {
+      "en": [
+       "any complaint",
+       "any complaints",
+       "how are you feeling",
+       "how do you feel"
+      ],
+      "pcm": [
+       "how your body"
+      ]
+     }
+    },
+    "group": "symptoms",
+    "id": "ask-common-complaints",
+    "source": {
+     "ref": "WHO-ANC-2016",
+     "section": "Common physiological symptoms",
+     "verified": false
+    },
+    "when": "every"
+   },
+   {
+    "ask_en": "Measure and record the blood pressure.",
+    "covered_by": {
+     "vitals": [
+      "bp_systolic"
+     ]
+    },
+    "group": "measure",
+    "id": "check-bp",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Examination: blood pressure",
+     "verified": false
+    },
+    "when": "every"
+   },
+   {
+    "ask_en": "Measure and record her weight.",
+    "covered_by": {
+     "vitals": [
+      "weight_kg"
+     ]
+    },
+    "group": "measure",
+    "id": "check-weight",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Examination: weight",
+     "verified": false
+    },
+    "when": "every"
+   },
+   {
+    "ask_en": "Check her temperature if she feels hot or unwell.",
+    "covered_by": {
+     "vitals": [
+      "temperature_c"
+     ]
+    },
+    "group": "measure",
+    "id": "check-temperature",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Examination",
+     "verified": false
+    },
+    "when": "every"
+   },
+   {
+    "ask_en": "Check haemoglobin (or PCV) for anaemia.",
+    "covered_by": {
+     "tests": [
+      "haemoglobin",
+      "pcv"
+     ]
+    },
+    "group": "tests",
+    "id": "test-hb",
+    "source": {
+     "ref": "WHO-ANC-2016",
+     "section": "Maternal assessment: anaemia",
+     "verified": false
+    },
+    "when": "first"
+   },
+   {
+    "ask_en": "Test urine for protein.",
+    "covered_by": {
+     "tests": [
+      "urine_protein"
+     ]
+    },
+    "group": "tests",
+    "id": "test-urine",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Tests: urine",
+     "verified": false
+    },
+    "when": "first"
+   },
+   {
+    "ask_en": "Test for HIV and syphilis (and hepatitis B), with consent.",
+    "covered_by": {
+     "tests": [
+      "hiv",
+      "syphilis",
+      "hepatitis_b"
+     ]
+    },
+    "group": "tests",
+    "id": "test-hiv-syphilis",
+    "source": {
+     "ref": "WHO-ANC-2016",
+     "section": "Maternal assessment: infections",
+     "verified": false
+    },
+    "when": "first"
+   },
+   {
+    "ask_en": "Test for malaria if she has fever.",
+    "covered_by": {
+     "tests": [
+      "malaria_rdt"
+     ]
+    },
+    "group": "tests",
+    "id": "test-malaria",
+    "source": {
+     "ref": "NG-NSO",
+     "section": "Malaria in pregnancy",
+     "verified": false
+    },
+    "when": "every"
+   },
+   {
+    "ask_en": "Is she taking iron and folic acid every day?",
+    "covered_by": {
+     "terms": {
+      "en": [
+       "iron",
+       "folic acid",
+       "fefol",
+       "ferrous",
+       "haematinics",
+       "hematinics"
+      ],
+      "pcm": [
+       "blood tonic",
+       "blood drug"
+      ],
+      "yo": [
+       "oògùn ẹ̀jẹ̀"
+      ]
+     }
+    },
+    "group": "medicines",
+    "id": "med-iron",
+    "source": {
+     "ref": "WHO-ANC-2016",
+     "section": "Nutritional interventions: iron and folic acid",
+     "verified": false
+    },
+    "when": "every"
+   },
+   {
+    "ask_en": "Is her malaria prevention (IPTp-SP) due today?",
+    "covered_by": {
+     "terms": {
+      "en": [
+       "sp",
+       "fansidar",
+       "iptp",
+       "ipt",
+       "sulfadoxine"
+      ]
+     }
+    },
+    "group": "medicines",
+    "id": "med-iptp",
+    "source": {
+     "ref": "WHO-ANC-2016",
+     "section": "Preventive measures: IPTp-SP",
+     "verified": false
+    },
+    "when": {
+     "from_weeks": 13
+    }
+   },
+   {
+    "ask_en": "Is she up to date with tetanus–diphtheria (Td) vaccine?",
+    "covered_by": {
+     "terms": {
+      "en": [
+       "tetanus",
+       "td",
+       "tt",
+       "vaccine",
+       "injection"
+      ]
+     }
+    },
+    "group": "medicines",
+    "id": "med-td",
+    "source": {
+     "ref": "WHO-ANC-2016",
+     "section": "Preventive measures: tetanus toxoid",
+     "verified": false
+    },
+    "when": "every"
+   },
+   {
+    "ask_en": "Does she sleep under an insecticide-treated net?",
+    "covered_by": {
+     "terms": {
+      "en": [
+       "net",
+       "mosquito net",
+       "bed net",
+       "llin",
+       "itn"
+      ],
+      "pcm": [
+       "mosquito net"
+      ],
+      "yo": [
+       "àwọ̀n ẹ̀fọn"
+      ]
+     }
+    },
+    "group": "medicines",
+    "id": "med-net",
+    "source": {
+     "ref": "NG-NSO",
+     "section": "Malaria in pregnancy",
+     "verified": false
+    },
+    "when": "every"
+   },
+   {
+    "ask_en": "Discuss where she will give birth and how she will get there in an emergency.",
+    "covered_by": {
+     "terms": {
+      "en": [
+       "birth plan",
+       "where to deliver",
+       "deliver",
+       "delivery",
+       "transport",
+       "emergency plan"
+      ],
+      "pcm": [
+       "where you go born",
+       "how you go reach"
+      ],
+      "yo": [
+       "ibi tí o ti máa bímọ"
+      ]
+     }
+    },
+    "group": "plan",
+    "id": "plan-birth",
+    "source": {
+     "ref": "WHO-ANC-2016",
+     "section": "Health promotion: birth preparedness",
+     "verified": false
+    },
+    "when": {
+     "from_weeks": 28
+    }
+   },
+   {
+    "ask_en": "Remind her of the danger signs and to come at once if any appear.",
+    "covered_by": {
+     "terms": {
+      "en": [
+       "danger signs",
+       "come immediately",
+       "come back immediately",
+       "come at once"
+      ],
+      "pcm": [
+       "come quick quick"
+      ]
+     }
+    },
+    "group": "plan",
+    "id": "plan-danger-education",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Counselling: danger signs",
+     "verified": false
+    },
+    "when": "every"
+   },
+   {
+    "ask_en": "Agree the date of the next visit.",
+    "covered_by": {
+     "terms": {
+      "en": [
+       "next visit",
+       "come back",
+       "tca",
+       "return on",
+       "see you on"
+      ],
+      "pcm": [
+       "come back"
+      ],
+      "yo": [
+       "padà wá"
+      ]
+     }
+    },
+    "group": "plan",
+    "id": "plan-next-visit",
+    "source": {
+     "ref": "WHO-ANC-DAK-2021",
+     "section": "Plan: next contact",
+     "verified": false
+    },
+    "when": "every"
+   }
+  ],
+  "module": "anc",
+  "sources": {
+   "NG-NSO": {
+    "title": "Federal Ministry of Health (Nigeria), National Standing Orders for CHEWs and JCHEWs",
+    "verified": false
+   },
+   "WHO-ANC-2016": {
+    "title": "WHO recommendations on antenatal care for a positive pregnancy experience (2016)",
+    "verified": false
+   },
+   "WHO-ANC-DAK-2021": {
+    "title": "WHO Digital adaptation kit for antenatal care (2021)",
+    "verified": false
+   }
+  },
+  "version": "0.1.0"
+ },
+ "vocabulary": {
+  "concepts": [
+   {
+    "danger_sign": true,
+    "definition": "Any bleeding or spotting per vagina during the current pregnancy.",
+    "id": "vaginal_bleeding",
+    "label_en": "Vaginal bleeding"
+   },
+   {
+    "danger_sign": true,
+    "definition": "Fits, seizures or convulsions.",
+    "id": "convulsions",
+    "label_en": "Convulsions / fits"
+   },
+   {
+    "danger_sign": true,
+    "definition": "Headache described as severe, very bad, persistent, or not relieved by usual measures. A headache without any severity qualifier is `headache`.",
+    "id": "severe_headache",
+    "label_en": "Severe headache"
+   },
+   {
+    "danger_sign": true,
+    "definition": "Blurred or dim vision, seeing spots or flashing lights, sudden loss of vision.",
+    "id": "blurred_vision",
+    "label_en": "Blurred vision / visual disturbance"
+   },
+   {
+    "danger_sign": true,
+    "definition": "Reported fever or feeling hot. A measured temperature goes in vitals.",
+    "id": "fever",
+    "label_en": "Fever"
+   },
+   {
+    "danger_sign": true,
+    "definition": "Abdominal (including epigastric) pain described as severe or very bad. Abdominal pain without a severity qualifier is `abdominal_pain`.",
+    "id": "severe_abdominal_pain",
+    "label_en": "Severe abdominal pain"
+   },
+   {
+    "danger_sign": true,
+    "definition": "The baby is moving less than usual or has stopped moving.",
+    "id": "reduced_fetal_movement",
+    "label_en": "Reduced or absent fetal movement"
+   },
+   {
+    "danger_sign": true,
+    "definition": "Shortness of breath, fast or difficult breathing.",
+    "id": "breathing_difficulty",
+    "label_en": "Difficulty breathing"
+   },
+   {
+    "danger_sign": true,
+    "definition": "Swelling (oedema) of the face or hands, or generalised swelling. Swelling limited to the feet or ankles is `leg_oedema`.",
+    "id": "swelling_face_hands",
+    "label_en": "Swelling of face or hands"
+   },
+   {
+    "danger_sign": true,
+    "definition": "Fluid draining or gushing from the vagina before labour.",
+    "id": "leaking_amniotic_fluid",
+    "label_en": "Leaking or gush of fluid (waters breaking)"
+   },
+   {
+    "danger_sign": true,
+    "definition": "Vomiting described as severe, persistent, or unable to keep food or fluids down. Ordinary morning sickness is `nausea_vomiting`.",
+    "id": "severe_vomiting",
+    "label_en": "Severe vomiting"
+   },
+   {
+    "danger_sign": true,
+    "definition": "Loss of consciousness, fainting with unresponsiveness, cannot be woken.",
+    "id": "unconscious",
+    "label_en": "Unconscious / unresponsive"
+   },
+   {
+    "danger_sign": true,
+    "definition": "Very pale palms, conjunctivae or tongue noted on examination or reported.",
+    "id": "severe_pallor",
+    "label_en": "Severe pallor"
+   },
+   {
+    "danger_sign": true,
+    "definition": "The health worker states the woman looks very ill or is in a bad state.",
+    "id": "looks_very_ill",
+    "label_en": "Looks very ill"
+   },
+   {
+    "danger_sign": false,
+    "definition": "Headache without a severity qualifier.",
+    "id": "headache",
+    "label_en": "Headache (not described as severe)"
+   },
+   {
+    "danger_sign": false,
+    "definition": "Abdominal or lower abdominal pain without a severity qualifier.",
+    "id": "abdominal_pain",
+    "label_en": "Abdominal pain (not described as severe)"
+   },
+   {
+    "danger_sign": false,
+    "definition": "Nausea or vomiting not described as severe.",
+    "id": "nausea_vomiting",
+    "label_en": "Nausea and vomiting"
+   },
+   {
+    "danger_sign": false,
+    "definition": "Burning feeling in the chest or upper abdomen, indigestion.",
+    "id": "heartburn",
+    "label_en": "Heartburn"
+   },
+   {
+    "danger_sign": false,
+    "definition": "Painful cramps in the legs.",
+    "id": "leg_cramps",
+    "label_en": "Leg cramps"
+   },
+   {
+    "danger_sign": false,
+    "definition": "Hard or infrequent stools.",
+    "id": "constipation",
+    "label_en": "Constipation"
+   },
+   {
+    "danger_sign": false,
+    "definition": "Pain in the lower back.",
+    "id": "low_back_pain",
+    "label_en": "Low back pain"
+   },
+   {
+    "danger_sign": false,
+    "definition": "Pain in the pelvis or pubic area.",
+    "id": "pelvic_pain",
+    "label_en": "Pelvic pain"
+   },
+   {
+    "danger_sign": false,
+    "definition": "Swollen, visible veins, usually in the legs.",
+    "id": "varicose_veins",
+    "label_en": "Varicose veins"
+   },
+   {
+    "danger_sign": false,
+    "definition": "Swelling limited to the feet, ankles or legs.",
+    "id": "leg_oedema",
+    "label_en": "Swelling of feet or ankles"
+   },
+   {
+    "danger_sign": false,
+    "definition": "Feeling dizzy or light-headed, without loss of consciousness.",
+    "id": "dizziness",
+    "label_en": "Dizziness"
+   },
+   {
+    "danger_sign": false,
+    "definition": "Feeling tired, weak or lacking energy.",
+    "id": "fatigue",
+    "label_en": "Tiredness / weakness"
+   },
+   {
+    "danger_sign": false,
+    "definition": "Cough of any duration.",
+    "id": "cough",
+    "label_en": "Cough"
+   },
+   {
+    "danger_sign": false,
+    "definition": "Vaginal discharge that is itchy, smelly, coloured or otherwise abnormal.",
+    "id": "abnormal_vaginal_discharge",
+    "label_en": "Abnormal vaginal discharge"
+   },
+   {
+    "danger_sign": false,
+    "definition": "Pain or burning when passing urine.",
+    "id": "painful_urination",
+    "label_en": "Painful or burning urination"
+   }
+  ],
+  "version": "0.1.0"
+ }
+}

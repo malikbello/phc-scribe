@@ -15,6 +15,7 @@ ruff format --check .
 pyright
 python scripts/export_schema.py --check
 python scripts/export_review_data.py --check
+python scripts/export_clinical_bundle.py --check
 python scripts/export_openapi.py --check
 pytest -q -W ignore
 if [ "${SKIP_APP:-0}" != "1" ]; then

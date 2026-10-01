@@ -36,6 +36,7 @@ jobs:
         run: |
           python scripts/export_schema.py --check
           python scripts/export_review_data.py --check
+          python scripts/export_clinical_bundle.py --check
           python scripts/export_openapi.py --check
       - name: Tests (unit, rules golden tests, smoke-eval)
         run: pytest

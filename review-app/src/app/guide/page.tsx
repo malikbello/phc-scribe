@@ -71,7 +71,7 @@ export default function GuidePage() {
             </ul>
             <p className="mt-2">Question cards have a box instead: type your answer and tap <b>Save answer</b>. A short answer is perfect.</p>
             {clinical && (
-              <p className="mt-2">There are six steps: <b>Danger-sign rules</b>, <b>Findings list</b>, <b>Open questions</b>, <b>How notes are worded</b>, <b>Medicines</b> and <b>Before the freeze</b>. Answer from your own practice; there are no trick questions.</p>
+              <p className="mt-2">There are seven steps: <b>Danger-sign rules</b>, <b>Findings list</b>, <b>Open questions</b>, <b>How notes are worded</b>, <b>Medicines</b>, <b>Visit guide</b> and <b>Before the freeze</b>. Answer from your own practice; there are no trick questions.</p>
             )}
             {pharmacist && (
               <p className="mt-2">You will see one card per medicine (iron and folic acid, IPTp-SP, Td vaccine, deworming, calcium), then two questions: the names people use for them, and anything missing from the list. Brand names, Pidgin and Yoruba names are exactly what we need.</p>

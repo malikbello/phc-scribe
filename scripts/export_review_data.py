@@ -26,6 +26,7 @@ from build_review_pack import GUIDELINES, PHRASES, RULES, condition  # noqa: E40
 from bench.uyo import SYMPTOM_FINDINGS, URINE_PROTEIN_LABELS  # noqa: E402
 from phc_scribe.encounter import Medication  # noqa: E402
 from phc_scribe.grounding import MIN_QUOTE_CHARS  # noqa: E402
+from phc_scribe.visit_guide import GUIDE_PATH, load_raw  # noqa: E402
 from phc_scribe.vocab import load_vocabulary  # noqa: E402
 
 OUT = ROOT / "review-app" / "src" / "data" / "review.json"
@@ -108,6 +109,8 @@ def build() -> str:
             {"label": label, "findings": ["Urine protein positive (test)"]}
             for label in sorted(URINE_PROTEIN_LABELS)
         ],
+        # ADR-0023: the Takada visit guide, for the clinical adviser's sign-off.
+        "visit_guide": _visit_guide(labels),
         "medications": [
             {"id": m.value, "label": MEDICATIONS[m.value][0], "definition": MEDICATIONS[m.value][1]}
             for m in Medication
@@ -115,6 +118,39 @@ def build() -> str:
         ],
     }
     return json.dumps(data, indent=1, ensure_ascii=False) + "\n"
+
+
+def _visit_guide(labels: dict[str, str]) -> dict:
+    raw = load_raw(GUIDE_PATH)
+    asks = {i["id"]: i["ask_en"] for i in raw["items"]}
+
+    def when(w: object) -> str:
+        if w == "every":
+            return "every visit"
+        if w == "first":
+            return "first visit"
+        return f"from {w['from_weeks']} weeks" if isinstance(w, dict) else str(w)
+
+    return {
+        "items": [
+            {
+                "id": i["id"],
+                "ask": i["ask_en"],
+                "group": raw["groups"][i["group"]],
+                "when": when(i["when"]),
+            }
+            for i in raw["items"]
+        ],
+        "follow_ups": [
+            {
+                "id": f["id"],
+                "if": labels[f["if"]],
+                "why": f["why_en"],
+                "asks": [asks[a] for a in f["ask"]],
+            }
+            for f in raw.get("follow_ups") or ()
+        ],
+    }
 
 
 def main() -> int:

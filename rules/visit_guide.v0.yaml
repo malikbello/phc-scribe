@@ -1,0 +1,327 @@
+# Visit guide for antenatal contacts (ADR-0023 §5): what to ask, and when to follow up.
+#
+# Status: DRAFT v0.1 (1 Oct 2026). NOT FOR CLINICAL USE until the clinical adviser signs
+# off every item in the review app. The content follows the WHO ANC Digital Adaptation
+# Kit (quick check, history, examination, tests, counselling) and the WHO 2016 ANC
+# recommendations as commonly stated; section references are `verified: false` until
+# checked against the documents.
+#
+# Safety by construction: the app never invents questions. It shows these items, detects
+# which ones the conversation has already covered, and raises the follow-ups below when a
+# finding triggers them. It never diagnoses or recommends treatment.
+#
+# Item fields:
+#   id, group, ask_en          what to ask or check, in plain English
+#   when                       every | first (first contact only) | from_weeks: N
+#   covered_by.concepts        vocabulary concepts (their lexicon forms count as coverage,
+#                              whatever the assertion: "no bleeding" means it was asked)
+#   covered_by.terms           extra words that show the topic came up (en / yo / pcm, drafts)
+#   covered_by.vitals / tests  a stated value covers the item
+#   source                     reference id + section; verified: false until checked
+# Follow-up fields:
+#   id, if (finding concept, asserted present or possible), ask (item ids), why_en
+
+version: 0.1.0
+module: anc
+
+sources:
+  WHO-ANC-DAK-2021:
+    title: "WHO Digital adaptation kit for antenatal care (2021)"
+    verified: false
+  WHO-ANC-2016:
+    title: "WHO recommendations on antenatal care for a positive pregnancy experience (2016)"
+    verified: false
+  NG-NSO:
+    title: "Federal Ministry of Health (Nigeria), National Standing Orders for CHEWs and JCHEWs"
+    verified: false
+
+groups:
+  danger: Danger signs (every visit)
+  pregnancy: This pregnancy
+  history: Past pregnancies and health
+  symptoms: Common complaints
+  measure: Measurements
+  tests: Tests
+  medicines: Medicines and prevention
+  plan: Plan and counselling
+
+items:
+  # ------------------------------------------------------------- danger signs (quick check)
+  - id: ask-bleeding
+    group: danger
+    ask_en: Any bleeding or spotting from the vagina?
+    when: every
+    covered_by: {concepts: [vaginal_bleeding]}
+    source: {ref: WHO-ANC-DAK-2021, section: "Quick check", verified: false}
+  - id: ask-fits
+    group: danger
+    ask_en: Any fits or convulsions, or fainting?
+    when: every
+    covered_by: {concepts: [convulsions, unconscious]}
+    source: {ref: WHO-ANC-DAK-2021, section: "Quick check", verified: false}
+  - id: ask-headache-vision
+    group: danger
+    ask_en: Any headache, or problems seeing (blurred vision, flashing lights)?
+    when: every
+    covered_by: {concepts: [severe_headache, headache, blurred_vision]}
+    source: {ref: WHO-ANC-DAK-2021, section: "Quick check", verified: false}
+  - id: ask-fever
+    group: danger
+    ask_en: Any fever or hot body?
+    when: every
+    covered_by: {concepts: [fever]}
+    source: {ref: WHO-ANC-DAK-2021, section: "Quick check", verified: false}
+  - id: ask-belly-pain
+    group: danger
+    ask_en: Any pain in the belly?
+    when: every
+    covered_by: {concepts: [severe_abdominal_pain, abdominal_pain, pelvic_pain]}
+    source: {ref: WHO-ANC-DAK-2021, section: "Quick check", verified: false}
+  - id: ask-breathing
+    group: danger
+    ask_en: Any difficulty breathing?
+    when: every
+    covered_by: {concepts: [breathing_difficulty]}
+    source: {ref: WHO-ANC-DAK-2021, section: "Quick check", verified: false}
+  - id: ask-swelling
+    group: danger
+    ask_en: Any swelling of the face, hands or feet?
+    when: every
+    covered_by: {concepts: [swelling_face_hands, leg_oedema]}
+    source: {ref: WHO-ANC-DAK-2021, section: "Quick check", verified: false}
+  - id: ask-fluid
+    group: danger
+    ask_en: Any water or fluid leaking from the vagina?
+    when: every
+    covered_by: {concepts: [leaking_amniotic_fluid]}
+    source: {ref: WHO-ANC-DAK-2021, section: "Quick check", verified: false}
+  - id: ask-vomiting
+    group: danger
+    ask_en: Any vomiting? Can she keep food and water down?
+    when: every
+    covered_by: {concepts: [severe_vomiting, nausea_vomiting]}
+    source: {ref: WHO-ANC-DAK-2021, section: "Quick check", verified: false}
+  - id: ask-movement
+    group: danger
+    ask_en: Is the baby moving as usual?
+    when: {from_weeks: 20}
+    covered_by:
+      concepts: [reduced_fetal_movement]
+      terms:
+        en: [baby moving, baby is moving, baby movement, fetal movement, foetal movement, kicking, kicks]
+        yo: [ọmọ ń mì, ọmọ ń gbé ara]
+        pcm: [pikin dey move, pikin dey kick, belle dey move]
+    source: {ref: WHO-ANC-DAK-2021, section: "Quick check", verified: false}
+
+  # ------------------------------------------------------------- this pregnancy
+  - id: ask-lmp
+    group: pregnancy
+    ask_en: When was her last menstrual period (to date the pregnancy)?
+    when: first
+    covered_by:
+      terms:
+        en: [last period, last menstrual period, lmp, last menses, edd, due date]
+        yo: [nǹkan oṣù tó kẹ́yìn, ìgbà tí mo rí nǹkan oṣù]
+        pcm: [last time wey I see my period, my last period]
+    source: {ref: WHO-ANC-DAK-2021, section: "Profile: gestational age", verified: false}
+  - id: ask-ga
+    group: pregnancy
+    ask_en: How many weeks pregnant is she?
+    when: every
+    covered_by:
+      terms:
+        en: [weeks pregnant, weeks gestation, gestational age, ega, ga, months pregnant]
+        yo: [ọ̀sẹ̀, oṣù oyún]
+        pcm: [how many weeks, how many months]
+    source: {ref: WHO-ANC-DAK-2021, section: "Profile: gestational age", verified: false}
+
+  # ------------------------------------------------------------- history (first contact)
+  - id: ask-obstetric-history
+    group: history
+    ask_en: How many times has she been pregnant, and how many births? Any problems before (bleeding, fits, caesarean, stillbirth, miscarriage)?
+    when: first
+    covered_by:
+      terms:
+        en: [gravida, para, primigravida, previous pregnancy, last pregnancy, caesarean, c-section, cs,
+             stillbirth, miscarriage, abortion, children]
+        yo: [oyún tó kọjá, ọmọ mélòó, ìṣẹ́yún]
+        pcm: [how many pikin, how many belle, last belle]
+    source: {ref: WHO-ANC-DAK-2021, section: "History: obstetric history", verified: false}
+  - id: ask-medical-history
+    group: history
+    ask_en: Any long-term illness (high blood pressure, diabetes, sickle cell, asthma, HIV)?
+    when: first
+    covered_by:
+      terms:
+        en: [hypertension, high blood pressure, diabetes, sugar, sickle cell, genotype, asthma, hiv status,
+             medical history]
+        yo: [ẹ̀jẹ̀ ríru, ìtọ̀ ṣúgà, àrùn ẹ̀jẹ̀]
+        pcm: [BP dey high, sugar sickness]
+    source: {ref: WHO-ANC-DAK-2021, section: "History: medical history", verified: false}
+
+  # ------------------------------------------------------------- common complaints
+  - id: ask-common-complaints
+    group: symptoms
+    ask_en: Any other complaints (heartburn, cramps, constipation, back pain, discharge, pain passing urine, cough)?
+    when: every
+    covered_by:
+      concepts: [heartburn, leg_cramps, constipation, low_back_pain, abnormal_vaginal_discharge,
+                 painful_urination, cough, dizziness, fatigue, varicose_veins]
+      terms: {en: [any complaint, any complaints, how are you feeling, how do you feel], pcm: [how your body]}
+    source: {ref: WHO-ANC-2016, section: "Common physiological symptoms", verified: false}
+
+  # ------------------------------------------------------------- measurements
+  - id: check-bp
+    group: measure
+    ask_en: Measure and record the blood pressure.
+    when: every
+    covered_by: {vitals: [bp_systolic]}
+    source: {ref: WHO-ANC-DAK-2021, section: "Examination: blood pressure", verified: false}
+  - id: check-weight
+    group: measure
+    ask_en: Measure and record her weight.
+    when: every
+    covered_by: {vitals: [weight_kg]}
+    source: {ref: WHO-ANC-DAK-2021, section: "Examination: weight", verified: false}
+  - id: check-temperature
+    group: measure
+    ask_en: Check her temperature if she feels hot or unwell.
+    when: every
+    covered_by: {vitals: [temperature_c]}
+    source: {ref: WHO-ANC-DAK-2021, section: "Examination", verified: false}
+
+  # ------------------------------------------------------------- tests
+  - id: test-hb
+    group: tests
+    ask_en: Check haemoglobin (or PCV) for anaemia.
+    when: first
+    covered_by: {tests: [haemoglobin, pcv]}
+    source: {ref: WHO-ANC-2016, section: "Maternal assessment: anaemia", verified: false}
+  - id: test-urine
+    group: tests
+    ask_en: Test urine for protein.
+    when: first
+    covered_by: {tests: [urine_protein]}
+    source: {ref: WHO-ANC-DAK-2021, section: "Tests: urine", verified: false}
+  - id: test-hiv-syphilis
+    group: tests
+    ask_en: Test for HIV and syphilis (and hepatitis B), with consent.
+    when: first
+    covered_by: {tests: [hiv, syphilis, hepatitis_b]}
+    source: {ref: WHO-ANC-2016, section: "Maternal assessment: infections", verified: false}
+  - id: test-malaria
+    group: tests
+    ask_en: Test for malaria if she has fever.
+    when: every
+    covered_by: {tests: [malaria_rdt]}
+    source: {ref: NG-NSO, section: "Malaria in pregnancy", verified: false}
+
+  # ------------------------------------------------------------- medicines and prevention
+  - id: med-iron
+    group: medicines
+    ask_en: Is she taking iron and folic acid every day?
+    when: every
+    covered_by:
+      terms:
+        en: [iron, folic acid, fefol, ferrous, haematinics, hematinics]
+        yo: [oògùn ẹ̀jẹ̀]
+        pcm: [blood tonic, blood drug]
+    source: {ref: WHO-ANC-2016, section: "Nutritional interventions: iron and folic acid", verified: false}
+  - id: med-iptp
+    group: medicines
+    ask_en: Is her malaria prevention (IPTp-SP) due today?
+    when: {from_weeks: 13}
+    covered_by: {terms: {en: [sp, fansidar, iptp, ipt, sulfadoxine]}}
+    source: {ref: WHO-ANC-2016, section: "Preventive measures: IPTp-SP", verified: false}
+  - id: med-td
+    group: medicines
+    ask_en: Is she up to date with tetanus–diphtheria (Td) vaccine?
+    when: every
+    covered_by: {terms: {en: [tetanus, td, tt, vaccine, injection]}}
+    source: {ref: WHO-ANC-2016, section: "Preventive measures: tetanus toxoid", verified: false}
+  - id: med-net
+    group: medicines
+    ask_en: Does she sleep under an insecticide-treated net?
+    when: every
+    covered_by:
+      terms:
+        en: [net, mosquito net, bed net, llin, itn]
+        yo: [àwọ̀n ẹ̀fọn]
+        pcm: [mosquito net]
+    source: {ref: NG-NSO, section: "Malaria in pregnancy", verified: false}
+
+  # ------------------------------------------------------------- plan
+  - id: plan-birth
+    group: plan
+    ask_en: Discuss where she will give birth and how she will get there in an emergency.
+    when: {from_weeks: 28}
+    covered_by:
+      terms:
+        en: [birth plan, where to deliver, deliver, delivery, transport, emergency plan]
+        yo: [ibi tí o ti máa bímọ]
+        pcm: [where you go born, how you go reach]
+    source: {ref: WHO-ANC-2016, section: "Health promotion: birth preparedness", verified: false}
+  - id: plan-danger-education
+    group: plan
+    ask_en: Remind her of the danger signs and to come at once if any appear.
+    when: every
+    covered_by: {terms: {en: [danger signs, come immediately, come back immediately, come at once], pcm: [come quick quick]}}
+    source: {ref: WHO-ANC-DAK-2021, section: "Counselling: danger signs", verified: false}
+  - id: plan-next-visit
+    group: plan
+    ask_en: Agree the date of the next visit.
+    when: every
+    covered_by: {terms: {en: [next visit, come back, tca, return on, see you on], yo: [padà wá], pcm: [come back]}}
+    source: {ref: WHO-ANC-DAK-2021, section: "Plan: next contact", verified: false}
+
+follow_ups:
+  - id: fu-headache
+    if: headache
+    ask: [ask-headache-vision, check-bp]
+    why_en: "Headache: ask about vision and check BP (pre-eclampsia warning signs)."
+    source: {ref: WHO-ANC-DAK-2021, section: "Quick check", verified: false}
+  - id: fu-severe-headache
+    if: severe_headache
+    ask: [ask-headache-vision, check-bp, test-urine]
+    why_en: "Severe headache is a danger sign: check BP and urine protein, ask about vision."
+    source: {ref: NG-NSO, section: "Danger signs in pregnancy", verified: false}
+  - id: fu-blurred-vision
+    if: blurred_vision
+    ask: [check-bp, test-urine, ask-swelling]
+    why_en: "Vision problems: check BP, urine protein and swelling."
+    source: {ref: WHO-ANC-DAK-2021, section: "Quick check", verified: false}
+  - id: fu-swelling
+    if: swelling_face_hands
+    ask: [check-bp, test-urine, ask-headache-vision]
+    why_en: "Swelling of face or hands: check BP and urine protein, ask about headache and vision."
+    source: {ref: WHO-ANC-DAK-2021, section: "Quick check", verified: false}
+  - id: fu-fever
+    if: fever
+    ask: [check-temperature, test-malaria]
+    why_en: "Fever: measure the temperature and test for malaria."
+    source: {ref: NG-NSO, section: "Malaria in pregnancy", verified: false}
+  - id: fu-bleeding
+    if: vaginal_bleeding
+    ask: [ask-belly-pain, check-bp]
+    why_en: "Bleeding is a danger sign: ask about pain and check BP before referral."
+    source: {ref: WHO-ANC-DAK-2021, section: "Quick check", verified: false}
+  - id: fu-fatigue
+    if: fatigue
+    ask: [test-hb, med-iron]
+    why_en: "Tiredness: check for anaemia and iron intake."
+    source: {ref: WHO-ANC-2016, section: "Maternal assessment: anaemia", verified: false}
+  - id: fu-dizziness
+    if: dizziness
+    ask: [check-bp, test-hb]
+    why_en: "Dizziness: check BP and haemoglobin."
+    source: {ref: WHO-ANC-2016, section: "Maternal assessment: anaemia", verified: false}
+  - id: fu-urine
+    if: painful_urination
+    ask: [ask-fever, ask-belly-pain]
+    why_en: "Pain passing urine: ask about fever and belly pain."
+    source: {ref: WHO-ANC-2016, section: "Common physiological symptoms", verified: false}
+  - id: fu-movement
+    if: reduced_fetal_movement
+    ask: [ask-belly-pain, ask-bleeding, ask-fluid]
+    why_en: "Reduced movement is a danger sign: ask about pain, bleeding and fluid."
+    source: {ref: WHO-ANC-DAK-2021, section: "Quick check", verified: false}

@@ -12,6 +12,10 @@ export const RULES: Rule[] = data.rules;
 export const PHRASES: Phrase[] = data.phrases;
 export const QUESTIONS: string[] = data.questions;
 export const MEDICATIONS: Medication[] = data.medications;
+export const VISIT_GUIDE: {
+  items: { id: string; ask: string; group: string; when: string }[];
+  follow_ups: { id: string; if: string; why: string; asks: string[] }[];
+} = data.visit_guide;
 export const UYO_MAPPING: { label: string; findings: string[] }[] = data.uyo_mapping;
 /** Shortest evidence quote grounding accepts (serve/phc_scribe/grounding.py). */
 export const MIN_QUOTE_CHARS: number = data.min_quote_chars;
@@ -62,7 +66,7 @@ export const QUESTION_CONTEXT: Record<number, QuestionContext> = {
   },
 };
 
-export type ReviewKind = "question" | "rule" | "concept" | "phrase" | "medicine" | "freeze";
+export type ReviewKind = "question" | "rule" | "concept" | "phrase" | "medicine" | "guide" | "freeze";
 export type ReviewRow = {
   key: string;
   kind: ReviewKind;
@@ -147,6 +151,24 @@ const FREEZE_SECTION: ReviewSection = {
   ],
 };
 
+// The Takada visit guide (ADR-0023 §5): the questions the app reminds health workers to
+// ask, and the follow-ups it suggests. Nothing reaches the app without this sign-off.
+const GUIDE_SECTION: ReviewSection = {
+  id: "guide",
+  title: "Visit guide",
+  blurb: "Step 6. Takada reminds health workers what to ask and suggests follow-ups. Is each question right, and asked at the right visit? Is each follow-up sensible?",
+  rows: [
+    ...VISIT_GUIDE.items.map((i) => ({ key: `guide:${i.id}`, kind: "guide" as const, title: i.ask, detail: `${i.group} · ${i.when}` })),
+    ...VISIT_GUIDE.follow_ups.map((f) => ({
+      key: `guide:${f.id}`,
+      kind: "guide" as const,
+      title: `If: ${f.if}`,
+      detail: f.why,
+      list: { title: "Then prompt", items: f.asks },
+    })),
+  ],
+};
+
 // Order matters: reviewers first confirm the rules and the findings they use, then
 // answer the edge-case questions about them, then check note wording, then medicines.
 export const REVIEW_SECTIONS: ReviewSection[] = [
@@ -185,6 +207,7 @@ export const REVIEW_SECTIONS: ReviewSection[] = [
     })),
   },
   MEDICINE_SECTION,
+  GUIDE_SECTION,
   FREEZE_SECTION,
 ];
 
