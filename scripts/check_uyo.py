@@ -22,7 +22,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "serve"), str(ROOT)]
 
-from bench.uyo import SYMPTOM_FINDINGS, URINE_PROTEIN_LABELS, UyoRecord, evaluate  # noqa: E402
+from bench.uyo import (  # noqa: E402
+    SYMPTOM_FINDINGS,
+    URINE_PROTEIN_LABELS,
+    Proportion,
+    UyoRecord,
+    evaluate,
+)
 
 # OSF j9zh8, "Maternal, Neonatal and Child Health Datasets for Spatiotemporal Data
 # Analytics" (CC-BY-4.0); file "MNCH Datasets_UyoSenDist.xlsx", downloaded 1 Oct 2026.
@@ -84,7 +90,7 @@ def main() -> int:
     res = evaluate(records)
     out = {"confirmed_by": args.confirmed_by, "records": len(records), "sha256": SHA256}
     for name, v in res.items():
-        if hasattr(v, "k"):
+        if isinstance(v, Proportion):
             ci = v.ci()
             out[name] = {"k": v.k, "n": v.n, "point": v.point, "ci95": ci}
             print(

@@ -64,7 +64,7 @@ def main() -> int:
     print(f"status: {status}")
     for line in text.splitlines():
         if (
-            line.startswith("=== INVALID")
+            line.startswith(("=== INVALID", "=== BELEBELE"))
             or "secret not attached" in line
             or line.startswith("run failed")
         ):

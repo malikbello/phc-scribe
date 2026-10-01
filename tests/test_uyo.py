@@ -50,4 +50,5 @@ def test_evaluate_counts_against_diagnoses():
     assert res["danger_diagnosis_flagged"] == Proportion(1, 2)
     assert res["hypertensive_diagnosis_bp_flag"] == Proportion(1, 2)
     assert res["normal_scan_flagged"] == Proportion(1, 2)
-    assert "VS-001" in res["flags_per_rule"]
+    per_rule = res["flags_per_rule"]
+    assert not isinstance(per_rule, Proportion) and "VS-001" in per_rule

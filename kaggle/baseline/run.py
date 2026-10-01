@@ -29,12 +29,18 @@ RUNS: list[tuple[str, str, str, list[str]]] = [
     ("natlas-zeroshot", "NCAIR1/N-ATLaS", "zeroshot", []),
 ]
 # Which items to run. "baseline": smoke + stratum G. "pilot": the 30 dev items used to set
-# the guardrail margins before the freeze (docs/eval-plan.md, section 6).
-PLAN = "pilot"
+# the guardrail margins before the freeze (docs/eval-plan.md, section 6). "prefreeze": the
+# last runs before the freeze: Belebele yor_Latn for N-ATLaS and Llama-3.1 (G2 base and the
+# 50% rule) and the unconstrained base comparator on the pilot items (proposal B).
+PLAN = "prefreeze"
 ITEM_SETS = {
     "baseline": ["tests/fixtures/smoke_items.jsonl", "data/bench/g.20261002.jsonl"],
     "pilot": ["data/bench/pilot.20261004.jsonl"],
+    "prefreeze": ["data/bench/pilot.20261004.jsonl"],
 }[PLAN]
+BELEBELE_MODELS = [("natlas", "NCAIR1/N-ATLaS"), ("llama31", "unsloth/Llama-3.1-8B-Instruct")]
+if PLAN == "prefreeze":
+    RUNS[:] = [("natlas-fewshot-unconstrained", "NCAIR1/N-ATLaS", "fewshot", ["--unconstrained"])]
 if PLAN == "pilot":
     # Dev-only check: are N-ATLaS's schema-invalid outputs cut off at the 768-token cap?
     RUNS.append(("natlas-fewshot-1536", "NCAIR1/N-ATLaS", "fewshot", ["--max-new-tokens", "1536"]))
@@ -93,13 +99,28 @@ def main() -> None:
     token = hf_token()
     if token:
         os.environ["HF_TOKEN"] = token
-    elif PLAN == "pilot":
+    elif PLAN in ("pilot", "prefreeze"):
         # The pilot exists to measure N-ATLaS; fail fast instead of spending GPU time without it.
         sys.exit("HF_TOKEN secret not attached: attach it (Add-ons -> Secrets) and re-run")
     else:
         print("HF_TOKEN secret not attached: skipping gated N-ATLaS runs", flush=True)
     out = WORK / "preds"
     out.mkdir(exist_ok=True)
+    if PLAN == "prefreeze":
+        for name, model in BELEBELE_MODELS:
+            dest = out / f"belebele.{name}.json"
+            if (
+                sh(sys.executable, "-m", "bench.belebele", "--model", model, "--out", str(dest))
+                == 0
+            ):
+                import json
+
+                res = json.loads(dest.read_text())
+                print(
+                    f"=== BELEBELE {name}: accuracy {res['accuracy']:.4f}"
+                    f" on {res['n_items']} items",
+                    flush=True,
+                )
     for name, model, mode, extra in RUNS:
         if model.startswith("NCAIR1/") and not token:
             continue

@@ -72,14 +72,16 @@ Point [95% bootstrap CI]. Reports: `results/pilot-20261001/`. 30 items is a pilo
 | Review app | https://phc-scribe-review.vercel.app; source `review-app/`; env vars `SESSION_SECRET`, `REVIEWERS` (Malik's admin code is in `REVIEWERS` in the Vercel dashboard) |
 | Modal deploy | `deploy/modal_app.py` (set `PRIVATE = False` on submission day), workflow `.github/workflows/deploy-modal.yml` (manual: Actions → deploy-modal → Run workflow) |
 | GitHub secrets (Actions) | `MODAL_TOKEN_ID`, `MODAL_TOKEN_SECRET`, `HF_WRITE_TOKEN` (spare; was for the HF Space), `HF_READ_TOKEN`, `PHC_API_KEY` (Malik keeps the key in his password manager; services only ever get its SHA-256 hash) |
-| Decisions | `docs/adr/0001`–`0019` (0016 accepted 30 Sept; **0018 and 0019 accepted 1 Oct**; 0017 proposed) |
+| Decisions | `docs/adr/0001`–`0021` (0016 accepted 30 Sept; **0018–0021 accepted 1 Oct**; 0017 proposed) |
+| Hard negatives (ADR-0020) | `python scripts/build_adeola_items.py` → `data/bench/h.adeola.jsonl` (454 items, MIT notice in `h.adeola.LICENSE`); source files checksum-pinned, cached in `data/private/adeola/` (incl. the three MP3s for the ASR test) |
+| Belebele (G2) | `python -m bench.belebele --model ... --out ...` (zero-shot letter likelihood, pinned revision); runs on Kaggle with `PLAN = "prefreeze"` |
 | Fine-tuning evidence | `docs/research/finetuning-review.md` (1 Oct): the literature behind the training recipe and margins, with proposals A–E awaiting Malik |
 | Uyo rules check (ADR-0019) | `bench/uyo.py` (fixed mapping, exact CIs; tested), `python scripts/check_uyo.py` (prints the mapping; scores only with `--confirmed-by <adviser>`); data pinned by SHA-256 under `data/private/uyo/` |
 | Benchmark data | `data/bench/g.20261002.jsonl` (300, test supplement G), `data/bench/pilot.20261004.jsonl` (30, dev), `tests/fixtures/smoke_items.jsonl` (6, constructed); private queues in `data/private/` (git-ignored) |
 
 ## Next steps, in order
 1. ~~**Baseline results**~~ **(done 30 Sept; see Baseline results):** read the Kaggle log when the run ends; put the three reports (N-ATLaS few-shot, Llama-3.1 few-shot, N-ATLaS zero-shot on G) in this file. If the 12 h limit cut the last run, re-run only what is missing.
-2. **Pilot: done; margins approved by Malik (1 Oct): G1 +5 points, G2 −3 points.** Before the freeze: Malik decides proposals A–E in `docs/research/finetuning-review.md` (E would set G2 by the FDA-style 50% rule, capped at 3 points); build one Kaggle job that scores N-ATLaS **and** Llama-3.1-8B on Belebele `yor_Latn` (and, if B is approved, runs the unconstrained base comparator on the pilot items); then commit the freeze. (Done so far: reports recorded, truncation settled, cap stays 768; originally: propose G1 (false-alarm margin) and G2 (Belebele `yor_Latn` regression margin) in `docs/eval-plan.md` §6 → Malik approves → commit the freeze. G2 needs a Belebele scoring job on Kaggle for base N-ATLaS (not built yet).
+2. **Pre-freeze Kaggle run (`PLAN = "prefreeze"`, pushed 1 Oct):** Malik starts it from the notebook editor (Save Version → Save & Run All). It scores N-ATLaS and Llama-3.1 on Belebele `yor_Latn` (G2 margin m) and runs the unconstrained base comparator on the pilot items (B). Read with `scripts/kaggle_log.py` (`=== BELEBELE` lines). Then fill m in `docs/eval-plan.md` §6, get Rahmat's G1 confirmation, and commit the freeze. Margins and proposals A–E were approved by Malik on 1 Oct. (Done so far: reports recorded, truncation settled, cap stays 768; originally: propose G1 (false-alarm margin) and G2 (Belebele `yor_Latn` regression margin) in `docs/eval-plan.md` §6 → Malik approves → commit the freeze. G2 needs a Belebele scoring job on Kaggle for base N-ATLaS (not built yet).
 3. **Freeze the test set** (`scripts/freeze_test_set.py data/bench/g.20261002.jsonl` plus S4 once MAMAI arrives; the script never overwrites an existing freeze, so decide the file list first).
 4. **Training data and QLoRA run** on Kaggle (split long jobs so each stays well under 12 h).
 5. **Modal:** ~~run `deploy-modal`~~ (done 30 Sept 15:21 UTC; unauthenticated requests refused), check `/v1/health` and that requests without proxy auth and without the API key are refused; Malik accepts ADR-0017.
@@ -124,7 +126,8 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 | Confirm Rahmat, Oseni and the pharmacy graduate as named team members (Track B needs 2–5); add the pharmacist's name to Team | Pending |
 | Follow up with Intron on NigBench-MAMAI access (2 Oct); fallback 5 Oct | Pending |
 | Accept or reject ADR-0018 (WazobiaSpeech as the real-data fallback, replacing MamaBench + G) | **Accepted 1 Oct** (amended: dev + dev_test) |
-| Decide proposals A–E in `docs/research/finetuning-review.md` (learning rate, supplementary comparator, multilingual training mix, teacher labels (needs an ADR), G2 by the 50% rule) | Pending |
+| Decide proposals A–E in `docs/research/finetuning-review.md` | **Approved 1 Oct**: A applied (`configs/qlora.v0.yaml` lr 1e-4), B built (`--unconstrained`), C and D in the training plan (ADR-0021), E in eval plan §6 |
+| Start the pre-freeze Kaggle run from the notebook editor | Pending (Malik) |
 | Rahmat confirms the Uyo symptom mapping (`python scripts/check_uyo.py` prints it), then run it with `--confirmed-by` | Pending |
 | Ask Rahmat to confirm the G1 tolerance (+5 points of false alarms) | Pending |
 | Accept ADR-0017 (Modal) after the first successful deploy | Pending |
@@ -139,6 +142,10 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 | Optional: delete the unused `HF_WRITE_TOKEN` on Hugging Face and GitHub | Optional |
 
 ## Progress log
+**1 Oct, session 5 (proposals applied):**
+- Malik approved proposals A–E and the Adeola data. **ADR-0020** (Antenatal Orientation Speech: stratum H of 454 real hard negatives, ASR test, phrase mining) and **ADR-0021** (Llama-3.1 teacher labels on training-split speech, filtered and spot-checked) accepted.
+- Built: `--unconstrained` runner option with `extract_json`; `bench/belebele.py`; Kaggle `PLAN = "prefreeze"`; `scripts/build_adeola_items.py`; QLoRA learning rate 1e-4. 169 tests pass.
+
 **1 Oct, session 5 (decisions and research):**
 - Malik: **ADR-0018 accepted**, **ADR-0019 (Uyo rules check) accepted**, **G1/G2 margins approved**. Intron contacted (no reply yet); NigBench access still not granted.
 - ADR-0018 amended at acceptance: `dev_test` has only 8 yo / 11 pcm speakers, so the test pool is `dev` + `dev_test` (20 / 21 speakers).

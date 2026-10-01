@@ -23,3 +23,5 @@ Format: context → decision → consequences. A decision changes only through a
 | [0017](0017-modal-for-the-cloud-api.md) | Serve the cloud API on Modal, private until submission | **Proposed** |
 | [0018](0018-wazobiaspeech-fallback-benchmark.md) | If NigBench-MAMAI is refused, the counted benchmark is WazobiaSpeech health speech | Accepted |
 | [0019](0019-uyo-records-rules-check.md) | Check the danger-sign rules on real Uyo antenatal records | Accepted |
+| [0020](0020-antenatal-orientation-speech.md) | Antenatal Orientation Speech Dataset: hard negatives, ASR test, phrases | Accepted |
+| [0021](0021-teacher-labels.md) | Teacher labels from Llama-3.1-8B for real training speech | Accepted |

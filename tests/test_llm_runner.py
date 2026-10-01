@@ -32,3 +32,18 @@ def test_run_records_outputs_errors_and_tokens():
     preds = run(items, lambda msgs: (next(outputs), len(msgs)), "fake", "fewshot")
     assert preds[0].record is not None and preds[0].prompt_tokens == 2 + 2 * len(FEWSHOT_IDS)
     assert preds[1].record is None and preds[1].error and preds[1].raw_output == "broken"
+
+
+def test_extract_json_finds_the_first_complete_object():
+    from bench.runners.llm import extract_json, parse_record
+
+    assert (
+        extract_json('Here you go:\n```json\n{"a": "x}{", "b": {"c": 1}}\n``` thanks')
+        == '{"a": "x}{", "b": {"c": 1}}'
+    )
+    assert extract_json("no json at all") == "no json at all"
+    assert extract_json('{"a": [1, 2') == '{"a": [1, 2'  # cut off: returned as is, parse fails
+    rec, err = parse_record('Answer: {"findings": []}', lenient=True)
+    assert rec is not None and err is None
+    rec, err = parse_record('Answer: {"findings": []}')  # constrained path is strict
+    assert rec is None and err

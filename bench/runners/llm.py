@@ -29,23 +29,52 @@ from phc_scribe.encounter import Encounter, decoding_schema
 Generate = Callable[[list[dict[str, str]]], tuple[str, int]]  # messages -> (text, prompt tokens)
 
 
-def parse_record(raw: str) -> tuple[Encounter | None, str | None]:
+def extract_json(text: str) -> str:
+    """The first complete top-level JSON object in free text (code fences and prose ignored).
+
+    Used only for unconstrained generation (the supplementary comparator, proposal B in
+    docs/research/finetuning-review.md); constrained output is parsed as is.
+    """
+    start = text.find("{")
+    if start < 0:
+        return text
+    depth, in_str, esc = 0, False, False
+    for i, ch in enumerate(text[start:], start):
+        if in_str:
+            if esc:
+                esc = False
+            elif ch == "\\":
+                esc = True
+            elif ch == '"':
+                in_str = False
+        elif ch == '"':
+            in_str = True
+        elif ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                return text[start : i + 1]
+    return text[start:]
+
+
+def parse_record(raw: str, lenient: bool = False) -> tuple[Encounter | None, str | None]:
     """Parse model output into a record; schema violations become an error, not a crash."""
     try:
-        return Encounter.model_validate(json.loads(raw)), None
+        return Encounter.model_validate(json.loads(extract_json(raw) if lenient else raw)), None
     except Exception as e:  # invalid JSON or schema violation: scored as schema-invalid
         return None, f"{type(e).__name__}: {str(e).splitlines()[0][:300]}"
 
 
 def run(
-    items: Sequence[BenchItem], generate: Generate, system: str, mode: Mode
+    items: Sequence[BenchItem], generate: Generate, system: str, mode: Mode, lenient: bool = False
 ) -> list[Prediction]:
     preds: list[Prediction] = []
     for n, item in enumerate(items, 1):
         t0 = time.perf_counter()
         try:
             raw, prompt_tokens = generate(build_messages(item.transcript, mode))
-            record, error = parse_record(raw)
+            record, error = parse_record(raw, lenient)
         except Exception as e:
             raw, prompt_tokens, record, error = None, None, None, f"{type(e).__name__}: {e}"
             if not any(p.error and p.raw_output is None for p in preds):
@@ -76,8 +105,9 @@ def hf_generator(
     max_new_tokens: int = 768,
     revision: str | None = None,
     adapter: str | None = None,
+    constrained: bool = True,
 ) -> Generate:
-    """Greedy, schema-constrained generation with transformers + xgrammar."""
+    """Greedy generation with transformers; schema-constrained with xgrammar unless told not to."""
     # Optional GPU-side dependencies: not installed in CI.
     import torch  # pyright: ignore[reportMissingImports]
     import xgrammar as xgr  # pyright: ignore[reportMissingImports]
@@ -121,14 +151,14 @@ def hf_generator(
             messages, add_generation_prompt=True, return_tensors="pt", return_dict=True
         ).to(model.device)
         ids, mask = enc["input_ids"], enc["attention_mask"]
-        processor = xgr.contrib.hf.LogitsProcessor(grammar)  # fresh state per request
+        processors = [xgr.contrib.hf.LogitsProcessor(grammar)] if constrained else []  # fresh state
         with torch.no_grad():
             out = model.generate(
                 ids,
                 attention_mask=mask,
                 max_new_tokens=max_new_tokens,
                 do_sample=False,
-                logits_processor=LogitsProcessorList([processor]),
+                logits_processor=LogitsProcessorList(processors),
                 eos_token_id=eos,
                 pad_token_id=tok.eos_token_id,
             )
@@ -150,20 +180,29 @@ def main() -> int:
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--load-in-4bit", action="store_true")
     parser.add_argument("--max-new-tokens", type=int, default=768)
+    parser.add_argument(
+        "--unconstrained",
+        action="store_true",
+        help="free generation, then parse the first JSON object (supplementary comparator only)",
+    )
     args = parser.parse_args()
 
     items = list(read_jsonl(args.items, BenchItem))
     if args.limit:
         items = items[: args.limit]
-    system = args.system or f"{args.model.split('/')[-1].lower()}-{args.mode}-{PROMPT_VERSION}"
+    suffix = "-unconstrained" if args.unconstrained else ""
+    system = (
+        args.system or f"{args.model.split('/')[-1].lower()}-{args.mode}{suffix}-{PROMPT_VERSION}"
+    )
     generate = hf_generator(
         args.model,
         load_in_4bit=args.load_in_4bit,
         max_new_tokens=args.max_new_tokens,
         revision=args.revision,
         adapter=args.adapter,
+        constrained=not args.unconstrained,
     )
-    preds = run(items, generate, system, args.mode)
+    preds = run(items, generate, system, args.mode, lenient=args.unconstrained)
     write_jsonl(args.out, preds)
     ok = sum(p.record is not None for p in preds)
     print(f"wrote {len(preds)} predictions ({ok} schema-valid) to {args.out}")
