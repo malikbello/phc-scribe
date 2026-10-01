@@ -3,7 +3,7 @@
 _Last updated: 1 Oct 2026, ~15:40 WAT (session 5). Keep this file current; it is the handoff between work sessions._
 
 ## Resume prompt (paste this into a new session)
-> Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`, branch `main`) and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution, no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results. Then: (1) run `python scripts/kaggle_log.py --save results/pilot-20261001` to read the pilot run on Kaggle (it started 1 Oct 13:29 UTC from the notebook editor); if it is complete, record the four pilot reports and the truncation verdict (768 vs 1536 tokens) in this file, commit, and draft the G1/G2 margins in `docs/eval-plan.md` §6 for my approval (do not freeze); (2) continue with "Next steps, in order". Ask me before anything outward-facing or irreversible.
+> Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`, branch `main`) and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution, no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results. Then continue with "Next steps, in order" (the pilot is done; the proposed G1/G2 margins in `docs/eval-plan.md` §6 wait for my approval). Ask me before anything outward-facing or irreversible.
 
 ## Snapshot
 - **What:** PHC Scribe. An offline-first AI scribe and safety net for Nigerian primary-health-care workers, built on a fine-tuned N-ATLaS.
@@ -17,7 +17,7 @@ _Last updated: 1 Oct 2026, ~15:40 WAT (session 5). Keep this file current; it is
 |---|---|
 | Benchmark design | **ADR-0016 accepted:** counted 500 = real NigBench-MAMAI speech (test split), labelled in the review app. Supplements: 300 generated notes (G), MamaBench ANC slice (kept, Malik 1 Oct), AMR. MAMAI access **still refused (403, 1 Oct)**: follow up with Intron 2 Oct. **ADR-0018 (Proposed):** if MAMAI is refused by 5 Oct, the counted set is WazobiaSpeech `dev_test` health clips (yo + pcm, enriched + random groups). Its fetcher `scripts/fetch_wazobia.py` is built and tested (queue → `data/private/label_queue.s4w.jsonl`, nothing labelled). Due diligence round 6 (1 Oct): no other real source matches MAMAI; the **Uyo MNCH records** (OSF, CC-BY, 538 real antenatal records, structured) can check the rules engine on real vitals (needs an ADR). |
 | Baseline runs | **Done 30 Sept** (Kaggle run 08:04 UTC → finished between 16:01 and 16:11 UTC, all six runs complete). Results below and in `results/baseline-20260930/`. **Llama-3.1-8B few-shot beats N-ATLaS few-shot on every metric on G**; N-ATLaS few-shot is schema-invalid on 57/300. |
-| Pilot | **Running** on Kaggle: saved version started from the notebook editor **1 Oct 13:29 UTC** with `HF_TOKEN` (N-ATLaS few-shot, Llama few-shot, N-ATLaS zero-shot, and a dev-only N-ATLaS few-shot at `max_new_tokens = 1536`, each on the 30 pilot items). The log prints an `=== INVALID` summary per run (how many outputs were cut off). Read it with `scripts/kaggle_log.py`. After it: propose G1/G2 margins → Malik approves → freeze. **G2 set chosen: Belebele `yor_Latn`** (Malik, 1 Oct; `docs/eval-plan.md` §3 and §6). |
+| Pilot | **Done 1 Oct** (see Pilot results). Was run as a saved version started from the notebook editor **1 Oct 13:29 UTC** with `HF_TOKEN` (N-ATLaS few-shot, Llama few-shot, N-ATLaS zero-shot, and a dev-only N-ATLaS few-shot at `max_new_tokens = 1536`, each on the 30 pilot items). The log prints an `=== INVALID` summary per run (how many outputs were cut off). Read it with `scripts/kaggle_log.py`. After it: propose G1/G2 margins → Malik approves → freeze. **G2 set chosen: Belebele `yor_Latn`** (Malik, 1 Oct; `docs/eval-plan.md` §3 and §6). |
 | Fine-tuning | Pipeline built and CPU-smoke-tested; **nothing trained.** Order: pilot → freeze thresholds → `scripts/freeze_test_set.py` → generate training G with a **new** seed → `scripts/build_train_set.py` → `bench/train_qlora.py` on Kaggle. |
 | API | `/v1` built (extract, check, records, transcribe with NCAIR1 ASR). Contract `docs/openapi.v1.json`, guide `docs/api.md`. 160 tests pass; CI green. |
 | Cloud deploy | **ADR-0017 (Proposed): Modal**, private (proxy auth + API key) until submission, deployed from GitHub Actions. Modal: Starter, $30/month credits, **spend limit $0**. **First successful deploy: 30 Sept 15:21 UTC** (`deploy-modal` run #4, `main` @ `26906eb`) → `https://malikbello--phc-scribe-api-api.modal.run` (keyword extractor, HF ASR). Checked from the cloud session: `/v1/health` and `/v1/extract` without proxy auth return **401**. Still to check (Malik, needs the proxy token + API key): `/v1/health` returns 200 with both, and 401 with proxy auth but no key. Then accept ADR-0017. |
@@ -45,6 +45,20 @@ What this does and does not show:
 - Zero-shot N-ATLaS almost never gets GA right (0.007): without examples it does not use the expected format.
 - **Decision for Malik before the freeze:** P1/P2 compare against *base N-ATLaS few-shot*. If the invalid outputs are truncation, raising `max_new_tokens` is a fairer baseline and must be decided **before** thresholds are frozen, not after. Llama-3.1 few-shot is a strong reference point that the fine-tuned model should be reported against too.
 
+## Pilot results (30 dev items; 1 Oct, saved run started 13:29 UTC)
+Point [95% bootstrap CI]. Reports: `results/pilot-20261001/`. 30 items is a pilot: the CIs are wide.
+
+| Metric | N-ATLaS few-shot (768) | N-ATLaS few-shot (1536) | Llama-3.1 few-shot | N-ATLaS zero-shot |
+|---|---|---|---|---|
+| Danger-sign recall | 0.600 [0.368, 0.812] | identical | **0.950** [0.833, 1.000] | 0.450 [0.222, 0.684] |
+| Micro-F1 | 0.451 [0.318, 0.582] | identical | **0.813** [0.727, 0.895] | 0.276 [0.150, 0.400] |
+| False-alarm rate (lower is better) | 0.385 [0.125, 0.667] | identical | **0.000** | 0.077 [0.000, 0.250] |
+| Schema-valid | 24/30 | 24/30 | 29/30 | 28/30 |
+
+- **Truncation verdict:** the cap is not the cause. N-ATLaS few-shot fails on the same ~20% of items at 768 and 1536 tokens (5 and 4 cut off mid-JSON, the rest schema violations); valid outputs are short (median about 890 characters) and the failed ones run on to whatever cap is set (up to 5,052 characters at 1536). Likely repetition loops in the base model. The comparator keeps 768.
+- Same picture as G: Llama-3.1 few-shot is far stronger than base N-ATLaS; fine-tuning N-ATLaS has a lot of room.
+- **Proposed G1/G2 margins** are in `docs/eval-plan.md` §6, awaiting Malik's approval (not frozen).
+
 ## Where everything lives
 | Thing | Location |
 |---|---|
@@ -63,7 +77,7 @@ What this does and does not show:
 
 ## Next steps, in order
 1. ~~**Baseline results**~~ **(done 30 Sept; see Baseline results):** read the Kaggle log when the run ends; put the three reports (N-ATLaS few-shot, Llama-3.1 few-shot, N-ATLaS zero-shot on G) in this file. If the 12 h limit cut the last run, re-run only what is missing.
-2. **Pilot (running):** read it with `scripts/kaggle_log.py`, record the reports, settle the truncation question (N-ATLaS at 768 vs 1536 tokens) and decide with Malik whether the base comparator uses the higher cap; propose G1 (false-alarm margin) and G2 (Belebele `yor_Latn` regression margin) in `docs/eval-plan.md` §6 → Malik approves → commit the freeze. G2 needs a Belebele scoring job on Kaggle for base N-ATLaS (not built yet).
+2. **Pilot: done; margins proposed.** Malik approves or changes G1 (+5 points) and G2 (−3 points) in `docs/eval-plan.md` §6, then a Kaggle job scores base N-ATLaS on Belebele `yor_Latn` (to build), then commit the freeze. (Done so far: reports recorded, truncation settled, cap stays 768; originally: propose G1 (false-alarm margin) and G2 (Belebele `yor_Latn` regression margin) in `docs/eval-plan.md` §6 → Malik approves → commit the freeze. G2 needs a Belebele scoring job on Kaggle for base N-ATLaS (not built yet).
 3. **Freeze the test set** (`scripts/freeze_test_set.py data/bench/g.20261002.jsonl` plus S4 once MAMAI arrives; the script never overwrites an existing freeze, so decide the file list first).
 4. **Training data and QLoRA run** on Kaggle (split long jobs so each stays well under 12 h).
 5. **Modal:** ~~run `deploy-modal`~~ (done 30 Sept 15:21 UTC; unauthenticated requests refused), check `/v1/health` and that requests without proxy auth and without the API key are refused; Malik accepts ADR-0017.
@@ -120,6 +134,9 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 | Optional: delete the unused `HF_WRITE_TOKEN` on Hugging Face and GitHub | Optional |
 
 ## Progress log
+**1 Oct, session 5 (pilot):**
+- **Pilot complete** (see Pilot results). The 768 → 1536 token check showed identical results: the cap is not the cause of N-ATLaS's invalid outputs; the comparator keeps 768. G1 (+5 points) and G2 (−3 points) margins proposed in the eval plan, not frozen.
+
 **1 Oct, session 5 (cont.):**
 - **Merged to `main`** (fast-forward, 9 commits): baselines, identity guard, ADR-0018, data survey round 5, review-app guided flow. CI green on all four jobs.
 - **Review app guided flow** (see Where things stand). 23 app tests; production build checked; screens checked as pharmacist, nurse and admin.

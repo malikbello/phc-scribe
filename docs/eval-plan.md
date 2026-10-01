@@ -64,6 +64,11 @@ Reported per stratum, per language and per field, each with 95% bootstrap CIs.
 - **G1 (guardrail):** false-alarm rate not worse than base by more than **_TBD_** points
 - **G2 (guardrail):** general-Yoruba regression within **_TBD_** points, measured on Belebele `yor_Latn` (900 items, 4-way multiple choice; set chosen by Malik 1 Oct; scoring proposed as accuracy by answer log-likelihood, to confirm at the freeze; margin set from the pilot)
 - **Significance of danger-sign detection:** McNemar's test on per-item detection, α = 0.05
+
+**Proposed margins (1 Oct, from the pilot; NOT frozen until Malik approves):**
+- **G1:** the upper bound of the 95% paired-bootstrap CI of *false-alarm rate (fine-tuned − base few-shot)* must be **≤ +5 points**. Base few-shot false-alarm rate was 0.385 [0.125, 0.667] on the 30 pilot items and 0.187 [0.127, 0.250] on G; Llama-3.1 few-shot reached 0.000 and 0.020. The pilot is too small to set the margin from its variance, so 5 points is a clinical judgement: a fine-tuned model may not add more than about one extra false referral per 20 visits.
+- **G2:** the lower bound of the 95% paired-bootstrap CI of *Belebele `yor_Latn` accuracy (fine-tuned − base)* must be **≥ −3 points**. With 900 paired items the CI half-width is roughly ±2 points, so a 3-point regression is detectable and still small. Base N-ATLaS has not been scored on Belebele yet (needs a Kaggle job).
+- **Decoding cap:** the base comparator keeps `max_new_tokens = 768`. The pilot ran N-ATLaS few-shot at 768 and 1536: every metric was identical (6/30 invalid in both; failed outputs simply ran on to the new cap, up to 5,052 characters), so the cap is not the cause and raising it would only add compute.
 - **If any criterion fails, it is reported as failed.** No post-hoc metric switching.
 
 ## 7. Analysis hygiene
