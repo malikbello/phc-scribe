@@ -164,7 +164,7 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
      - The kept file is written into the log; `python scripts/kaggle_log.py --save results/trainprep` restores it to `data/private/kaggle/teacher.kept.jsonl`, and the counts print as `=== TEACHER`.
   2. **Base N-ATLaS few-shot on the 454 Adeola hard negatives (stratum H)**, scored as usual.
 - **Malik starts it from the notebook editor** (Save Version → Save & Run All); expect ~6–8 h.
-- After it: Oseni spot-checks 50 kept teacher labels (ADR-0021 §4).
+- After it: Malik spot-checks 50 kept teacher labels in the app (ADR-0021 §4; Malik chose to do it himself, 1 Oct).
 - Deferred: ASR WER on the Adeola recordings, which needs the audio on Kaggle.
 - `scripts/fetch_wazobia.py` now reads through `bench/wazobia.py` (shared with the teacher fetch).
 
