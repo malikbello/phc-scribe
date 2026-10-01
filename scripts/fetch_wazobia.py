@@ -120,7 +120,9 @@ def main() -> int:
     parser.add_argument("--per-language", type=int, default=300)
     parser.add_argument("--enriched-share", type=float, default=0.6)
     parser.add_argument("--seed", type=int, default=20261005)
-    parser.add_argument("--no-hints", action="store_true", help="omit keyword hints")
+    # Off by default (guidelines §10.7): keyword hints would anchor labellers on the
+    # rung-1 baseline the benchmark is meant to judge.
+    parser.add_argument("--hints", action="store_true", help="add keyword-baseline hints")
     parser.add_argument(
         "--check-speakers", action="store_true", help="check split disjointness (slow)"
     )
@@ -158,7 +160,7 @@ def main() -> int:
             say(f"{lang}: speakers shared between train and the test pool: {overlap[lang]}")
 
     per_language = {lang: int(args.per_language) for lang in args.languages}
-    hint_fn = None if args.no_hints else keyword_hints
+    hint_fn = keyword_hints if args.hints else None
     queue = sample_enriched_queue(
         all_rows, per_language, args.enriched_share, args.seed, hint_fn=hint_fn
     )

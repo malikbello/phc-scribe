@@ -13,6 +13,8 @@ import {
   type ReviewAnswer,
   type StoredReviewAnswer,
   type AckStep,
+  isSpeechSource,
+  SPEECH_SKIP_REASONS,
 } from "./schema";
 import { store } from "./store";
 
@@ -108,6 +110,8 @@ async function getItem(queueId: string, itemId: string): Promise<QueueItem> {
 export type ClientItem = {
   itemId: string;
   language: string;
+  /** Where the item came from; "wazobia" items are real everyday speech (guidelines §10). */
+  source: string;
   transcript: string;
   hints: QueueItem["hints"];
   double: boolean;
@@ -118,6 +122,7 @@ function toClient(meta: QueueMeta, item: QueueItem, mine: Label | null): ClientI
   return {
     itemId: item.item_id,
     language: item.language,
+    source: item.source,
     transcript: item.transcript,
     hints: meta.showHints ? item.hints : [],
     double: Boolean(meta.everyone) || meta.double.includes(item.item_id),
@@ -199,6 +204,9 @@ export async function myHistory(queueId: string, rid: string): Promise<string[]>
 export async function saveLabel(queueId: string, rid: string, input: LabelInput): Promise<Label> {
   const s = store();
   const item = await getItem(queueId, input.itemId);
+  if (input.status === "skip" && input.skipReason && isSpeechSource(item.source) && !SPEECH_SKIP_REASONS.has(input.skipReason)) {
+    throw new HttpError(400, "In real speech sets, general talk is labelled Nothing to record, not skipped");
+  }
   for (const f of input.findings) {
     if (!evidenceLongEnough(f.evidence.text)) {
       throw new HttpError(400, `Evidence for ${f.concept} is too short: select a few more words`);

@@ -117,4 +117,13 @@ describe("repo flow", () => {
     expect(await reviewProgress("p", "pharmacist")).toEqual({ done: 1, total: 7 });
     expect((await reviewProgress("p", "annotator")).total).toBe(0);
   });
+
+  it("does not let real-speech items be skipped as off-topic", async () => {
+    const speech = items.slice(0, 2).map((it) => ({ ...it, source: "wazobia" }));
+    const meta = await createQueue({ title: "Speech", items: speech, doubleShare: 0, showHints: false, everyone: false }, "admin");
+    await expect(saveLabel(meta.id, "a", { itemId: "it-0", status: "skip", skipReason: "not_pregnancy_related", findings: [] })).rejects.toThrow(/Nothing to record/);
+    await expect(saveLabel(meta.id, "a", { itemId: "it-0", status: "skip", skipReason: "not_patient_report", findings: [] })).rejects.toThrow(/Nothing to record/);
+    expect((await saveLabel(meta.id, "a", { itemId: "it-0", status: "skip", skipReason: "unintelligible", findings: [] })).status).toBe("skip");
+    expect((await saveLabel(meta.id, "a", { itemId: "it-1", status: "labelled", findings: [] })).findings).toEqual([]);
+  });
 });

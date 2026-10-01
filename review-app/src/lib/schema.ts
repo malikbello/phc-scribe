@@ -16,6 +16,12 @@ export const SkipReason = z.enum([
 ]);
 export type SkipReason = z.infer<typeof SkipReason>;
 
+// Real everyday speech (annotation guidelines §10): general health talk is a negative to be
+// labelled "nothing to record", so off-topic and not-her-own-symptoms skips are not allowed.
+export const SPEECH_SOURCES = new Set(["wazobia"]);
+export const SPEECH_SKIP_REASONS = new Set<SkipReason>(["unintelligible", "duplicate", "other"]);
+export const isSpeechSource = (source: string) => SPEECH_SOURCES.has(source);
+
 export const Finding = z.object({
   concept: z.string().refine((c) => CONCEPT_BY_ID.has(c), "unknown concept"),
   assertion: Assertion,

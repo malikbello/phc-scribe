@@ -39,7 +39,11 @@ Revised by ADR-0016 (accepted 30 Sept) and ADR-0018 (proposed 30 Sept). The orig
 
 - **Splits:** group-wise by source note. Translations stay with their originals. Exact and near-duplicate checks run across splits.
 - **Enrichment:** at least 30% of test items contain at least one danger sign.
-- **Freezing:** the test set is hashed and frozen before any training data is generated.
+- **Freezing (ADR-0022, two stages):**
+  - **Stage 1 (items):** the test items (ids, speakers, text) are hashed before any training data is built.
+  - **Stage 2 (labels):** the adjudicated gold labels are hashed before any fine-tuned model is scored.
+  - Exclusions at stage 2 are declared and reported.
+  - Each stage is one commit, recorded here.
 
 ## 4. Gold labels
 - Written annotation guidelines, reviewed by the clinical adviser

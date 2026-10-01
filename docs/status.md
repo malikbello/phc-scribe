@@ -1,6 +1,6 @@
 # Project status and working agreement
 
-_Last updated: 1 Oct 2026, ~15:40 WAT (session 5). Keep this file current; it is the handoff between work sessions._
+_Last updated: 1 Oct 2026, ~19:00 WAT (session 5). Keep this file current; it is the handoff between work sessions._
 
 ## Resume prompt (paste this into a new session)
 > Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`, branch `main`) and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution, no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results. Then continue with "Next steps, in order" (the pilot is done; the proposed G1/G2 margins in `docs/eval-plan.md` §6 wait for my approval). Ask me before anything outward-facing or irreversible.
@@ -18,7 +18,8 @@ _Last updated: 1 Oct 2026, ~15:40 WAT (session 5). Keep this file current; it is
 | Benchmark design | **ADR-0016 accepted:** counted 500 = real NigBench-MAMAI speech (test split), labelled in the review app. Supplements: 300 generated notes (G), MamaBench ANC slice (kept, Malik 1 Oct), AMR. MAMAI access **still refused (403, 1 Oct)**: follow up with Intron 2 Oct. **ADR-0018 (Accepted 1 Oct, amended):** if MAMAI is refused by 5 Oct, the counted set is WazobiaSpeech **`dev` + `dev_test`** health clips (yo + pcm, enriched + random groups; about 20 speakers per language, so CIs are wide and the report says so). Its fetcher `scripts/fetch_wazobia.py` is built and tested (queue → `data/private/label_queue.s4w.jsonl`, nothing labelled). Due diligence round 6 (1 Oct): no other real source matches MAMAI; the **Uyo MNCH records** (OSF, CC-BY, 538 real antenatal records, structured) check the rules engine on real vitals (**ADR-0019 accepted**; mapping awaits Rahmat's confirmation). The **Antenatal Orientation Speech Dataset** turned out to be public (GitHub `Adeola80/Antenatal-Speech`, MIT): nurses' clinic talks in en/yo/pcm, usable for ASR tests, phrase mining and hard negatives (needs an ADR). |
 | Baseline runs | **Done 30 Sept** (Kaggle run 08:04 UTC → finished between 16:01 and 16:11 UTC, all six runs complete). Results below and in `results/baseline-20260930/`. **Llama-3.1-8B few-shot beats N-ATLaS few-shot on every metric on G**; N-ATLaS few-shot is schema-invalid on 57/300. |
 | Pilot | **Done 1 Oct** (see Pilot results). Was run as a saved version started from the notebook editor **1 Oct 13:29 UTC** with `HF_TOKEN` (N-ATLaS few-shot, Llama few-shot, N-ATLaS zero-shot, and a dev-only N-ATLaS few-shot at `max_new_tokens = 1536`, each on the 30 pilot items). The log prints an `=== INVALID` summary per run (how many outputs were cut off). Read it with `scripts/kaggle_log.py`. After it: propose G1/G2 margins → Malik approves → freeze. **G2 set chosen: Belebele `yor_Latn`** (Malik, 1 Oct; `docs/eval-plan.md` §3 and §6). |
-| Fine-tuning | Pipeline built and CPU-smoke-tested; **nothing trained.** Order: pilot → freeze thresholds → `scripts/freeze_test_set.py` → generate training G with a **new** seed → `scripts/build_train_set.py` → `bench/train_qlora.py` on Kaggle. |
+| Fine-tuning | Pipeline built and CPU-smoke-tested; **nothing trained.** Order: freeze stage 1 (items, ADR-0022) → generate training G with a **new** seed + real yo/pcm (teacher labels, ADR-0021) → `scripts/build_train_set.py` → `bench/train_qlora.py` on Kaggle → labels adjudicated → freeze stage 2 → score. |
+| S4-W labelling | **Ready to upload (1 Oct).** Guidelines §10: the speaker is the patient, general talk is "Nothing to record", skips only for unlabellable clips (the app enforces this on `wazobia` items and shows a *Real speech* banner and guide section). Hints off. Calibration set of 20 (`data/private/label_queue.s4w-cal.jsonl`) and the counted queue of 600 (`data/private/label_queue.s4w.jsonl`, hints stripped) are built; nothing labelled. Upload steps: Next steps 3. |
 | API | `/v1` built (extract, check, records, transcribe with NCAIR1 ASR). Contract `docs/openapi.v1.json`, guide `docs/api.md`. 160 tests pass; CI green. |
 | Cloud deploy | **ADR-0017 (Proposed): Modal**, private (proxy auth + API key) until submission, deployed from GitHub Actions. Modal: Starter, $30/month credits, **spend limit $0**. **First successful deploy: 30 Sept 15:21 UTC** (`deploy-modal` run #4, `main` @ `26906eb`) → `https://malikbello--phc-scribe-api-api.modal.run` (keyword extractor, HF ASR). Checked from the cloud session: `/v1/health` and `/v1/extract` without proxy auth return **401**. Still to check (Malik, needs the proxy token + API key): `/v1/health` returns 200 with both, and 401 with proxy auth but no key. Then accept ADR-0017. |
 | Review app | Live at https://phc-scribe-review.vercel.app (Vercel project `phc-scribe-review`, Upstash Redis; deploys from `main`). **1 Oct: guided flow.** Each reviewer's home screen has a *Start here* checklist (guide → sign-off for their role → practice set → benchmark labelling, which shows "opens later" until a non-practice set exists), an in-app guide (`/guide`), a **Pharmacist** role (sees only the new *Medicines* sign-off step: 5 medicines + local names + anything missing), and **practice sets** where everyone labels every item (agreement over all pairs; admin toggle per set). Malik to invite Rahmat (Clinician), Oseni (Annotator) and the pharmacy graduate (Pharmacist), and switch "Calibration · MamaBench ANC" to a practice set. |
@@ -68,7 +69,7 @@ Point [95% bootstrap CI]. Reports: `results/pilot-20261001/`. 30 items is a pilo
 | Kaggle job source | `kaggle/baseline/run.py` (`PLAN` switch) + `kernel-metadata.json` (T4, internet on, private) |
 | Kaggle secrets | **Runs started through the API (`scripts/kaggle_push.py`) do not receive the `HF_TOKEN` secret** (pilot versions 5–7 on 30 Sept all reported it missing, including one pushed after Malik switched it on). Push the code with `kaggle_push.py`, then **start the run from the notebook editor**: Edit → Add-ons → Secrets (HF_TOKEN on) → Save Version → Save & Run All. In `pilot` mode the job exits within a minute if the token is missing. |
 | Reading the Kaggle log from a cloud session | `python scripts/kaggle_log.py [--save results/<run>]`: prints status, `=== INVALID` lines and a metric summary per report, and can save each report JSON. The log is only complete after the run ends. |
-| WazobiaSpeech fallback queue (ADR-0018) | `python scripts/fetch_wazobia.py [--check-speakers]` → `data/private/wazobia/*_health.jsonl`, `data/private/label_queue.s4w.jsonl` + `.meta.json` (pools, groups, terms, speaker overlap). Enrichment terms and sampling: `bench/label_queue.py` (`ENRICH_TERMS`, `sample_enriched_queue`). Upload the queue in the review app (Admin → Add a labelling set; **not** a practice set) only if ADR-0018 is accepted and triggered. |
+| WazobiaSpeech fallback queue (ADR-0018) | `python scripts/fetch_wazobia.py [--check-speakers]` → `data/private/wazobia/*_health.jsonl`, `data/private/label_queue.s4w.jsonl` + `.meta.json` (pools, groups, terms, speaker overlap). Enrichment terms and sampling: `bench/label_queue.py` (`ENRICH_TERMS`, `sample_enriched_queue`). Calibration practice set: `python scripts/build_s4w_calibration.py` → `data/private/label_queue.s4w-cal.jsonl`. Both uploaded per Next steps 3 (labelling started 1 Oct; counted only if ADR-0018 triggers on 5 Oct, otherwise a reported supplement). Freeze: `scripts/freeze_test_set.py items|labels` (ADR-0022). |
 | Review app | https://phc-scribe-review.vercel.app; source `review-app/`; env vars `SESSION_SECRET`, `REVIEWERS` (Malik's admin code is in `REVIEWERS` in the Vercel dashboard) |
 | Modal deploy | `deploy/modal_app.py` (set `PRIVATE = False` on submission day), workflow `.github/workflows/deploy-modal.yml` (manual: Actions → deploy-modal → Run workflow) |
 | GitHub secrets (Actions) | `MODAL_TOKEN_ID`, `MODAL_TOKEN_SECRET`, `HF_WRITE_TOKEN` (spare; was for the HF Space), `HF_READ_TOKEN`, `PHC_API_KEY` (Malik keeps the key in his password manager; services only ever get its SHA-256 hash) |
@@ -82,7 +83,17 @@ Point [95% bootstrap CI]. Reports: `results/pilot-20261001/`. 30 items is a pilo
 ## Next steps, in order
 1. ~~**Baseline results**~~ **(done 30 Sept; see Baseline results):** read the Kaggle log when the run ends; put the three reports (N-ATLaS few-shot, Llama-3.1 few-shot, N-ATLaS zero-shot on G) in this file. If the 12 h limit cut the last run, re-run only what is missing.
 2. **Pre-freeze Kaggle run (`PLAN = "prefreeze"`, pushed 1 Oct):** Malik starts it from the notebook editor (Save Version → Save & Run All). It scores N-ATLaS and Llama-3.1 on Belebele `yor_Latn` (G2 margin m) and runs the unconstrained base comparator on the pilot items (B). Read with `scripts/kaggle_log.py` (`=== BELEBELE` lines). Then fill m in `docs/eval-plan.md` §6, get Rahmat's G1 confirmation, and commit the freeze. Margins and proposals A–E were approved by Malik on 1 Oct. (Done so far: reports recorded, truncation settled, cap stays 768; originally: propose G1 (false-alarm margin) and G2 (Belebele `yor_Latn` regression margin) in `docs/eval-plan.md` §6 → Malik approves → commit the freeze. G2 needs a Belebele scoring job on Kaggle for base N-ATLaS (not built yet).
-3. **Freeze the test set** (`scripts/freeze_test_set.py data/bench/g.20261002.jsonl` plus S4 once MAMAI arrives; the script never overwrites an existing freeze, so decide the file list first).
+3. **S4-W labelling (started 1 Oct, Malik: "label wazobia now")**. Rules: annotation guidelines §10; ADR-0018 amendment 2.
+   - Malik uploads two sets in the review app (Admin → Add a labelling set):
+     - **(a) Calibration:** `data/private/label_queue.s4w-cal.jsonl`, title "Practice · real speech (S4-W)", **Everyone labels every item** ticked, hints off.
+     - **(b) Counted set:** `data/private/label_queue.s4w.jsonl`, title "Benchmark · real health speech (S4-W)", double share **0.2**, hints off, not a practice set.
+   - The team does (a) first. Malik and Rahmat go through the calibration disagreements on the admin page; if a rule caused them, revise §10 *before* much of (b) is done.
+   - Still to build before stage 2:
+     - an adjudication log;
+     - `scripts/build_s4w_gold.py`, which turns the exported labels plus adjudication into gold BenchItems (`data/bench/s4w.jsonl`), with skipped-unlabellable ids passed to `--exclude`.
+3b. **Freeze, two stages (ADR-0022, accepted 1 Oct):**
+   - **Stage 1** on 5 Oct, after the MAMAI decision: `python scripts/freeze_test_set.py items data/bench/g.20261002.jsonl data/bench/h.adeola.jsonl data/private/label_queue.s4w.jsonl` (plus the MamaBench slice, if built, or the MAMAI queue instead of S4-W if it arrives). Commit the manifest, then `scripts/build_train_set.py` can run.
+   - **Stage 2** when labelling is adjudicated: `python scripts/freeze_test_set.py labels --labelled data/private/label_queue.s4w.jsonl=data/bench/s4w.jsonl [--exclude …]`. This must happen before any fine-tuned model sees a counted item.
 4. **Training data and QLoRA run** on Kaggle (split long jobs so each stays well under 12 h).
 5. **Modal:** ~~run `deploy-modal`~~ (done 30 Sept 15:21 UTC; unauthenticated requests refused), check `/v1/health` and that requests without proxy auth and without the API key are refused; Malik accepts ADR-0017.
 6. **MAMAI or the fallback (decide 5 Oct):** if MAMAI access arrives, `scripts/fetch_mamai.py` → upload `label_queue.s4.jsonl` in the review app → the team labels (~9–10 h for 500). If not, and ADR-0018 is accepted, `scripts/fetch_wazobia.py` → upload `label_queue.s4w.jsonl` instead. Either way, the set counted is the one in the freeze; nothing is swapped in afterwards.
@@ -142,6 +153,21 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 | Optional: delete the unused `HF_WRITE_TOKEN` on Hugging Face and GitHub | Optional |
 
 ## Progress log
+**1 Oct, session 5 (S4-W labelling and the two-stage freeze):**
+- CI on `main` is green again (run 36901141065, `d058d09`).
+- Malik: "label wazobia now", done the way mature teams do it:
+  - **Labelling rules:** annotation guidelines §10 (patient-speech rules), mirrored in the in-app guide, a *Real speech* banner and the label pop-up.
+  - **App rules:** the review app refuses off-topic skips on `wazobia` items (server-side, tested).
+  - **Hints off:** `scripts/fetch_wazobia.py` now defaults to no hints, and the queue was stripped of them.
+  - **Calibration set:** 20 clips from `scripts/build_s4w_calibration.py`.
+  - **Records:** ADR-0018 amendment 2.
+- **ADR-0022 (two-stage freeze) accepted and implemented:**
+  - `bench/freeze.py` (`freeze_items`, `freeze_labels` with declared exclusions, `load_gold_items`);
+  - `scripts/freeze_test_set.py items|labels`;
+  - tests;
+  - eval plan §3 updated.
+- `./scripts/ci_local.sh` passes.
+
 **1 Oct, session 5 (CI fix):**
 - CI on `main` was red from `de25ff8` to `7fe2a5d` (job `checks`, RUF100: an unused `noqa` that only CI's pinned ruff 0.16.9 reports). Fixed, and `scripts/ci_local.sh` added so local checks use CI's exact versions.
 
@@ -247,4 +273,3 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 - **Team:** invite and revoke reviewers from the admin screen with no redeploy; codes are stored only as HMAC hashes.
 - **Operations:** a health endpoint and batched Redis reads for scale; CI job `review-app`; `main` is production.
 - **Data:** med-convo-nig access granted; NigBench-MAMAI and nig-bench still pending.
-

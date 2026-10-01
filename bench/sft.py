@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from bench.freeze import Overlap
+from bench.freeze import Overlap, TestItem
 from bench.items import BenchItem
 from bench.prompts import build_messages, record_json
 
@@ -21,7 +21,9 @@ def example(item: BenchItem) -> dict:
     }
 
 
-def build(items: Sequence[BenchItem], test: Sequence[BenchItem]) -> tuple[list[dict], list[str]]:
+def build(
+    items: Sequence[BenchItem], test: Sequence[TestItem | BenchItem]
+) -> tuple[list[dict], list[str]]:
     """Training examples, and the ids dropped for overlapping the frozen test set."""
     overlap = Overlap(t.transcript for t in test)
     test_groups = {t.group_id for t in test}

@@ -25,3 +25,4 @@ Format: context → decision → consequences. A decision changes only through a
 | [0019](0019-uyo-records-rules-check.md) | Check the danger-sign rules on real Uyo antenatal records | Accepted |
 | [0020](0020-antenatal-orientation-speech.md) | Antenatal Orientation Speech Dataset: hard negatives, ASR test, phrases | Accepted |
 | [0021](0021-teacher-labels.md) | Teacher labels from Llama-3.1-8B for real training speech | Accepted |
+| [0022](0022-two-stage-freeze.md) | Freeze the test set in two stages: items first, labels before scoring | Accepted |

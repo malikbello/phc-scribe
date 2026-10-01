@@ -56,7 +56,7 @@ export default function GuidePage() {
             {clinical && <li><b>Clinical sign-off</b>: check our danger-sign rules, findings, wordings and medicines. About 1.5 hours.</li>}
             {pharmacist && <li><b>Medicines check</b>: check the medicines the app records and tell us the names people use. About 20 minutes.</li>}
             <li><b>Practice set</b>: label 20 short antenatal cases on your own. About 30 minutes. We compare everyone&apos;s answers to see if the rules are clear.</li>
-            <li><b>Benchmark labelling</b> (later): more cases of the same kind. It appears on your home screen when it&apos;s ready.</li>
+            <li><b>Benchmark labelling</b>: real speech clips in Yorùbá and Pidgin, starting with a 20-clip practice round (see <i>Real speech sets</i> below). It appears on your home screen when it&apos;s ready.</li>
           </ol>
           <p className="muted mt-2">Your home screen shows these steps in order, with a tick when each is done. Everything saves as you go, so you can stop and continue any time, on any device.</p>
         </Section>
@@ -88,7 +88,7 @@ export default function GuidePage() {
           <p className="mt-2">Add as many findings as the text has, then tap <b>Save &amp; next</b> at the bottom.</p>
           <ul className="mt-2 space-y-1">
             <li>Nothing to record? Tap <b>Nothing to record</b>. That is a valid answer.</li>
-            <li>Not about pregnancy, or can&apos;t be understood? Tap <b>Skip</b> and pick a reason.</li>
+            <li>Can&apos;t be understood, or (in the antenatal practice cases) not about pregnancy? Tap <b>Skip</b> and pick a reason. Real speech sets have their own rule: see below.</li>
             <li>Made a mistake? The <b>clock icon</b> at the top takes you back to your previous case.</li>
             <li>Forgot a rule? The <b>book icon</b> at the top shows the five rules below.</li>
           </ul>
@@ -106,7 +106,19 @@ export default function GuidePage() {
           <p className="mt-2">Past pregnancy and now in one sentence? Add two findings: &quot;bled in her last pregnancy, no bleeding now&quot; is <i>Past pregnancy</i> and <i>Absent</i>.</p>
         </Section>
 
-        <Section n={clinical || pharmacist ? 5 : 4} title="Please keep it confidential">
+        <Section n={clinical || pharmacist ? 5 : 4} title="Real speech sets">
+          <p>Some sets are <b>real recordings of everyday health talk</b> in Yorùbá and Pidgin (they show a blue <b>Real speech</b> banner). Most clips are advice or opinions, and only a few are someone describing their own problem. Both kinds matter: the clips with nothing to record test whether the app stays quiet.</p>
+          <ul className="mt-2 list-disc space-y-1 pl-5">
+            <li><b>The speaker is the patient.</b> Record what they say about their own health (&quot;my belle dey pain me&quot;), or about one pregnant woman they describe (&quot;my wife dey bleed&quot;).</li>
+            <li><b>Advice, facts, opinions, questions and &quot;if…&quot; sentences:</b> tap <b>Nothing to record</b>. So do talk about babies, children or &quot;pregnant women&quot; in general. This will be your most common answer.</li>
+            <li><b>Skip only if you can&apos;t label it:</b> it&apos;s garbled, cut off, or in another language. Never skip because it isn&apos;t about pregnancy.</li>
+            <li>A real complaint that isn&apos;t in the list (toothache, &quot;body pain&quot;)? Nothing to record, and add a note if you think the list is missing something common.</li>
+            <li>Ignore marks like [um] or [cough].</li>
+          </ul>
+          <p className="muted mt-2">You&apos;ll first get a short practice set of 20 real-speech clips that everyone labels, so we can check these rules are clear before the main set.</p>
+        </Section>
+
+        <Section n={clinical || pharmacist ? 6 : 5} title="Please keep it confidential">
           <p>The cases are real people&apos;s words, shared for research. Don&apos;t screenshot, copy or share them, and don&apos;t discuss your answers with each other until everyone has finished the practice set: we need your independent judgement.</p>
           <p className="mt-2">Questions? Message Malik.</p>
         </Section>

@@ -55,3 +55,16 @@
 - **Statistical consequence, stated in the report:** CIs resample by speaker, so 600 clips from about 41 speakers carry far less information than 600 independent items. The report gives the number of speakers next to every S4-W result.
 - **Built (nothing labelled):** `scripts/fetch_wazobia.py` (pinned revisions yo `353ea9f`, pcm `2bb5618`; text columns only), `bench/label_queue.py` (`ENRICH_TERMS`, `sample_enriched_queue`; tested). Default queue: 300 per language, 60% enriched / 40% random, seed 20261005.
 - **Speaker check (all shards, 1 Oct):** 0 speakers shared between `train` and the `dev` + `dev_test` pool, in both Yoruba and Pidgin. Pool: yo 5,584 health clips (544 enriched, 20 speakers), pcm 5,591 (1,558 enriched, 21 speakers). Queue built (600 items: per language 180 enriched + 120 random); nothing labelled.
+
+## Amendment 2 (1 Oct, labelling as run; Malik: "label wazobia now")
+- **Labelling starts now, before 5 Oct.** If MAMAI arrives first, these labels become the reported S4-W supplement (§1), so no work is wasted.
+- **Patient-speech rules:** annotation guidelines §10.
+  - The speaker is the patient.
+  - General talk is labelled "Nothing to record" and kept as a negative.
+  - Skips are only allowed for unlabellable clips. The app enforces this (an off-topic skip is refused for `wazobia` items).
+- **Hints are off** (replaces "hints are shown but never pre-ticked" in §4). Keyword hints would anchor labellers on the rung-1 baseline being judged. `scripts/fetch_wazobia.py` now omits them unless `--hints` is passed; the existing queue was stripped of hints, with item selection unchanged.
+- **Double-labelling:** 20% of the 600 (120 items), blind, replaces "the nurse double-labels a random 50".
+  - Rahmat adjudicates every disagreement involving a danger sign; Malik adjudicates the rest.
+  - κ and exact agreement are reported.
+- **Calibration first:** 20 pool clips not in the queue (`scripts/build_s4w_calibration.py`, seed 20261001; per language 6 enriched + 4 random), labelled by everyone as a practice set. Never counted.
+- **Freeze:** two stages (ADR-0022).

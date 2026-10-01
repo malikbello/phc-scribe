@@ -96,3 +96,31 @@ Record a vital only when a number is stated.
 5. Is PCV < 21% an acceptable stand-in for Hb < 7 g/dL in the severe-anaemia rule?
 6. Which edition and sections of the National Standing Orders should each rule cite?
 7. Are there common local terms (English or Yoruba) for these signs that we are missing?
+
+## 10. Real speech sets (S4-W, WazobiaSpeech)
+_Added 1 Oct 2026 (ADR-0018). Applies to every item whose source is `wazobia`. The app shows a "Real speech" banner on these items and offers only the skip reasons below._
+
+The clips are everyday health talk from Yoruba and Pidgin speakers: some describe their own symptoms, most give general advice or opinions. **Both kinds are wanted.** Items with nothing to record are the negatives that measure false alarms (ADR-0018 §3), so they must be labelled, not skipped.
+
+1. **Who is the patient.** Treat the speaker as the patient. Record findings about:
+   - the speaker ("I", "mi", "my belle dey pain me"); or
+   - one specific pregnant woman the speaker is reporting on ("my wife dey bleed since morning").
+
+   Do **not** record findings about babies or children, other named people who are not pregnant, or "people", "women" or "pregnant women" in general.
+2. **General talk is "Nothing to record".** Advice ("if you get fever, go hospital"), facts ("pregnant women fit get high BP"), opinions, questions without an answer, and hypotheticals ("if your leg swell…") get **Nothing to record**. This is the commonest correct answer.
+3. **Present, absent, possible and past apply as in §2.** "I no dey bleed again" is `absent`; "I bled when I carried my first child" is `historical`.
+4. **The finding must be one in the vocabulary.** A real complaint outside it (e.g. toothache, "body pain") is Nothing to record; write a note if you think the vocabulary is missing something common.
+5. **Ignore transcription marks** such as `[um]`, `[cough]` or `[noise]`. Don't include them in evidence unless they sit inside the phrase.
+6. **Skip only when the item cannot be labelled:**
+   - **Can't understand it**: garbled, cut off mid-thought so the meaning is lost, or not Yoruba, Pidgin or English;
+   - **Duplicate**;
+   - **Other** (with a note).
+
+   Never skip because a clip is "not about pregnancy" or "not her own symptoms": those are Nothing to record.
+7. **Hints are off** for this set. Label from the words alone.
+8. **Process** (ADR-0018 §4, as run):
+   - **Calibration first:** every labeller labels the same 20 calibration clips (practice set, drawn from the pool but not from the counted queue). Malik reviews the disagreements with Rahmat; this section is revised if a rule caused them. The calibration clips are never counted.
+   - **Then the counted queue** (600 clips): 20% are labelled independently by two people (blind; nobody sees another's label).
+   - **Agreement** is reported per item (exact match of finding, assertion and the nothing-to-record decision), with Cohen's κ on danger-sign positivity (present or possible, per pair and danger sign) and pairwise F1; the admin page shows all three.
+   - **Adjudication:** Rahmat decides every overlap disagreement that involves a danger sign; Malik decides the rest. Decisions are logged (item, both labels, decision, reason) and the adjudicated label is the gold.
+   - Labels are frozen at stage 2 of the freeze (ADR-0022), before any fine-tuned model is scored on them.

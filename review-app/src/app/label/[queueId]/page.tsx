@@ -7,7 +7,7 @@ import { Bar, Burst, Icon, Spinner, Toast, TopBar, useToast } from "@/components
 import { api, post } from "@/lib/client";
 import { CONCEPTS, CONCEPT_BY_ID } from "@/lib/content";
 import type { ClientItem, QueueProgress } from "@/lib/repo";
-import { evidenceLongEnough, type Assertion, type Finding, type SkipReason } from "@/lib/schema";
+import { evidenceLongEnough, isSpeechSource, SPEECH_SKIP_REASONS, type Assertion, type Finding, type SkipReason } from "@/lib/schema";
 import { evidenceFor, tap, tokenize, type Range } from "@/lib/spans";
 
 const ASSERTIONS: { id: Assertion; label: string; hint: string; key: string; cls: string }[] = [
@@ -24,6 +24,8 @@ const SKIPS: { id: SkipReason; label: string }[] = [
   { id: "duplicate", label: "Duplicate" },
   { id: "other", label: "Other (add a note)" },
 ];
+
+const isSpeech = isSpeechSource;
 
 const ASSERT_STYLE: Record<Assertion, string> = {
   present: "border-clay-400/60 bg-clay-500/15 text-clay-100 shadow-glow-coral",
@@ -217,6 +219,13 @@ export default function LabelPage() {
           </div>
         )}
 
+        {isSpeech(item.source) && (
+          <p className="mb-3 rounded-2xl bg-cyan-400/10 px-4 py-2 text-sm leading-relaxed text-cyan-100 ring-1 ring-cyan-300/30">
+            <b>Real speech.</b> Record only what the speaker says about their own health, or about one pregnant woman they describe.
+            Advice, facts, opinions and talk about babies or people in general: tap <b>Nothing to record</b>.
+          </p>
+        )}
+
         {revisiting && (
           <p className="mb-3 rounded-2xl bg-sun-400/10 px-4 py-2 text-sm font-medium text-sun-100 ring-1 ring-sun-400/30">
             Editing an item you already labelled. Saving updates it.
@@ -330,7 +339,7 @@ export default function LabelPage() {
             <button className="btn-ghost" onClick={() => setSkipOpen((o) => !o)} aria-expanded={skipOpen}>Skip</button>
             {skipOpen && (
               <div className="card absolute bottom-14 left-0 w-72 animate-pop bg-night-800/90 p-2">
-                {SKIPS.map((s) => (
+                {SKIPS.filter((s) => !isSpeech(item.source) || SPEECH_SKIP_REASONS.has(s.id)).map((s) => (
                   <button key={s.id} className="block w-full rounded-xl px-3 py-2.5 text-left text-[15px] hover:bg-white/[.08]" onClick={() => save("skip", s.id)}>
                     {s.label}
                   </button>
@@ -344,7 +353,7 @@ export default function LabelPage() {
         </div>
       </div>
 
-      {guideOpen && <Guide onClose={() => setGuideOpen(false)} />}
+      {guideOpen && <Guide speech={isSpeech(item.source)} onClose={() => setGuideOpen(false)} />}
       <Toast message={toast} tone={tone} />
     </>
   );
@@ -376,7 +385,7 @@ function ChipGroup({ title, items, value, onPick, danger = false }: { title: str
   );
 }
 
-function Guide({ onClose }: { onClose: () => void }) {
+function Guide({ speech, onClose }: { speech: boolean; onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4" onClick={onClose} role="dialog" aria-modal aria-label="How to label">
       <div className="card max-h-[85dvh] w-full max-w-lg animate-rise overflow-y-auto rounded-b-none p-6 sm:rounded-3xl" onClick={(e) => e.stopPropagation()}>
@@ -391,6 +400,11 @@ function Guide({ onClose }: { onClose: () => void }) {
           <li><b>Severe only if the words say so</b> (severe, very bad, persistent, "gidigidi"). Otherwise pick the mild finding.</li>
           <li><b>When torn, choose what a cautious clinician would act on.</b> Use <i>Possible</i> rather than leaving a danger sign out.</li>
         </ol>
+        {speech && (
+          <p className="mt-4 rounded-2xl bg-cyan-400/10 p-3 text-[15px] leading-relaxed ring-1 ring-cyan-300/30">
+            <b>Real speech:</b> the speaker is the patient. Advice, facts, opinions, questions, &quot;if…&quot; sentences and talk about babies or people in general are <b>Nothing to record</b>. Skip only garbled, cut-off or other-language clips.
+          </p>
+        )}
         <p className="muted mt-4 text-sm">Past pregnancy and now in one sentence? Add two findings: <i>Past pregnancy</i> and <i>Absent</i>. About a minute per item is normal.</p>
         <Link href="/guide" className="btn-ghost mt-4 w-full text-sm">Read the full guide</Link>
         <p className="faint mt-3 text-xs">Keyboard: 1–4 choose the answer · Ctrl+Enter saves · Esc clears.</p>
