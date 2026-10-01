@@ -7,7 +7,7 @@ import { randomBytes } from "node:crypto";
 
 const args = process.argv.slice(2);
 if (!args.length) {
-  console.error('Usage: npm run make-codes -- "Name:role" ...   (role = admin | clinician | annotator)');
+  console.error('Usage: npm run make-codes -- "Name:role" ...   (role = admin | clinician | pharmacist | annotator)');
   process.exit(1);
 }
 const words = ["ewe", "odo", "oko", "ile", "oju", "ina", "omi", "igi", "ayo", "ire", "oba", "ona"];
@@ -19,7 +19,7 @@ const code = () => {
 const seen = new Set();
 const reviewers = args.map((a) => {
   const [name, role = "annotator"] = a.split(":");
-  if (!["admin", "clinician", "annotator"].includes(role)) throw new Error(`bad role: ${role}`);
+  if (!["admin", "clinician", "pharmacist", "annotator"].includes(role)) throw new Error(`bad role: ${role}`);
   let id = name.toLowerCase().normalize("NFD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 24) || "reviewer";
   while (seen.has(id)) id += "-2";
   seen.add(id);

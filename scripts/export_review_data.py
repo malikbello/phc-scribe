@@ -23,10 +23,36 @@ sys.path[:0] = [str(ROOT / "serve"), str(ROOT), str(ROOT / "scripts")]
 
 from build_review_pack import GUIDELINES, PHRASES, RULES, condition  # noqa: E402
 
+from phc_scribe.encounter import Medication  # noqa: E402
 from phc_scribe.grounding import MIN_QUOTE_CHARS  # noqa: E402
 from phc_scribe.vocab import load_vocabulary  # noqa: E402
 
 OUT = ROOT / "review-app" / "src" / "data" / "review.json"
+
+# Plain-language description of each medication class in the record schema
+# (serve/phc_scribe/encounter.py, Medication), for the pharmacist's sign-off.
+MEDICATIONS = {
+    "iron_folic_acid": (
+        "Iron and folic acid",
+        "Daily iron and folic acid tablets (haematinics) given to prevent anaemia in pregnancy.",
+    ),
+    "ipt_sp": (
+        "IPTp-SP (malaria prevention)",
+        "Sulfadoxine-pyrimethamine given at antenatal visits to prevent malaria in pregnancy.",
+    ),
+    "tetanus_diphtheria": (
+        "Tetanus-diphtheria (Td) vaccine",
+        "Td injection given in pregnancy to protect mother and baby against tetanus.",
+    ),
+    "deworming": (
+        "Deworming",
+        "A deworming tablet (for example albendazole or mebendazole) after the first trimester.",
+    ),
+    "calcium": (
+        "Calcium",
+        "Calcium supplements, used where diets are low in calcium to lower pre-eclampsia risk.",
+    ),
+}
 
 
 def _plain(html_text: str) -> str:
@@ -69,6 +95,11 @@ def build() -> str:
             for cid, spec in phrases["concepts"].items()
         ],
         "questions": [_plain(q) for q in questions],
+        "medications": [
+            {"id": m.value, "label": MEDICATIONS[m.value][0], "definition": MEDICATIONS[m.value][1]}
+            for m in Medication
+            if m != Medication.other
+        ],
     }
     return json.dumps(data, indent=1, ensure_ascii=False) + "\n"
 

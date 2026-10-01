@@ -11,7 +11,7 @@ import { store } from "./store";
 // Sign-in looks the code up by its hash, so it is O(1) and does not leak timing about
 // how close a guess was.
 
-export const Role = z.enum(["admin", "clinician", "annotator"]);
+export const Role = z.enum(["admin", "clinician", "pharmacist", "annotator"]);
 export type Role = z.infer<typeof Role>;
 
 const EnvReviewer = z.object({
@@ -34,6 +34,7 @@ export type PublicReviewer = Pick<Reviewer, "id" | "name" | "role">;
 const DEV_REVIEWERS = [
   { id: "admin", name: "Malik", role: "admin" as const, code: "dev-admin-code" },
   { id: "nurse", name: "Nurse", role: "clinician" as const, code: "dev-nurse-code" },
+  { id: "pharmacist", name: "Pharmacist", role: "pharmacist" as const, code: "dev-pharmacist-code" },
   { id: "student", name: "Student", role: "annotator" as const, code: "dev-student-code" },
 ];
 

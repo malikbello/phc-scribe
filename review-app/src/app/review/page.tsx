@@ -1,26 +1,41 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Bar, Burst, Icon, Spinner, Toast, TopBar, useToast } from "@/components/ui";
 import { api, post } from "@/lib/client";
-import { REVIEW_SECTIONS, REVIEW_TOTAL, type ReviewRow } from "@/lib/content";
+import { sectionsFor, type ReviewRow, type Role } from "@/lib/content";
 import type { StoredReviewAnswer } from "@/lib/schema";
 
 type Answers = Record<string, StoredReviewAnswer>;
 
+const INTRO: Record<string, string> = {
+  rule: "when the app raises a flag.",
+  concept: "the symptoms those rules use.",
+  question: "7 edge cases about the rules and findings.",
+  phrase: "wordings in the practice notes.",
+  medicine: "the medicines the app records, and the names people use.",
+};
+
 export default function ReviewPage() {
   const [answers, setAnswers] = useState<Answers | null>(null);
+  const [role, setRole] = useState<Role>("clinician");
   const [section, setSection] = useState(0);
   const [onlyOpen, setOnlyOpen] = useState(false);
   const [toast, showToast, tone] = useToast();
   const [burst, setBurst] = useState(false);
 
   useEffect(() => {
-    api<{ answers: Answers }>("/api/review").then((d) => setAnswers(d.answers)).catch((e) => showToast(e.message, "error"));
+    api<{ role: Role; answers: Answers }>("/api/review")
+      .then((d) => { setRole(d.role); setAnswers(d.answers); })
+      .catch((e) => showToast(e.message, "error"));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const done = answers ? Object.keys(answers).length : 0;
+  const sections = sectionsFor(role);
+  const mineKeys = new Set(sections.flatMap((x) => x.rows.map((r) => r.key)));
+  const total = mineKeys.size;
+  const done = answers ? Object.keys(answers).filter((k) => mineKeys.has(k)).length : 0;
 
   async function save(row: ReviewRow, verdict: StoredReviewAnswer["verdict"], note?: string) {
     const prev = answers?.[row.key];
@@ -29,8 +44,8 @@ export default function ReviewPage() {
     try {
       const { saved } = await post<{ saved: StoredReviewAnswer }>("/api/review", { key: row.key, verdict, note });
       setAnswers((a) => ({ ...(a ?? {}), [row.key]: saved }));
-      const nowDone = Object.keys({ ...(answers ?? {}), [row.key]: saved }).length;
-      if (!prev && nowDone === REVIEW_TOTAL) {
+      const nowDone = Object.keys({ ...(answers ?? {}), [row.key]: saved }).filter((k) => mineKeys.has(k)).length;
+      if (!prev && nowDone === total) {
         setBurst(true);
         setTimeout(() => setBurst(false), 1400);
       }
@@ -45,20 +60,21 @@ export default function ReviewPage() {
     }
   }
 
-  if (!answers) return (<><TopBar title="Clinical sign-off" /><div className="py-24"><Spinner /></div></>);
+  const title = role === "pharmacist" ? "Medicines check" : "Clinical sign-off";
+  if (!answers) return (<><TopBar title={title} /><div className="py-24"><Spinner /></div></>);
 
-  const sec = REVIEW_SECTIONS[section];
+  const sec = sections[section];
   const rows = onlyOpen ? sec.rows.filter((r) => !answers[r.key]) : sec.rows;
   const secDone = sec.rows.filter((r) => answers[r.key]).length;
 
   return (
     <>
-      <TopBar title="Clinical sign-off" right={<span className="muted text-sm tabular-nums">{done}/{REVIEW_TOTAL}</span>} />
+      <TopBar title={title} right={<span className="muted text-sm tabular-nums">{done}/{total}</span>} />
       <Burst show={burst} />
       <main className="mx-auto max-w-3xl px-4 pb-24 pt-4">
-        <Bar value={done / REVIEW_TOTAL} />
+        <Bar value={done / total} />
         <nav className="-mx-4 mt-4 flex gap-2 overflow-x-auto px-4 pb-1" aria-label="Sections">
-          {REVIEW_SECTIONS.map((s, i) => {
+          {sections.map((s, i) => {
             const d = s.rows.filter((r) => answers[r.key]).length;
             const active = i === section;
             return (
@@ -80,10 +96,9 @@ export default function ReviewPage() {
           <div className="card mt-4 animate-rise p-4 text-[15px] leading-relaxed">
             <p className="font-semibold">How this works</p>
             <ol className="muted mt-1 list-decimal space-y-0.5 pl-5">
-              <li><b className="text-sand-100">Danger-sign rules</b>: when the app raises a flag.</li>
-              <li><b className="text-sand-100">Findings list</b>: the symptoms those rules use.</li>
-              <li><b className="text-sand-100">Open questions</b>: 7 edge cases about the rules and findings.</li>
-              <li><b className="text-sand-100">How notes are worded</b>: wordings in the practice notes.</li>
+              {sections.map((x) => (
+                <li key={x.id}><b className="text-sand-100">{x.title}</b>: {INTRO[x.id]}</li>
+              ))}
             </ol>
             <p className="muted mt-2">Tap <b className="text-leaf-400">Looks right</b> or <b className="text-sun-400">Needs change</b>. Everything saves as you tap, so you can stop and continue any time.</p>
           </div>
@@ -106,16 +121,17 @@ export default function ReviewPage() {
           ))}
         </ul>
 
-        {secDone === sec.rows.length && section < REVIEW_SECTIONS.length - 1 && (
+        {secDone === sec.rows.length && section < sections.length - 1 && (
           <button className="btn-primary mt-6 w-full" onClick={() => { setSection(section + 1); window.scrollTo({ top: 0, behavior: "smooth" }); }}>
-            Next: {REVIEW_SECTIONS[section + 1].title} <Icon.Arrow />
+            Next: {sections[section + 1].title} <Icon.Arrow />
           </button>
         )}
-        {done === REVIEW_TOTAL && (
+        {done === total && (
           <div className="card mt-6 animate-pop p-6 text-center">
             <Icon.Sparkle className="mx-auto h-8 w-8 text-sun-400 drop-shadow-[0_0_12px_rgba(255,197,66,.7)]" />
             <p className="mt-2 text-lg font-bold">Sign-off complete. Ẹ ṣé gan!</p>
             <p className="muted mt-1 text-sm">You can still change any answer; it saves as you tap.</p>
+            <Link href="/" className="btn-primary mt-4">Next step <Icon.Arrow /></Link>
           </div>
         )}
       </main>

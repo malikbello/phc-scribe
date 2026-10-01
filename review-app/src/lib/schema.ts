@@ -41,6 +41,8 @@ export const QueueUpload = z.object({
   description: z.string().max(400).optional(),
   doubleShare: z.number().min(0).max(1).default(0.2),
   showHints: z.boolean().default(false),
+  /** Calibration mode: every reviewer labels every item (agreement over all pairs). */
+  everyone: z.boolean().default(false),
   items: z.array(QueueItem).min(1).max(5000),
 });
 export type QueueUpload = z.infer<typeof QueueUpload>;
@@ -54,7 +56,14 @@ export type QueueMeta = {
   showHints: boolean;
   order: string[];
   double: string[];
+  /** Calibration mode: every reviewer labels every item. Absent on older sets. */
+  everyone?: boolean;
 };
+
+export const AckStep = z.enum(["guide"]);
+export type AckStep = z.infer<typeof AckStep>;
+
+export const QueuePatch = z.object({ everyone: z.boolean() });
 
 export const LabelInput = z
   .object({

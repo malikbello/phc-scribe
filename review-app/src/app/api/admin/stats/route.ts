@@ -1,6 +1,6 @@
 import { listReviewers, publicReviewer } from "@/lib/reviewers";
 import { allReviews, itemsById, queueStats } from "@/lib/repo";
-import { REVIEW_TOTAL } from "@/lib/content";
+import { reviewKeysFor } from "@/lib/content";
 import { handle, json, requireReviewer } from "@/lib/server";
 import { store } from "@/lib/store";
 
@@ -22,7 +22,14 @@ export async function GET() {
       });
     }
     const reviews = await allReviews(ids);
-    const reviewDone = Object.fromEntries(ids.map((id) => [id, Object.keys(reviews[id]).length]));
-    return json({ team, queues, reviewDone, reviewTotal: REVIEW_TOTAL });
+    // Progress per member over the sign-off steps of their role.
+    const reviewDone: Record<string, number> = {};
+    const reviewTotal: Record<string, number> = {};
+    for (const t of team) {
+      const keys = reviewKeysFor(t.role);
+      reviewDone[t.id] = Object.keys(reviews[t.id]).filter((k) => keys.has(k)).length;
+      reviewTotal[t.id] = keys.size;
+    }
+    return json({ team, queues, reviewDone, reviewTotal });
   });
 }

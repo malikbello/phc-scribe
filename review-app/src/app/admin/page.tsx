@@ -10,6 +10,7 @@ type Team = { id: string; name: string; role: string }[];
 type QueueStat = {
   id: string;
   title: string;
+  everyone: boolean;
   total: number;
   doubleTotal: number;
   labelledItems: number;
@@ -17,13 +18,14 @@ type QueueStat = {
   perReviewer: Record<string, number>;
   agreement: {
     items: number;
+    pairs: number;
     exact: number | null;
     dangerKappa: number | null;
     pairF1: number | null;
     disagreements: { itemId: string; labels: Label[]; transcript?: string }[];
   };
 };
-type Stats = { team: Team; queues: QueueStat[]; reviewDone: Record<string, number>; reviewTotal: number };
+type Stats = { team: Team; queues: QueueStat[]; reviewDone: Record<string, number>; reviewTotal: Record<string, number> };
 
 const fmt = (x: number | null, d = 2) => (x === null ? "–" : x.toFixed(d));
 
@@ -38,6 +40,15 @@ export default function Admin() {
       load();
     } catch (e) {
       showToast(e instanceof Error ? e.message : "Delete failed", "error");
+    }
+  }
+  async function setPractice(id: string, everyone: boolean) {
+    try {
+      await api(`/api/admin/queues/${encodeURIComponent(id)}`, { method: "PATCH", body: JSON.stringify({ everyone }) });
+      showToast(everyone ? "Everyone will label every item in this set" : "Back to normal sharing");
+      load();
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : "Update failed", "error");
     }
   }
   const load = useCallback(() => api<Stats>("/api/admin/stats").then(setStats).catch((e) => showToast(e.message, "error")), [showToast]);
@@ -59,11 +70,11 @@ export default function Admin() {
             <a className="btn-ghost min-h-[40px] px-3 text-sm" href="/api/admin/export?kind=review"><Icon.Download /> Export</a>
           </div>
           <ul className="mt-3 space-y-2">
-            {stats.team.filter((t) => t.role !== "annotator").map((t) => (
+            {stats.team.filter((t) => (stats.reviewTotal[t.id] ?? 0) > 0).map((t) => (
               <li key={t.id} className="flex items-center gap-3">
                 <span className="w-28 truncate text-sm font-medium">{t.name}</span>
-                <Bar value={(stats.reviewDone[t.id] ?? 0) / stats.reviewTotal} />
-                <span className="muted w-14 text-right text-xs tabular-nums">{stats.reviewDone[t.id] ?? 0}/{stats.reviewTotal}</span>
+                <Bar value={(stats.reviewDone[t.id] ?? 0) / stats.reviewTotal[t.id]} />
+                <span className="muted w-14 text-right text-xs tabular-nums">{stats.reviewDone[t.id] ?? 0}/{stats.reviewTotal[t.id]}</span>
               </li>
             ))}
           </ul>
@@ -74,9 +85,14 @@ export default function Admin() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2 className="text-lg font-bold">{q.title}</h2>
-                <p className="muted text-sm">{q.total} items · {q.doubleTotal} double-labelled · {q.complete} complete</p>
+                <p className="muted text-sm">
+                  {q.everyone ? `Practice set: everyone labels all ${q.total} items` : `${q.total} items · ${q.doubleTotal} double-labelled`} · {q.complete} complete
+                </p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
+                <button className="btn-ghost min-h-[40px] px-3 text-sm" onClick={() => setPractice(q.id, !q.everyone)}>
+                  {q.everyone ? "Stop: share items normally" : "Make it a practice set (everyone labels all)"}
+                </button>
                 {q.labelledItems === 0 && (
                   <button className="btn-ghost min-h-[40px] px-3 text-sm text-clay-400" onClick={() => removeSet(q.id, q.title)}>Delete set</button>
                 )}
@@ -89,7 +105,7 @@ export default function Admin() {
               <Metric label="Danger-sign kappa" value={fmt(q.agreement.dangerKappa)} />
               <Metric label="Finding F1" value={fmt(q.agreement.pairF1)} />
             </div>
-            <p className="faint mt-1 text-center text-xs">From {q.agreement.items} double-labelled items so far.</p>
+            <p className="faint mt-1 text-center text-xs">From {q.agreement.items} items labelled by two or more people ({q.agreement.pairs} pairs of labellers) so far.</p>
             <ul className="mt-4 space-y-1.5">
               {Object.entries(q.perReviewer).map(([rid, n]) => (
                 <li key={rid} className="flex justify-between text-sm"><span>{name(rid)}</span><span className="tabular-nums">{n}</span></li>
@@ -136,6 +152,7 @@ function Upload({ onDone, onError }: { onDone: () => void; onError: (m: string) 
   const [fileName, setFileName] = useState("");
   const [share, setShare] = useState(20);
   const [hints, setHints] = useState(false);
+  const [everyone, setEveryone] = useState(false);
   const [busy, setBusy] = useState(false);
 
   async function pick(f: File | undefined) {
@@ -154,7 +171,7 @@ function Upload({ onDone, onError }: { onDone: () => void; onError: (m: string) 
     if (!items) return;
     setBusy(true);
     try {
-      await post("/api/admin/queues", { title, items, doubleShare: share / 100, showHints: hints });
+      await post("/api/admin/queues", { title, items, doubleShare: share / 100, showHints: hints, everyone });
       setItems(null);
       setFileName("");
       setTitle("");
@@ -183,6 +200,10 @@ function Upload({ onDone, onError }: { onDone: () => void; onError: (m: string) 
             <span className="faint text-xs">These items get two independent labels, for the agreement statistics. Use 100% for a calibration round.</span>
           </label>
           <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" checked={everyone} onChange={(e) => setEveryone(e.target.checked)} className="h-4 w-4 accent-leaf-600" />
+            Practice set: everyone labels every item (for calibration; the share above is ignored)
+          </label>
+          <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" checked={hints} onChange={(e) => setHints(e.target.checked)} className="h-4 w-4 accent-leaf-600" />
             Show keyword suggestions (leave off for agreement checks)
           </label>
@@ -193,9 +214,10 @@ function Upload({ onDone, onError }: { onDone: () => void; onError: (m: string) 
   );
 }
 
-type Member = { id: string; name: string; role: "admin" | "clinician" | "annotator"; source: "env" | "invite"; createdAt?: string };
+type Member = { id: string; name: string; role: "admin" | "clinician" | "pharmacist" | "annotator"; source: "env" | "invite"; createdAt?: string };
 const ROLES: { id: Member["role"]; label: string; hint: string }[] = [
   { id: "clinician", label: "Clinician", hint: "sign-off + labelling" },
+  { id: "pharmacist", label: "Pharmacist", hint: "medicines check + labelling" },
   { id: "annotator", label: "Annotator", hint: "labelling only" },
   { id: "admin", label: "Admin", hint: "everything" },
 ];
@@ -245,7 +267,7 @@ function Team({ onChange, notify }: { onChange: () => void; notify: (m: string, 
         <h2 className="text-lg font-bold tracking-tight">Team</h2>
         <span className="faint text-xs">{members?.length ?? "–"} people</span>
       </div>
-      <p className="muted mt-1 text-sm">Invite reviewers without redeploying. Each code is shown once; only a keyed hash is stored. Clinicians do sign-off and labelling; annotators label only.</p>
+      <p className="muted mt-1 text-sm">Invite reviewers without redeploying. Each code is shown once; only a keyed hash is stored. Clinicians do the full sign-off and labelling; pharmacists check the medicines and label; annotators label only.</p>
 
       <div className="mt-4 grid gap-2 sm:grid-cols-[1fr_auto_auto]">
         <input className="input" placeholder="Full name" value={name} onChange={(e) => setName(e.target.value)} maxLength={60} aria-label="Name" />

@@ -10,10 +10,54 @@ import { displayName } from "@/lib/names";
 import type { QueueProgress } from "@/lib/repo";
 
 type Me = {
-  reviewer: { id: string; name: string; role: "admin" | "clinician" | "annotator" };
+  reviewer: { id: string; name: string; role: "admin" | "clinician" | "pharmacist" | "annotator" };
   queues: QueueProgress[];
   review: { done: number; total: number };
+  acks: Record<string, string>;
 };
+
+type Step = { id: string; title: string; detail: string; href?: string; done: boolean; later?: boolean };
+
+// The ordered onboarding checklist for this reviewer: guide, then sign-off (by role),
+// then the practice (calibration) set, then benchmark labelling once it exists.
+function steps(me: Me): Step[] {
+  const role = me.reviewer.role;
+  const out: Step[] = [
+    { id: "guide", title: "Read the guide", detail: "What to do and the five labelling rules. About 5 min.", href: "/guide", done: Boolean(me.acks.guide) },
+  ];
+  if (role !== "annotator") {
+    const left = me.review.total - me.review.done;
+    out.push({
+      id: "signoff",
+      title: role === "pharmacist" ? "Medicines check" : "Clinical sign-off",
+      detail: left === 0 ? "Done. Thank you!" : `${left} cards left · about ${Math.max(5, Math.round(left * 0.6))} min`,
+      href: "/review",
+      done: me.review.total > 0 && left === 0,
+    });
+  }
+  const practice = me.queues.filter((q) => q.everyone);
+  const practiceLeft = practice.reduce((n, q) => n + q.mineAvailable, 0);
+  out.push({
+    id: "practice",
+    title: "Label the practice set",
+    detail: practice.length === 0 ? "Malik will add it soon. It will appear here." : practiceLeft === 0 ? "Done. Thank you!" : `${practiceLeft} cases left · about ${Math.max(5, practiceLeft)} min`,
+    href: practice.length ? `/label/${practice[0].id}` : undefined,
+    done: practice.length > 0 && practiceLeft === 0,
+    later: practice.length === 0,
+  });
+  const bench = me.queues.filter((q) => !q.everyone);
+  const benchLeft = bench.reduce((n, q) => n + q.mineAvailable, 0);
+  const benchNext = bench.find((q) => q.mineAvailable > 0) ?? bench[0];
+  out.push({
+    id: "benchmark",
+    title: "Benchmark labelling",
+    detail: bench.length === 0 ? "Opens later. It will appear here." : benchLeft === 0 ? "Nothing waiting for you right now." : `${benchLeft} cases waiting`,
+    href: benchNext ? `/label/${benchNext.id}` : undefined,
+    done: false,
+    later: bench.length === 0,
+  });
+  return out;
+}
 
 function greeting(): string {
   const h = new Date().getHours();
@@ -22,7 +66,7 @@ function greeting(): string {
   return "Ẹ kú alẹ́";
 }
 
-const ROLE: Record<Me["reviewer"]["role"], string> = { admin: "Admin", clinician: "Clinical reviewer", annotator: "Annotator" };
+const ROLE: Record<Me["reviewer"]["role"], string> = { admin: "Admin", clinician: "Clinical reviewer", pharmacist: "Pharmacist", annotator: "Annotator" };
 
 export default function Home() {
   const [me, setMe] = useState<Me | null>(null);
@@ -65,6 +109,8 @@ export default function Home() {
         <p className="muted mt-3 max-w-md">Every item you finish makes the benchmark stronger, and helps catch danger signs for Nigerian mothers.</p>
       </header>
 
+      <StartHere list={steps(me)} />
+
       <section className="mt-7 grid animate-rise grid-cols-3 gap-2 [animation-delay:80ms]" aria-label="Your progress">
         <Stat value={labelled} label="labelled" />
         <Stat value={waiting} label="waiting" />
@@ -77,8 +123,8 @@ export default function Home() {
             <div className="flex items-center gap-5">
               <Ring value={me.review.done / me.review.total} />
               <div className="min-w-0 flex-1">
-                <p className="eyebrow text-leaf-400">Clinical sign-off</p>
-                <h2 className="mt-1 text-xl font-bold tracking-tight">Review the danger-sign rules</h2>
+                <p className="eyebrow text-leaf-400">{me.reviewer.role === "pharmacist" ? "Medicines check" : "Clinical sign-off"}</p>
+                <h2 className="mt-1 text-xl font-bold tracking-tight">{me.reviewer.role === "pharmacist" ? "Check the medicines list" : "Review the danger-sign rules"}</h2>
                 <p className="muted mt-1 text-sm">
                   {reviewLeft === 0 ? "All done. Thank you!" : `${reviewLeft} quick taps left · about ${Math.max(5, Math.round(reviewLeft * 0.6))} min`}
                 </p>
@@ -131,6 +177,45 @@ export default function Home() {
         <Icon.Lock className="h-4 w-4" /> Items are confidential. Please don't screenshot or share them.
       </p>
     </main>
+  );
+}
+
+function StartHere({ list }: { list: Step[] }) {
+  const next = list.find((s) => !s.done && !s.later && s.href);
+  return (
+    <section className="card mt-7 animate-rise p-5 sm:p-6" aria-label="Start here">
+      <p className="eyebrow text-leaf-400">Start here</p>
+      <h2 className="mt-1 text-xl font-bold tracking-tight">{next ? "Your steps, in order" : "All your steps are done. Ẹ ṣé gan!"}</h2>
+      <ol className="mt-4 space-y-3">
+        {list.map((s, i) => {
+          const current = next?.id === s.id;
+          return (
+            <li key={s.id} className="flex items-start gap-3">
+              <span
+                className={`mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full text-sm font-bold ${
+                  s.done ? "bg-gradient-to-br from-leaf-400 to-cyan-400 text-night-950" : current ? "bg-sun-400 text-night-950" : "bg-white/[.07] text-sand-200 ring-1 ring-white/10"
+                }`}
+              >
+                {s.done ? <Icon.Check className="h-4 w-4" /> : i + 1}
+              </span>
+              <div className="min-w-0 flex-1">
+                {s.href && !s.later ? (
+                  <Link href={s.href} className={`font-semibold hover:underline ${s.done ? "muted" : ""}`}>{s.title}</Link>
+                ) : (
+                  <p className="faint font-semibold">{s.title}</p>
+                )}
+                <p className="muted text-sm">{s.detail}</p>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+      {next?.href && (
+        <Link href={next.href} className="btn-primary mt-5 w-full">
+          {list[0].done ? "Continue" : "Start"}: {next.title} <Icon.Arrow />
+        </Link>
+      )}
+    </section>
   );
 }
 

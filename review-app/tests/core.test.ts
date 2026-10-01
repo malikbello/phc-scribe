@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { agreement, cohensKappa } from "@/lib/agreement";
-import { candidates, pickDouble } from "@/lib/assign";
+import { candidates, pickDouble, teamComplete } from "@/lib/assign";
 import { reviewerForCode } from "@/lib/reviewers";
 import type { Label } from "@/lib/schema";
 import { LabelInput, evidenceInTranscript } from "@/lib/schema";
@@ -71,6 +71,17 @@ const L = (who: string, findings: Label["findings"], status: Label["status"] = "
 });
 const f = (concept: string, assertion: "present" | "absent" | "possible" | "historical", text = "t") => ({ concept, assertion, evidence: { text } });
 
+describe("calibration (everyone) mode", () => {
+  it("keeps every item open to each reviewer who has not labelled it", () => {
+    const order = ["a", "b", "c"];
+    const counts = { a: 3, b: 1 };
+    expect(candidates(order, new Set(), counts, new Set(["b"]), true)).toEqual(["a", "c"]);
+    expect(candidates(order, new Set(), counts, new Set(["a", "b", "c"]), true)).toEqual([]);
+    // complete for the team once two people have labelled it
+    expect(teamComplete(order, new Set(), counts, true)).toBe(1);
+  });
+});
+
 describe("agreement", () => {
   it("kappa basics", () => {
     expect(cohensKappa([true, false], [true, false])).toBe(1);
@@ -87,6 +98,19 @@ describe("agreement", () => {
     expect(res.exact).toBeCloseTo(2 / 3);
     expect(res.disagreements.map((d) => d.itemId)).toEqual(["i2"]);
     expect(res.dangerKappa).not.toBeNull();
+  });
+});
+
+describe("agreement over several labellers", () => {
+  const lab = (labeller: string, concept: string): Label => ({
+    item_id: "i1", status: "labelled", labeller, labelled_at: "", findings: [{ concept, assertion: "present", evidence: { text: "x" } }],
+  });
+  it("compares every pair", () => {
+    const res = agreement({ i1: { a: lab("a", "vaginal_bleeding"), b: lab("b", "vaginal_bleeding"), c: lab("c", "fever") } });
+    expect(res.items).toBe(1);
+    expect(res.pairs).toBe(3);
+    expect(res.exact).toBeCloseTo(1 / 3);
+    expect(res.disagreements.map((d) => d.labels.length)).toEqual([3]);
   });
 });
 
@@ -113,6 +137,18 @@ describe("review content", () => {
     const { QUESTIONS, QUESTION_CONTEXT, REVIEW_SECTIONS } = await import("@/lib/content");
     expect(QUESTIONS.length).toBe(Object.keys(QUESTION_CONTEXT).length);
     QUESTIONS.forEach((_, i) => expect(QUESTION_CONTEXT[i + 1]?.ask).toBeTruthy());
-    expect(REVIEW_SECTIONS.map((s) => s.id)).toEqual(["rule", "concept", "question", "phrase"]);
+    expect(REVIEW_SECTIONS.map((s) => s.id)).toEqual(["rule", "concept", "question", "phrase", "medicine"]);
+  });
+
+  it("gives each role its own sign-off steps", async () => {
+    const { MEDICATIONS, REVIEW_KEYS, reviewKeysFor, sectionsFor } = await import("@/lib/content");
+    expect(MEDICATIONS.map((m) => m.id)).toEqual(["iron_folic_acid", "ipt_sp", "tetanus_diphtheria", "deworming", "calcium"]);
+    expect(sectionsFor("annotator")).toEqual([]);
+    expect(sectionsFor("pharmacist").map((s) => s.id)).toEqual(["medicine"]);
+    const pharm = reviewKeysFor("pharmacist");
+    expect(pharm.size).toBe(MEDICATIONS.length + 2);
+    expect([...pharm].every((k) => k.startsWith("medicine"))).toBe(true);
+    expect(reviewKeysFor("clinician")).toEqual(REVIEW_KEYS);
+    expect(reviewKeysFor("admin")).toEqual(REVIEW_KEYS);
   });
 });

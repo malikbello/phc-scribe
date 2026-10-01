@@ -1,6 +1,6 @@
 import { agreement } from "./agreement";
-import { candidates, pickDouble, required } from "./assign";
-import { REVIEW_TOTAL } from "./content";
+import { candidates, pickDouble, teamComplete } from "./assign";
+import { reviewKeysFor, type Role } from "./content";
 import { HttpError } from "./server";
 import {
   evidenceInTranscript,
@@ -12,6 +12,7 @@ import {
   type QueueUpload,
   type ReviewAnswer,
   type StoredReviewAnswer,
+  type AckStep,
 } from "./schema";
 import { store } from "./store";
 
@@ -25,6 +26,7 @@ import { store } from "./store";
 //   q:{id}:time:{rid}           hash {n, ms} for time estimates
 //   lock:{id}:{itemId}          reviewerId, 15-minute expiry
 //   rev:{rid}                   hash reviewKey -> StoredReviewAnswer
+//   ack:{rid}                   hash step -> ISO time (onboarding steps, e.g. "guide")
 
 const LOCK_SECONDS = 15 * 60;
 
@@ -37,6 +39,7 @@ const k = {
   time: (q: string, r: string) => `q:${q}:time:${r}`,
   lock: (q: string, i: string) => `lock:${q}:${i}`,
   review: (r: string) => `rev:${r}`,
+  ack: (r: string) => `ack:${r}`,
 };
 
 function slug(title: string): string {
@@ -56,7 +59,8 @@ export async function createQueue(up: QueueUpload, createdBy: string): Promise<Q
     createdBy,
     showHints: up.showHints,
     order: ids,
-    double: pickDouble(ids, up.doubleShare),
+    double: up.everyone ? [] : pickDouble(ids, up.doubleShare),
+    ...(up.everyone ? { everyone: true } : {}),
   };
   for (let i = 0; i < up.items.length; i += 100) {
     const chunk = up.items.slice(i, i + 100);
@@ -65,6 +69,14 @@ export async function createQueue(up: QueueUpload, createdBy: string): Promise<Q
   await s.set(k.meta(meta.id), meta);
   await s.sadd("queues", meta.id);
   return meta;
+}
+
+/** Switch calibration mode on or off. Labels already given are kept. */
+export async function setEveryone(queueId: string, everyone: boolean): Promise<QueueMeta> {
+  const meta = await getMeta(queueId);
+  const next: QueueMeta = { ...meta, everyone };
+  await store().set(k.meta(queueId), next);
+  return next;
 }
 
 /** Delete a set that nobody has labelled yet (e.g. to re-upload with other settings). */
@@ -108,7 +120,7 @@ function toClient(meta: QueueMeta, item: QueueItem, mine: Label | null): ClientI
     language: item.language,
     transcript: item.transcript,
     hints: meta.showHints ? item.hints : [],
-    double: meta.double.includes(item.item_id),
+    double: Boolean(meta.everyone) || meta.double.includes(item.item_id),
     mine,
   };
 }
@@ -122,6 +134,7 @@ export type QueueProgress = {
   mineAvailable: number;
   teamComplete: number;
   avgMs: number | null;
+  everyone: boolean;
 };
 
 export async function listQueues(rid: string): Promise<QueueProgress[]> {
@@ -135,16 +148,17 @@ export async function listQueues(rid: string): Promise<QueueProgress[]> {
     const counts = await s.hgetall<number>(k.counts(id));
     const mine = new Set(await s.smembers(k.done(id, rid)));
     const time = await s.hgetall<number>(k.time(id, rid));
-    const teamComplete = meta.order.filter((i) => Number(counts[i] ?? 0) >= required(i, double)).length;
+    const everyone = Boolean(meta.everyone);
     out.push({
       id,
       title: meta.title,
       description: meta.description,
       total: meta.order.length,
       mineDone: mine.size,
-      mineAvailable: candidates(meta.order, double, counts, mine).length,
-      teamComplete,
+      mineAvailable: candidates(meta.order, double, counts, mine, everyone).length,
+      teamComplete: teamComplete(meta.order, double, counts, everyone),
       avgMs: time.n ? Number(time.ms) / Number(time.n) : null,
+      everyone,
     });
   }
   return out.sort((a, b) => a.title.localeCompare(b.title));
@@ -156,10 +170,11 @@ export async function nextItem(queueId: string, rid: string): Promise<ClientItem
   const double = new Set(meta.double);
   const counts = await s.hgetall<number>(k.counts(queueId));
   const mine = new Set(await s.smembers(k.done(queueId, rid)));
-  for (const id of candidates(meta.order, double, counts, mine).slice(0, 60)) {
+  const everyone = Boolean(meta.everyone);
+  for (const id of candidates(meta.order, double, counts, mine, everyone).slice(0, 60)) {
     const lockKey = k.lock(queueId, id);
-    // Double items may be worked on by two people at once; single items are locked.
-    if (!double.has(id)) {
+    // Double and calibration items may be worked on by several people at once; single items are locked.
+    if (!everyone && !double.has(id)) {
       const got = await s.set(lockKey, rid, { nx: true, ex: LOCK_SECONDS });
       if (!got && (await s.get<string>(lockKey)) !== rid) continue;
     }
@@ -227,8 +242,20 @@ export async function myReview(rid: string): Promise<Record<string, StoredReview
   return store().hgetall<StoredReviewAnswer>(k.review(rid));
 }
 
-export async function reviewProgress(rid: string): Promise<{ done: number; total: number }> {
-  return { done: Object.keys(await myReview(rid)).length, total: REVIEW_TOTAL };
+/** Sign-off progress over the steps this reviewer's role works through. */
+export async function reviewProgress(rid: string, role: Role): Promise<{ done: number; total: number }> {
+  const keys = reviewKeysFor(role);
+  const done = Object.keys(await myReview(rid)).filter((k) => keys.has(k)).length;
+  return { done, total: keys.size };
+}
+
+/** Onboarding steps the reviewer has confirmed (e.g. read the guide). */
+export async function myAcks(rid: string): Promise<Record<string, string>> {
+  return store().hgetall<string>(k.ack(rid));
+}
+
+export async function saveAck(rid: string, step: AckStep): Promise<void> {
+  await store().hset(k.ack(rid), { [step]: new Date().toISOString() });
 }
 
 // ---------------------------------------------------------------- admin
@@ -249,15 +276,18 @@ export async function queueStats(queueId: string, reviewerIds: string[]) {
   const perReviewer: Record<string, number> = {};
   for (const rid of reviewerIds) perReviewer[rid] = (await s.smembers(k.done(queueId, rid))).length;
   const double = new Set(meta.double);
-  const doubleLabels = Object.fromEntries(Object.entries(labels).filter(([id]) => double.has(id)));
+  const everyone = Boolean(meta.everyone);
+  // Calibration sets compare everyone on every item; other sets use the double-label subset.
+  const doubleLabels = everyone ? labels : Object.fromEntries(Object.entries(labels).filter(([id]) => double.has(id)));
   const counts = await s.hgetall<number>(k.counts(queueId));
   return {
     id: meta.id,
     title: meta.title,
+    everyone,
     total: meta.order.length,
-    doubleTotal: meta.double.length,
+    doubleTotal: everyone ? meta.order.length : meta.double.length,
     labelledItems: Object.keys(labels).length,
-    complete: meta.order.filter((i) => Number(counts[i] ?? 0) >= required(i, double)).length,
+    complete: teamComplete(meta.order, double, counts, everyone),
     perReviewer,
     agreement: agreement(doubleLabels),
   };

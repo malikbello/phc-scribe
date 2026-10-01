@@ -562,5 +562,32 @@
   "Is PCV < 21% an acceptable stand-in for Hb < 7 g/dL in the severe-anaemia rule?",
   "Which edition and sections of the National Standing Orders should each rule cite?",
   "Are there common local terms (English or Yoruba) for these signs that we are missing?"
+ ],
+ "medications": [
+  {
+   "id": "iron_folic_acid",
+   "label": "Iron and folic acid",
+   "definition": "Daily iron and folic acid tablets (haematinics) given to prevent anaemia in pregnancy."
+  },
+  {
+   "id": "ipt_sp",
+   "label": "IPTp-SP (malaria prevention)",
+   "definition": "Sulfadoxine-pyrimethamine given at antenatal visits to prevent malaria in pregnancy."
+  },
+  {
+   "id": "tetanus_diphtheria",
+   "label": "Tetanus-diphtheria (Td) vaccine",
+   "definition": "Td injection given in pregnancy to protect mother and baby against tetanus."
+  },
+  {
+   "id": "deworming",
+   "label": "Deworming",
+   "definition": "A deworming tablet (for example albendazole or mebendazole) after the first trimester."
+  },
+  {
+   "id": "calcium",
+   "label": "Calcium",
+   "definition": "Calcium supplements, used where diets are low in calcium to lower pre-eclampsia risk."
+  }
  ]
 }

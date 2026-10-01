@@ -392,6 +392,7 @@ function Guide({ onClose }: { onClose: () => void }) {
           <li><b>When torn, choose what a cautious clinician would act on.</b> Use <i>Possible</i> rather than leaving a danger sign out.</li>
         </ol>
         <p className="muted mt-4 text-sm">Past pregnancy and now in one sentence? Add two findings: <i>Past pregnancy</i> and <i>Absent</i>. About a minute per item is normal.</p>
+        <Link href="/guide" className="btn-ghost mt-4 w-full text-sm">Read the full guide</Link>
         <p className="faint mt-3 text-xs">Keyboard: 1–4 choose the answer · Ctrl+Enter saves · Esc clears.</p>
       </div>
     </div>

@@ -1,11 +1,11 @@
 import { DANGER_IDS } from "./content";
 import type { Label } from "./schema";
 
-// Inter-annotator agreement on double-labelled items (first two labellers per item,
-// by reviewer id). Reported: exact agreement on the full finding set, Cohen's kappa on
-// danger-sign positivity over (item x danger concept), and pairwise F1 on
-// (concept, assertion) pairs. Items either labeller skipped count as disagreements
-// unless both skipped.
+// Inter-annotator agreement over every pair of labellers on each multiply-labelled item
+// (two per item for double-label subsets; everyone on calibration sets). Reported:
+// exact agreement on the full finding set (share of pairs), Cohen's kappa on danger-sign
+// positivity over (pair x danger concept), and pairwise F1 on (concept, assertion)
+// pairs. A pair where one labeller skipped counts as a disagreement unless both skipped.
 
 const POSITIVE = new Set(["present", "possible"]);
 
@@ -19,6 +19,7 @@ function dangerPositive(l: Label): Set<string> {
 
 export type Agreement = {
   items: number;
+  pairs: number;
   exact: number | null;
   dangerKappa: number | null;
   pairF1: number | null;
@@ -43,33 +44,41 @@ export function cohensKappa(a: boolean[], b: boolean[]): number | null {
 }
 
 export function agreement(byItem: Record<string, Record<string, Label>>): Agreement {
-  let exact = 0, items = 0, tp = 0, fp = 0, fn = 0;
+  let exact = 0, items = 0, pairCount = 0, tp = 0, fp = 0, fn = 0;
   const ka: boolean[] = [], kb: boolean[] = [];
   const disagreements: Agreement["disagreements"] = [];
   for (const [itemId, labels] of Object.entries(byItem)) {
     const ids = Object.keys(labels).sort();
     if (ids.length < 2) continue;
-    const A = labels[ids[0]], B = labels[ids[1]];
     items++;
-    const bothSkip = A.status === "skip" && B.status === "skip";
-    const pa = pairs(A), pb = pairs(B);
-    const same = bothSkip || (A.status === B.status && pa.size === pb.size && [...pa].every((p) => pb.has(p)));
-    if (same) exact++;
-    else disagreements.push({ itemId, labels: ids.map((i) => labels[i]) });
-    if (A.status === "labelled" && B.status === "labelled") {
-      for (const p of pa) (pb.has(p) ? tp++ : fp++);
-      for (const p of pb) if (!pa.has(p)) fn++;
-      const da = dangerPositive(A), db = dangerPositive(B);
-      for (const c of DANGER_IDS) {
-        ka.push(da.has(c));
-        kb.push(db.has(c));
+    let itemAgrees = true;
+    for (let x = 0; x < ids.length; x++) {
+      for (let y = x + 1; y < ids.length; y++) {
+        const A = labels[ids[x]], B = labels[ids[y]];
+        pairCount++;
+        const bothSkip = A.status === "skip" && B.status === "skip";
+        const pa = pairs(A), pb = pairs(B);
+        const same = bothSkip || (A.status === B.status && pa.size === pb.size && [...pa].every((p) => pb.has(p)));
+        if (same) exact++;
+        else itemAgrees = false;
+        if (A.status === "labelled" && B.status === "labelled") {
+          for (const p of pa) (pb.has(p) ? tp++ : fp++);
+          for (const p of pb) if (!pa.has(p)) fn++;
+          const da = dangerPositive(A), db = dangerPositive(B);
+          for (const c of DANGER_IDS) {
+            ka.push(da.has(c));
+            kb.push(db.has(c));
+          }
+        }
       }
     }
+    if (!itemAgrees) disagreements.push({ itemId, labels: ids.map((i) => labels[i]) });
   }
-  const f1 = tp + fp + fn === 0 ? (items ? 1 : null) : (2 * tp) / (2 * tp + fp + fn);
+  const f1 = tp + fp + fn === 0 ? (pairCount ? 1 : null) : (2 * tp) / (2 * tp + fp + fn);
   return {
     items,
-    exact: items ? exact / items : null,
+    pairs: pairCount,
+    exact: pairCount ? exact / pairCount : null,
     dangerKappa: cohensKappa(ka, kb),
     pairF1: f1,
     disagreements,

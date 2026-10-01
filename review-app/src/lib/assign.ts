@@ -3,8 +3,16 @@
 // the agreement sample fills early. A short lock stops two people getting the same
 // single-label item at the same time.
 
-export function required(itemId: string, double: ReadonlySet<string>): number {
+// In calibration ("everyone") mode every reviewer labels every item, so an item never
+// closes; it counts as complete for the team once two people have labelled it.
+export function required(itemId: string, double: ReadonlySet<string>, everyone = false): number {
+  if (everyone) return Number.POSITIVE_INFINITY;
   return double.has(itemId) ? 2 : 1;
+}
+
+export function teamComplete(order: readonly string[], double: ReadonlySet<string>, counts: Readonly<Record<string, number>>, everyone = false): number {
+  const need = (id: string) => (everyone ? 2 : required(id, double));
+  return order.filter((id) => Number(counts[id] ?? 0) >= need(id)).length;
 }
 
 export function candidates(
@@ -12,8 +20,9 @@ export function candidates(
   double: ReadonlySet<string>,
   counts: Readonly<Record<string, number>>,
   mine: ReadonlySet<string>,
+  everyone = false,
 ): string[] {
-  const open = order.filter((id) => !mine.has(id) && (counts[id] ?? 0) < required(id, double));
+  const open = order.filter((id) => !mine.has(id) && (counts[id] ?? 0) < required(id, double, everyone));
   return [...open.filter((id) => double.has(id)), ...open.filter((id) => !double.has(id))];
 }
 

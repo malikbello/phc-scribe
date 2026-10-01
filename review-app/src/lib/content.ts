@@ -5,11 +5,13 @@ import data from "@/data/review.json";
 export type Concept = { id: string; label: string; danger: boolean; definition: string };
 export type Rule = { id: string; name: string; when: string; message: string; severity: string };
 export type Phrase = { concept: string; label: string; forms: string[] };
+export type Medication = { id: string; label: string; definition: string };
 
 export const CONCEPTS: Concept[] = data.concepts;
 export const RULES: Rule[] = data.rules;
 export const PHRASES: Phrase[] = data.phrases;
 export const QUESTIONS: string[] = data.questions;
+export const MEDICATIONS: Medication[] = data.medications;
 /** Shortest evidence quote grounding accepts (serve/phc_scribe/grounding.py). */
 export const MIN_QUOTE_CHARS: number = data.min_quote_chars;
 export const CONCEPT_BY_ID = new Map(CONCEPTS.map((c) => [c.id, c]));
@@ -59,7 +61,7 @@ export const QUESTION_CONTEXT: Record<number, QuestionContext> = {
   },
 };
 
-export type ReviewKind = "question" | "rule" | "concept" | "phrase";
+export type ReviewKind = "question" | "rule" | "concept" | "phrase" | "medicine";
 export type ReviewRow = {
   key: string;
   kind: ReviewKind;
@@ -94,8 +96,33 @@ const QUESTION_SECTION: ReviewSection = {
   }),
 };
 
+// The pharmacist's step: one card per medication class in the record schema, then two
+// open questions. Answers export with the rest of the sign-off.
+const MEDICINE_QUESTIONS = [
+  {
+    key: "medicine-q:local-names",
+    title: "Local and brand names",
+    ask: "What names do women and health workers use for these medicines? Brand names, Pidgin, Yoruba, or how people describe them (\"blood tonic\", \"malaria drug\", \"injection for belle\"). Please say which medicine each name belongs to.",
+  },
+  {
+    key: "medicine-q:missing",
+    title: "Anything missing?",
+    ask: "Is any medicine routinely given at antenatal visits in Nigerian primary health care missing from this list?",
+  },
+];
+
+const MEDICINE_SECTION: ReviewSection = {
+  id: "medicine",
+  title: "Medicines",
+  blurb: "The medicines the app records at an antenatal visit. Is each one described correctly for Nigerian PHC? Then add the names people actually use.",
+  rows: [
+    ...MEDICATIONS.map((m) => ({ key: `medicine:${m.id}`, kind: "medicine" as const, title: m.label, detail: m.definition })),
+    ...MEDICINE_QUESTIONS.map((q) => ({ key: q.key, kind: "question" as const, title: q.title, detail: q.ask })),
+  ],
+};
+
 // Order matters: reviewers first confirm the rules and the findings they use, then
-// answer the edge-case questions about them, then check note wording.
+// answer the edge-case questions about them, then check note wording, then medicines.
 export const REVIEW_SECTIONS: ReviewSection[] = [
   {
     id: "rule",
@@ -131,7 +158,21 @@ export const REVIEW_SECTIONS: ReviewSection[] = [
       danger: CONCEPT_BY_ID.get(p.concept)?.danger,
     })),
   },
+  MEDICINE_SECTION,
 ];
 
 export const REVIEW_KEYS = new Set(REVIEW_SECTIONS.flatMap((s) => s.rows.map((r) => r.key)));
 export const REVIEW_TOTAL = REVIEW_KEYS.size;
+
+export type Role = "admin" | "clinician" | "pharmacist" | "annotator";
+
+/** The sign-off steps a role works through. Annotators have none. */
+export function sectionsFor(role: Role): ReviewSection[] {
+  if (role === "annotator") return [];
+  if (role === "pharmacist") return [MEDICINE_SECTION];
+  return REVIEW_SECTIONS;
+}
+
+export function reviewKeysFor(role: Role): Set<string> {
+  return new Set(sectionsFor(role).flatMap((s) => s.rows.map((r) => r.key)));
+}
