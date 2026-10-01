@@ -50,6 +50,15 @@ _Last updated: 1 Oct 2026, ~23:15 WAT (session 5). Keep this file current; it is
   - `python scripts/teacher_check.py build`, then send the file.
 
 **Takada (ADR-0023, accepted 1 Oct): the health-worker app, live at https://github.com/malikbello/takada-app (private; pushed 1 Oct, redesign v2 on 2 Oct). It is an installable web app (PWA) for Android and iPhone from one codebase; a native wrapper (Capacitor) for the app stores is optional later.**
+- **Design v3.2 "warm care" (2 Oct):**
+  - New t-cradle logo; the name is written **tákàdá**.
+  - White default with a peach/rose/violet palette; danger crimson is reserved for alerts.
+  - Plus Jakarta Sans, bundled offline.
+  - React 19 + Framer Motion with lazy-loaded features: first load 162 KB.
+  - Glass surfaces with a floating dock; automatic light mode on low-memory phones.
+  - The nurse picks her greeting language (Yorùbá merged forms Ẹ káàárọ̀ / Ẹ káàsán / Ẹ káalẹ́, plus Hausa, Igbo, Pidgin, English). **Malik to check the tone marks and the non-Yorùbá forms.**
+  - Spec: `docs/design.md` in takada-app.
+- **Next for the hub:** a language-identification step so the visit's "Auto" language is detected from the recording.
 - **Built:**
   - `packages/clinical`: rules, folding and the visit guide, ported to TypeScript and tested against vectors from phc-scribe's Python reference (`scripts/export_clinical_bundle.py` → `exports/clinical-bundle.json`, vendored with a pinned SHA-256).
   - `packages/protocol`: append-only, hashed visit events; order-independent state; per-device monotonic timestamps.
