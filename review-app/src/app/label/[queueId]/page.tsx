@@ -52,6 +52,8 @@ export default function LabelPage() {
   const [burst, setBurst] = useState(false);
   const [toast, showToast, tone] = useToast();
   const started = useRef(Date.now());
+  const pickerRef = useRef<HTMLDivElement>(null);
+  const assertRef = useRef<HTMLDivElement>(null);
 
   const tokens = useMemo(() => (item ? tokenize(item.transcript) : []), [item]);
   const evidence = item ? evidenceFor(item.transcript, tokens, range) : "";
@@ -66,6 +68,15 @@ export default function LabelPage() {
     }
     return used;
   }, [item, tokens, findings]);
+
+  // On a phone the next step is below the fold: bring it into view as each step completes.
+  const hasEvidence = Boolean(evidence);
+  useEffect(() => {
+    if (hasEvidence && !concept) pickerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [hasEvidence, concept]);
+  useEffect(() => {
+    if (concept) assertRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [concept]);
 
   const refreshProgress = useCallback(async () => {
     const me = await api<{ queues: QueueProgress[] }>("/api/me");
@@ -229,10 +240,14 @@ export default function LabelPage() {
         )}
 
         {isSpeech(item.source) && (
-          <p className="mb-3 rounded-2xl bg-cyan-400/10 px-4 py-2 text-sm leading-relaxed text-cyan-100 ring-1 ring-cyan-300/30">
-            <b>Real speech.</b> Record only what the speaker says about their own health, or about one pregnant woman they describe.
-            Advice, facts, opinions and talk about babies or people in general: tap <b>Nothing to record</b>.
-          </p>
+          <details className="mb-3 rounded-2xl bg-cyan-400/10 px-4 py-2 text-sm leading-relaxed text-cyan-100 ring-1 ring-cyan-300/30">
+            <summary className="cursor-pointer font-semibold">Real speech: general talk = Nothing to record</summary>
+            <p className="mt-1">
+              Record only what the speaker says about their own health, or about one pregnant woman they describe.
+              Advice, facts, opinions, questions and talk about babies or people in general: tap <b>Nothing to record</b>.
+              Skip only garbled, cut-off or other-language clips.
+            </p>
+          </details>
         )}
 
         {revisiting && (
@@ -246,7 +261,7 @@ export default function LabelPage() {
             <span className="rounded-full bg-white/[.07] px-2.5 py-1 text-sand-200 ring-1 ring-white/10">{langName(item.language)}</span>
             {item.double && <span className="rounded-full bg-cyan-400/10 px-2.5 py-1 text-cyan-200 ring-1 ring-cyan-300/30">Agreement check</span>}
           </div>
-          <p className="select-none text-[21px] leading-[1.75] sm:text-[23px]" lang={item.language}>
+          <p className="select-none text-[19px] leading-[1.7] sm:text-[23px]" lang={item.language}>
             {tokens.map((t, i) => {
               const inRange = range && i >= range.from && i <= range.to;
               const used = usedTokens.has(i);
@@ -277,26 +292,47 @@ export default function LabelPage() {
             {evidence && <button className="btn-ghost min-h-[36px] px-3 text-sm" onClick={() => setRange(null)}>Clear</button>}
           </div>
 
-          <div className="mt-4 flex items-center gap-2">
-            <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-gradient-to-br from-leaf-400 to-cyan-400 text-xs font-bold text-night-950 shadow-glow">2</span>
-            <p className="muted flex-1">{concept ? <span className="font-semibold text-ink dark:text-sand-100">{CONCEPT_BY_ID.get(concept)?.label}</span> : "What is it?"}</p>
-            <input className="input w-36 py-2 text-sm sm:w-48" placeholder="Search" value={search} onChange={(e) => setSearch(e.target.value)} aria-label="Search findings" />
-          </div>
-          <ChipGroup title="Danger signs" items={danger} value={concept} onPick={setConcept} danger />
-          <ChipGroup title="Other findings" items={other} value={concept} onPick={setConcept} />
+          {evidence && (
+            <div ref={pickerRef} className="scroll-mt-20">
+              <div className="mt-4 flex items-center gap-2">
+                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-gradient-to-br from-leaf-400 to-cyan-400 text-xs font-bold text-night-950 shadow-glow">2</span>
+                {concept ? (
+                  <>
+                    <p className="min-w-0 flex-1 truncate font-semibold text-ink dark:text-sand-100">{CONCEPT_BY_ID.get(concept)?.label}</p>
+                    <button className="btn-ghost min-h-[36px] px-3 text-sm" onClick={() => setConcept(null)}>Change</button>
+                  </>
+                ) : (
+                  <>
+                    <p className="muted flex-1">What is it?</p>
+                    <input className="input w-32 py-2 text-sm sm:w-48" placeholder="Search" value={search} onChange={(e) => setSearch(e.target.value)} aria-label="Search findings" />
+                  </>
+                )}
+              </div>
+              {!concept && (
+                <>
+                  <ChipGroup title="Danger signs" items={danger} value={concept} onPick={setConcept} danger />
+                  <ChipGroup title="Other findings" items={other} value={concept} onPick={setConcept} />
+                </>
+              )}
+            </div>
+          )}
 
-          <div className="mt-4 flex items-center gap-2">
-            <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-gradient-to-br from-leaf-400 to-cyan-400 text-xs font-bold text-night-950 shadow-glow">3</span>
-            <p className="muted">Is it…</p>
-          </div>
-          <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
-            {ASSERTIONS.map((a) => (
-              <button key={a.id} className={`btn focus-ring flex-col gap-0 py-2 leading-tight ${a.cls}`} disabled={!evidence || !concept} onClick={() => addFinding(a.id)}>
-                <span>{a.label}</span>
-                <span className="text-[11px] font-medium opacity-80">{a.hint}</span>
-              </button>
-            ))}
-          </div>
+          {evidence && concept && (
+            <div ref={assertRef} className="scroll-mt-20">
+              <div className="mt-4 flex items-center gap-2">
+                <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-gradient-to-br from-leaf-400 to-cyan-400 text-xs font-bold text-night-950 shadow-glow">3</span>
+                <p className="muted">Is it…</p>
+              </div>
+              <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+                {ASSERTIONS.map((a) => (
+                  <button key={a.id} className={`btn focus-ring min-h-[56px] flex-col gap-0 py-2 leading-tight ${a.cls}`} onClick={() => addFinding(a.id)}>
+                    <span>{a.label}</span>
+                    <span className="text-[11px] font-medium opacity-80">{a.hint}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </section>
 
         <section className="mt-3" aria-label="Findings for this item">
