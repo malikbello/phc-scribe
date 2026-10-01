@@ -155,3 +155,23 @@ def test_enriched_queue_splits_groups_and_backfills():
     assert all(x.item_id.startswith("s4w-yo-") for x in q)
     again = sample_enriched_queue(list(reversed(rows)), {"yo": 10}, enriched_share=0.6, seed=1)
     assert [x.item_id for x in q] == [x.item_id for x in again]
+
+
+def test_build_items_reads_the_apps_gold_export_and_lists_exclusions():
+    # One line per item as /api/admin/export?kind=gold writes it (review-app lib/adjudicate.ts)
+    q, q2 = _queue_item(), _queue_item().model_copy(update={"item_id": "s4-yo-2"})
+    gold = Label(
+        item_id=q.item_id,
+        status="labelled",
+        findings=[],
+        labeller="gold:adjudicated:nurse",
+        labelled_at="2026-10-02T09:00:00Z",
+        note="General talk: nothing to record",
+    )
+    skip = Label.model_validate_json(
+        '{"item_id": "s4-yo-2", "status": "skip", "skip_reason": "unintelligible",'
+        ' "findings": [], "labeller": "gold:agreed", "labelled_at": "2026-10-02T09:00:00Z"}'
+    )
+    items, report = build_items([q, q2], [gold, skip], stratum="S4W")
+    assert [i.stratum for i in items] == ["S4W"]
+    assert report.skipped_ids == ["s4-yo-2"]

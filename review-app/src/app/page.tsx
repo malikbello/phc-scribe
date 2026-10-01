@@ -13,6 +13,7 @@ type Me = {
   reviewer: { id: string; name: string; role: "admin" | "clinician" | "pharmacist" | "annotator" };
   queues: QueueProgress[];
   review: { done: number; total: number };
+  settle: { id: string; title: string; pending: number }[];
   acks: Record<string, string>;
 };
 
@@ -40,18 +41,29 @@ function steps(me: Me): Step[] {
   out.push({
     id: "practice",
     title: "Label the practice set",
-    detail: practice.length === 0 ? "Malik will add it soon. It will appear here." : practiceLeft === 0 ? "Done. Thank you!" : `${practiceLeft} cases left · about ${Math.max(5, practiceLeft)} min`,
+    detail: practice.length === 0 ? "Malik will add it soon. It will appear here." : practiceLeft === 0 ? "Done. Thank you!" : `${practiceLeft} ${practiceLeft === 1 ? "case" : "cases"} left · about ${Math.max(5, practiceLeft)} min`,
     href: practice.length ? `/label/${practice[0].id}` : undefined,
     done: practice.length > 0 && practiceLeft === 0,
     later: practice.length === 0,
   });
+  if (role === "clinician" || role === "admin") {
+    const waiting = me.settle.reduce((n, q) => n + q.pending, 0);
+    out.push({
+      id: "settle",
+      title: "Settle disagreements",
+      detail: waiting ? `${waiting} waiting · about ${Math.max(2, Math.round(waiting * 0.5))} min. They appear here as people label.` : "Nothing waiting. New ones appear here as people label.",
+      href: waiting ? `/adjudicate/${me.settle[0].id}` : undefined,
+      done: false,
+      later: waiting === 0,
+    });
+  }
   const bench = me.queues.filter((q) => !q.everyone);
   const benchLeft = bench.reduce((n, q) => n + q.mineAvailable, 0);
   const benchNext = bench.find((q) => q.mineAvailable > 0) ?? bench[0];
   out.push({
     id: "benchmark",
     title: "Benchmark labelling",
-    detail: bench.length === 0 ? "Opens later. It will appear here." : benchLeft === 0 ? "Nothing waiting for you right now." : `${benchLeft} cases waiting`,
+    detail: bench.length === 0 ? "Opens later. It will appear here." : benchLeft === 0 ? "Nothing waiting for you right now." : `${benchLeft} ${benchLeft === 1 ? "case" : "cases"} waiting`,
     href: benchNext ? `/label/${benchNext.id}` : undefined,
     done: false,
     later: bench.length === 0,

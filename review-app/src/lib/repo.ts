@@ -13,10 +13,12 @@ import {
   type ReviewAnswer,
   type StoredReviewAnswer,
   type AckStep,
+  type AdjudicationInput,
   isSpeechSource,
   SPEECH_SKIP_REASONS,
 } from "./schema";
 import { store } from "./store";
+import { basisOf, causesOf, resolve, type Adjudication, type Cause, type Resolution } from "./adjudicate";
 
 // Key layout (all under one Redis database):
 //   queues                      set of queue ids
@@ -29,6 +31,7 @@ import { store } from "./store";
 //   lock:{id}:{itemId}          reviewerId, 15-minute expiry
 //   rev:{rid}                   hash reviewKey -> StoredReviewAnswer
 //   ack:{rid}                   hash step -> ISO time (onboarding steps, e.g. "guide")
+//   q:{id}:adj                  hash itemId -> Adjudication (clinician's gold decision)
 
 const LOCK_SECONDS = 15 * 60;
 
@@ -42,6 +45,7 @@ const k = {
   lock: (q: string, i: string) => `lock:${q}:${i}`,
   review: (r: string) => `rev:${r}`,
   ack: (r: string) => `ack:${r}`,
+  adj: (q: string) => `q:${q}:adj`,
 };
 
 function slug(title: string): string {
@@ -311,4 +315,104 @@ export async function allReviews(reviewerIds: string[]) {
   const out: Record<string, Record<string, StoredReviewAnswer>> = {};
   for (const rid of reviewerIds) out[rid] = await myReview(rid);
   return out;
+}
+
+// ---- Gold labels and adjudication (lib/adjudicate.ts has the rules) ----
+
+/** Items whose labels decide gold together: every item of a practice set, the double subset otherwise. */
+function multiLabelled(meta: QueueMeta, labels: Record<string, Record<string, Label>>): string[] {
+  return meta.order.filter((id) => Object.keys(labels[id] ?? {}).length >= 2);
+}
+
+export type PendingItem = {
+  itemId: string;
+  language: string;
+  source: string;
+  transcript: string;
+  why: string;
+  /** Distinct answers, anonymised (A, B, ...) and grouped; who gave them is never shown. */
+  answers: { name: string; count: number; status: Label["status"]; skip_reason?: Label["skip_reason"]; findings: Label["findings"] }[];
+};
+
+export async function adjudicationState(queueId: string) {
+  const meta = await getMeta(queueId);
+  const labels = await allLabels(queueId);
+  const adj = await store().hgetall<Adjudication>(k.adj(queueId));
+  const counts: Record<Resolution | "pending" | "unlabelled", number> = { single: 0, agreed: 0, majority: 0, adjudicated: 0, pending: 0, unlabelled: 0 };
+  const causes: Partial<Record<Cause, number>> = {};
+  const pending: string[] = [];
+  const gold: Label[] = [];
+  for (const id of meta.order) {
+    const ls = Object.values(labels[id] ?? {});
+    const r = resolve(ls, adj[id]);
+    if (r.state === "resolved") {
+      counts[r.resolution]++;
+      gold.push(r.gold);
+    } else counts[r.state]++;
+    if (r.state === "pending") pending.push(id);
+    if (ls.length >= 2) for (const c of causesOf(ls)) causes[c] = (causes[c] ?? 0) + 1;
+  }
+  return { meta, labels, adj, counts, causes, pending, gold, multi: multiLabelled(meta, labels).length };
+}
+
+export async function pendingCounts(): Promise<{ id: string; title: string; pending: number }[]> {
+  const ids = await store().smembers("queues");
+  const out = [];
+  for (const id of ids) {
+    const st = await adjudicationState(id).catch(() => null);
+    if (st && st.pending.length) out.push({ id, title: st.meta.title, pending: st.pending.length });
+  }
+  return out.sort((a, b) => a.title.localeCompare(b.title));
+}
+
+export async function nextPending(queueId: string, after?: string): Promise<PendingItem | null> {
+  const st = await adjudicationState(queueId);
+  const start = after ? st.pending.indexOf(after) + 1 : 0;
+  const id = st.pending[start] ?? st.pending[0];
+  if (!id) return null;
+  const item = await getItem(queueId, id);
+  const ls = Object.values(st.labels[id] ?? {}).sort((a, b) => a.labeller.localeCompare(b.labeller));
+  const r = resolve(ls, st.adj[id]);
+  const groups = new Map<string, Label[]>();
+  for (const l of ls) {
+    const key = l.status === "skip" ? "skip" : l.findings.map((f) => `${f.concept}|${f.assertion}`).sort().join(",") || "nothing";
+    groups.set(key, [...(groups.get(key) ?? []), l]);
+  }
+  return {
+    itemId: id,
+    language: item.language,
+    source: item.source,
+    transcript: item.transcript,
+    why: r.state === "pending" ? r.why : "",
+    answers: [...groups.values()].map((g, i) => ({
+      name: String.fromCharCode(65 + i),
+      count: g.length,
+      status: g[0].status,
+      ...(g[0].skip_reason ? { skip_reason: g[0].skip_reason } : {}),
+      findings: g[0].status === "skip" ? [] : g[0].findings,
+    })),
+  };
+}
+
+export async function saveAdjudication(queueId: string, rid: string, input: AdjudicationInput): Promise<Adjudication> {
+  const item = await getItem(queueId, input.itemId);
+  for (const f of input.findings) {
+    if (!evidenceInTranscript(item.transcript, f.evidence.text)) {
+      throw new HttpError(400, `Evidence for ${f.concept} is not exact text from the item`);
+    }
+  }
+  const labels = Object.values((await allLabels(queueId))[input.itemId] ?? {});
+  if (labels.length < 2) throw new HttpError(409, "Only items with two or more labels are adjudicated");
+  const decision: Adjudication = {
+    item_id: input.itemId,
+    status: input.status,
+    ...(input.status === "skip" && input.skipReason ? { skip_reason: input.skipReason } : {}),
+    findings: input.status === "skip" ? [] : input.findings,
+    reason: input.reason,
+    adjudicator: rid,
+    adjudicated_at: new Date().toISOString(),
+    basis: basisOf([...labels].sort((a, b) => a.labeller.localeCompare(b.labeller))),
+  };
+  await store().hset(k.adj(queueId), { [input.itemId]: decision });
+  return decision;
 }

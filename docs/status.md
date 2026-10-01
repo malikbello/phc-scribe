@@ -84,13 +84,17 @@ Point [95% bootstrap CI]. Reports: `results/pilot-20261001/`. 30 items is a pilo
 1. ~~**Baseline results**~~ **(done 30 Sept; see Baseline results):** read the Kaggle log when the run ends; put the three reports (N-ATLaS few-shot, Llama-3.1 few-shot, N-ATLaS zero-shot on G) in this file. If the 12 h limit cut the last run, re-run only what is missing.
 2. **Pre-freeze Kaggle run (`PLAN = "prefreeze"`, pushed 1 Oct):** Malik starts it from the notebook editor (Save Version → Save & Run All). It scores N-ATLaS and Llama-3.1 on Belebele `yor_Latn` (G2 margin m) and runs the unconstrained base comparator on the pilot items (B). Read with `scripts/kaggle_log.py` (`=== BELEBELE` lines). Then fill m in `docs/eval-plan.md` §6, get Rahmat's G1 confirmation, and commit the freeze. Margins and proposals A–E were approved by Malik on 1 Oct. (Done so far: reports recorded, truncation settled, cap stays 768; originally: propose G1 (false-alarm margin) and G2 (Belebele `yor_Latn` regression margin) in `docs/eval-plan.md` §6 → Malik approves → commit the freeze. G2 needs a Belebele scoring job on Kaggle for base N-ATLaS (not built yet).
 3. **S4-W labelling (started 1 Oct, Malik: "label wazobia now")**. Rules: annotation guidelines §10; ADR-0018 amendment 2.
-   - Malik uploads two sets in the review app (Admin → Add a labelling set):
-     - **(a) Calibration:** `data/private/label_queue.s4w-cal.jsonl`, title "Practice · real speech (S4-W)", **Everyone labels every item** ticked, hints off.
-     - **(b) Counted set:** `data/private/label_queue.s4w.jsonl`, title "Benchmark · real health speech (S4-W)", double share **0.2**, hints off, not a practice set.
-   - The team does (a) first. Malik and Rahmat go through the calibration disagreements on the admin page; if a rule caused them, revise §10 *before* much of (b) is done.
-   - Still to build before stage 2:
-     - an adjudication log;
-     - `scripts/build_s4w_gold.py`, which turns the exported labels plus adjudication into gold BenchItems (`data/bench/s4w.jsonl`), with skipped-unlabellable ids passed to `--exclude`.
+   - **Both sets uploaded by Malik (1 Oct):**
+     - "Practice · real speech (S4-W)": 20 clips, practice set.
+     - "Benchmark · real health speech (S4-W)": 600 clips, 20% double-labelled, hints off.
+   - **Human-only work:**
+     - the team labels;
+     - Rahmat settles the disagreements that need clinical judgement ("Settle disagreements" on her home screen, answers anonymised).
+   - **Everything else is automatic** (guidelines §10.8):
+     - single, agreed and danger-safe majority items settle by rule;
+     - the admin page groups disagreements by cause and names the rule behind each;
+     - if a rule causes repeated disagreements, revise §10 before much of the counted set is done.
+   - **Gold:** Admin → set → *Gold (JSONL)* → `python scripts/build_s4_items.py <gold file> --set s4w --strict` → `data/bench/s4w.jsonl` + `s4w.excluded.txt` (ids for the stage-2 `--exclude`).
 3b. **Freeze, two stages (ADR-0022, accepted 1 Oct):**
    - **Stage 1** on 5 Oct, after the MAMAI decision: `python scripts/freeze_test_set.py items data/bench/g.20261002.jsonl data/bench/h.adeola.jsonl data/private/label_queue.s4w.jsonl` (plus the MamaBench slice, if built, or the MAMAI queue instead of S4-W if it arrives). Commit the manifest, then `scripts/build_train_set.py` can run.
    - **Stage 2** when labelling is adjudicated: `python scripts/freeze_test_set.py labels --labelled data/private/label_queue.s4w.jsonl=data/bench/s4w.jsonl [--exclude …]`. This must happen before any fine-tuned model sees a counted item.
@@ -153,6 +157,10 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 | Optional: delete the unused `HF_WRITE_TOKEN` on Hugging Face and GitHub | Optional |
 
 ## Progress log
+**1 Oct, session 5 (settling disagreements):**
+- Malik: keep only truly human tasks human. The review app now settles labels by rule (single, agreed, majority with no danger-sign split) and sends only clinical disagreements to Rahmat (`review-app/src/lib/adjudicate.ts`, `/adjudicate/[queueId]`, home-screen step, admin *Gold labels* panel with causes, `kind=gold` export).
+- `scripts/build_s4_items.py --set s4w --strict` builds the S4-W gold file and its exclusion list. 31 app tests and the Python suite pass.
+
 **1 Oct, session 5 (S4-W labelling and the two-stage freeze):**
 - CI on `main` is green again (run 36901141065, `d058d09`).
 - Malik: "label wazobia now", done the way mature teams do it:

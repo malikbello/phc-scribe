@@ -64,7 +64,7 @@
   - Skips are only allowed for unlabellable clips. The app enforces this (an off-topic skip is refused for `wazobia` items).
 - **Hints are off** (replaces "hints are shown but never pre-ticked" in §4). Keyword hints would anchor labellers on the rung-1 baseline being judged. `scripts/fetch_wazobia.py` now omits them unless `--hints` is passed; the existing queue was stripped of hints, with item selection unchanged.
 - **Double-labelling:** 20% of the 600 (120 items), blind, replaces "the nurse double-labels a random 50".
-  - Rahmat adjudicates every disagreement involving a danger sign; Malik adjudicates the rest.
+  - Settling is automatic where no judgement is needed (single, agreed, or a majority with no danger-sign split). Rahmat decides **all** other disagreements in the app, with answers anonymised (Malik, 1 Oct; guidelines §10.8).
   - κ and exact agreement are reported.
 - **Calibration first:** 20 pool clips not in the queue (`scripts/build_s4w_calibration.py`, seed 20261001; per language 6 enriched + 4 random), labelled by everyone as a practice set. Never counted.
 - **Freeze:** two stages (ADR-0022).

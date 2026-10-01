@@ -236,6 +236,8 @@ class BuildReport(BaseModel):
     items: int = 0
     skipped: int = 0
     unlabelled: int = 0
+    skipped_ids: list[str] = Field(default_factory=list)  # for freeze --exclude (ADR-0022)
+    unlabelled_ids: list[str] = Field(default_factory=list)
     errors: list[str] = Field(default_factory=list)
 
 
@@ -263,9 +265,11 @@ def build_items(
         lab = latest.get(q.item_id)
         if lab is None:
             report.unlabelled += 1
+            report.unlabelled_ids.append(q.item_id)
             continue
         if lab.status == "skip":
             report.skipped += 1
+            report.skipped_ids.append(q.item_id)
             continue
         bad = [
             f.concept

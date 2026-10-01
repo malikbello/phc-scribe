@@ -126,3 +126,16 @@ export function foldedLength(text: string): number {
 export function evidenceLongEnough(text: string): boolean {
   return foldedLength(text) >= MIN_QUOTE_CHARS;
 }
+
+export const AdjudicationInput = z
+  .object({
+    itemId: z.string().min(1),
+    status: z.enum(["labelled", "skip"]),
+    skipReason: SkipReason.optional(),
+    findings: z.array(Finding).max(40).default([]),
+    reason: z.string().trim().min(3, "Give a short reason").max(500),
+  })
+  .superRefine((v, ctx) => {
+    if (v.status === "skip" && !v.skipReason) ctx.addIssue({ code: "custom", message: "skip needs a reason" });
+  });
+export type AdjudicationInput = z.infer<typeof AdjudicationInput>;

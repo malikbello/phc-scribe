@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import { listReviewers, publicReviewer } from "@/lib/reviewers";
-import { allLabels, allReviews, getMeta } from "@/lib/repo";
+import { adjudicationState, allLabels, allReviews, getMeta } from "@/lib/repo";
 import { handle, HttpError, requireReviewer } from "@/lib/server";
 
 // ?kind=labels&queue=<id>  -> JSONL, one Label per line (feeds scripts/build_s4_items.py)
+// ?kind=gold&queue=<id>    -> JSONL, one resolved gold Label per item (labeller "gold:<how>");
+//                             unresolved items are left out and counted in X-Pending
 // ?kind=review             -> JSON of every reviewer's clinical-review answers
 
 export async function GET(req: Request) {
@@ -25,6 +27,20 @@ export async function GET(req: Request) {
         },
       });
     }
+    if (kind === "gold") {
+      const st = await adjudicationState(url.searchParams.get("queue") ?? "");
+      const lines = st.gold.map((l) => JSON.stringify(l));
+      const open = st.counts.pending + st.counts.unlabelled;
+      return new NextResponse(lines.join("\n") + (lines.length ? "\n" : ""), {
+        headers: {
+          "Content-Type": "application/jsonl; charset=utf-8",
+          "Content-Disposition": `attachment; filename="gold.${st.meta.id}.${stamp}${open ? ".partial" : ""}.jsonl"`,
+          "X-Pending": String(st.counts.pending),
+          "X-Unlabelled": String(st.counts.unlabelled),
+          "Cache-Control": "no-store",
+        },
+      });
+    }
     if (kind === "review") {
       const team = (await listReviewers()).map(publicReviewer);
       const body = { exported_at: new Date().toISOString(), team, answers: await allReviews(team.map((t) => t.id)) };
@@ -36,6 +52,6 @@ export async function GET(req: Request) {
         },
       });
     }
-    throw new HttpError(400, "kind must be labels or review");
+    throw new HttpError(400, "kind must be labels, gold or review");
   });
 }

@@ -1,5 +1,5 @@
 import { listReviewers, publicReviewer } from "@/lib/reviewers";
-import { allReviews, itemsById, queueStats } from "@/lib/repo";
+import { adjudicationState, allReviews, itemsById, queueStats } from "@/lib/repo";
 import { reviewKeysFor } from "@/lib/content";
 import { handle, json, requireReviewer } from "@/lib/server";
 import { store } from "@/lib/store";
@@ -13,8 +13,10 @@ export async function GET() {
     for (const qid of await store().smembers("queues")) {
       const st = await queueStats(qid, ids);
       const items = await itemsById(qid, st.agreement.disagreements.slice(0, 50).map((d) => d.itemId));
+      const adj = await adjudicationState(qid);
       queues.push({
         ...st,
+        gold: { counts: adj.counts, causes: adj.causes },
         agreement: {
           ...st.agreement,
           disagreements: st.agreement.disagreements.slice(0, 50).map((d) => ({ ...d, transcript: items[d.itemId]?.transcript })),

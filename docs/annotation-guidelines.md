@@ -122,5 +122,15 @@ The clips are everyday health talk from Yoruba and Pidgin speakers: some describ
    - **Calibration first:** every labeller labels the same 20 calibration clips (practice set, drawn from the pool but not from the counted queue). Malik reviews the disagreements with Rahmat; this section is revised if a rule caused them. The calibration clips are never counted.
    - **Then the counted queue** (600 clips): 20% are labelled independently by two people (blind; nobody sees another's label).
    - **Agreement** is reported per item (exact match of finding, assertion and the nothing-to-record decision), with Cohen's κ on danger-sign positivity (present or possible, per pair and danger sign) and pairwise F1; the admin page shows all three.
-   - **Adjudication:** Rahmat decides every overlap disagreement that involves a danger sign; Malik decides the rest. Decisions are logged (item, both labels, decision, reason) and the adjudicated label is the gold.
+   - **Settling (adjudication), automatic where no judgement is needed** (Malik, 1 Oct). The review app resolves each item by rule and records how:
+     - *single*: one label;
+     - *agreed*: all labels give the same findings and assertions, or all skip. Evidence spans may differ;
+     - *majority*: three or more labels, a strict majority agree, and no label differs from the majority on any danger sign.
+   - **Everything else goes to Rahmat** as a "Settle disagreements" step on her home screen. This includes every danger-sign split, every two-way split and every skip-versus-label split.
+     - She sees the answers anonymised (A, B, …), picks one or ticks the correct findings, and gives a reason.
+     - Her decision is the gold label.
+     - If a labeller later edits a label she decided on, the item goes back to her.
+     - Rahmat also labels, so she can meet items she labelled herself. The answers are anonymised and the report says so.
+   - **Unclear rules are flagged automatically:** the admin page groups disagreements by cause, with the rule each points to.
+   - **Gold export:** Admin → set → *Gold (JSONL)* → `scripts/build_s4_items.py <gold file> --set s4w --strict`. That builds `data/bench/s4w.jsonl` and the exclusion list for stage 2 of the freeze.
    - Labels are frozen at stage 2 of the freeze (ADR-0022), before any fine-tuned model is scored on them.

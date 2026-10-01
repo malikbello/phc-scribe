@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Bar, Icon, Spinner, Toast, TopBar, useToast } from "@/components/ui";
 import { api, post } from "@/lib/client";
+import { CAUSE_HINT, type Cause } from "@/lib/adjudicate";
 import { CONCEPT_BY_ID } from "@/lib/content";
 import type { Label } from "@/lib/schema";
 
@@ -24,6 +25,7 @@ type QueueStat = {
     pairF1: number | null;
     disagreements: { itemId: string; labels: Label[]; transcript?: string }[];
   };
+  gold: { counts: Record<"single" | "agreed" | "majority" | "adjudicated" | "pending" | "unlabelled", number>; causes: Partial<Record<Cause, number>> };
 };
 type Stats = { team: Team; queues: QueueStat[]; reviewDone: Record<string, number>; reviewTotal: Record<string, number> };
 
@@ -111,9 +113,10 @@ export default function Admin() {
                 <li key={rid} className="flex justify-between text-sm"><span>{name(rid)}</span><span className="tabular-nums">{n}</span></li>
               ))}
             </ul>
+            <GoldPanel q={q} />
             {q.agreement.disagreements.length > 0 && (
               <details className="mt-4">
-                <summary className="cursor-pointer text-sm font-semibold">Disagreements to adjudicate ({q.agreement.disagreements.length})</summary>
+                <summary className="cursor-pointer text-sm font-semibold">Raw disagreements, with names ({q.agreement.disagreements.length})</summary>
                 <ul className="mt-3 space-y-3">
                   {q.agreement.disagreements.map((d) => (
                     <li key={d.itemId} className="rounded-2xl bg-sand-100 p-3 text-sm dark:bg-white/[.06]">
@@ -134,6 +137,33 @@ export default function Admin() {
       </main>
       <Toast message={toast} tone={tone} />
     </>
+  );
+}
+
+// Gold labels: how each item was settled, what is waiting for the clinician, and which
+// guideline rules the disagreements point at. Settling is automatic except for real
+// clinical disagreements, which go to the clinician's home screen.
+function GoldPanel({ q }: { q: QueueStat }) {
+  const c = q.gold.counts;
+  const causes = (Object.entries(q.gold.causes) as [Cause, number][]).sort((a, b) => b[1] - a[1]);
+  return (
+    <div className="mt-4 rounded-2xl bg-white/[.04] p-4 ring-1 ring-white/10">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h3 className="font-semibold">Gold labels</h3>
+        <a className="btn-ghost min-h-[36px] px-3 text-sm" href={`/api/admin/export?kind=gold&queue=${encodeURIComponent(q.id)}`}><Icon.Download /> Gold (JSONL)</a>
+      </div>
+      <p className="muted mt-1 text-sm">
+        {c.single + c.agreed + c.majority + c.adjudicated} settled · <b className="text-sun-400">{c.pending} waiting for the clinician</b> · {c.unlabelled} not labelled yet
+      </p>
+      <p className="faint mt-1 text-xs">One label {c.single} · all agreed {c.agreed} · majority (no danger-sign split) {c.majority} · clinician decided {c.adjudicated}</p>
+      {causes.length > 0 && (
+        <ul className="mt-3 space-y-1.5 text-sm">
+          {causes.map(([cause, n]) => (
+            <li key={cause}><b>{cause}</b> ({n} items): <span className="muted">{CAUSE_HINT[cause]}</span></li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 

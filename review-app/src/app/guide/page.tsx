@@ -56,6 +56,7 @@ export default function GuidePage() {
             {clinical && <li><b>Clinical sign-off</b>: check our danger-sign rules, findings, wordings and medicines. About 1.5 hours.</li>}
             {pharmacist && <li><b>Medicines check</b>: check the medicines the app records and tell us the names people use. About 20 minutes.</li>}
             <li><b>Practice set</b>: label 20 short antenatal cases on your own. About 30 minutes. We compare everyone&apos;s answers to see if the rules are clear.</li>
+            {clinical && <li><b>Settle disagreements</b>: when labellers disagree on something clinical, you decide. It appears on your home screen when needed.</li>}
             <li><b>Benchmark labelling</b>: real speech clips in Yorùbá and Pidgin, starting with a 20-clip practice round (see <i>Real speech sets</i> below). It appears on your home screen when it&apos;s ready.</li>
           </ol>
           <p className="muted mt-2">Your home screen shows these steps in order, with a tick when each is done. Everything saves as you go, so you can stop and continue any time, on any device.</p>
@@ -107,7 +108,19 @@ export default function GuidePage() {
           <p className="mt-2">Past pregnancy and now in one sentence? Add two findings: &quot;bled in her last pregnancy, no bleeding now&quot; is <i>Past pregnancy</i> and <i>Absent</i>.</p>
         </Section>
 
-        <Section n={clinical || pharmacist ? 5 : 4} title="Real speech sets">
+        {clinical && (
+          <Section n={5} title="Settling disagreements">
+            <p>When labellers disagree on something that needs clinical judgement (a danger sign, or a two-way split), the case comes to you as <b>Settle disagreements</b> on your home screen. Simple cases are settled automatically.</p>
+            <ul className="mt-2 list-disc space-y-1 pl-5">
+              <li>You see the text and the different answers as <b>A</b>, <b>B</b>… You don&apos;t see who gave which.</li>
+              <li>Tap the right answer, or <b>None is fully right</b> and tick the findings that are correct.</li>
+              <li>Tap a reason (or type one), then <b>Decide &amp; next</b>. Use the same rules as labelling.</li>
+            </ul>
+            <p className="muted mt-2">Your decision becomes the answer the model is tested against. About 30 seconds each.</p>
+          </Section>
+        )}
+
+        <Section n={clinical ? 6 : pharmacist ? 5 : 4} title="Real speech sets">
           <p>Some sets are <b>real recordings of everyday health talk</b> in Yorùbá and Pidgin (they show a blue <b>Real speech</b> banner). Most clips are advice or opinions, and only a few are someone describing their own problem. Both kinds matter: the clips with nothing to record test whether the app stays quiet.</p>
           <ul className="mt-2 list-disc space-y-1 pl-5">
             <li><b>The speaker is the patient.</b> Record what they say about their own health (&quot;my belle dey pain me&quot;), or about one pregnant woman they describe (&quot;my wife dey bleed&quot;).</li>
@@ -119,7 +132,7 @@ export default function GuidePage() {
           <p className="muted mt-2">You&apos;ll first get a short practice set of 20 real-speech clips that everyone labels, so we can check these rules are clear before the main set.</p>
         </Section>
 
-        <Section n={clinical || pharmacist ? 6 : 5} title="Please keep it confidential">
+        <Section n={clinical ? 7 : pharmacist ? 6 : 5} title="Please keep it confidential">
           <p>The cases are real people&apos;s words, shared for research. Don&apos;t screenshot, copy or share them, and don&apos;t discuss your answers with each other until everyone has finished the practice set: we need your independent judgement.</p>
           <p className="mt-2">Questions? Message Malik.</p>
         </Section>
