@@ -82,7 +82,13 @@ def _answer(findings) -> set[tuple[str, str]]:
 def score(kept: list[BenchItem], labels: list[Label]) -> dict:
     danger_ids = load_vocabulary().danger_sign_ids
     teacher = {f"tc-{i.item_id}": i for i in kept}
-    rows = {"checked": 0, "unlabellable": 0, "danger_errors": 0, "full_matches": 0}
+    rows: dict[str, int | float | bool | None] = {
+        "checked": 0,
+        "unlabellable": 0,
+        "danger_errors": 0,
+        "full_matches": 0,
+    }
+    checked = unlabellable = danger_errors = full_matches = 0
     latest: dict[str, Label] = {}
     for lab in labels:
         if lab.item_id in teacher and (
@@ -91,16 +97,22 @@ def score(kept: list[BenchItem], labels: list[Label]) -> dict:
             latest[lab.item_id] = lab
     for item_id, lab in latest.items():
         if lab.status == "skip":
-            rows["unlabellable"] += 1
+            unlabellable += 1
             continue
         gold = teacher[item_id].gold.findings
-        rows["checked"] += 1
-        rows["danger_errors"] += _danger(lab.findings, danger_ids) != _danger(gold, danger_ids)
-        rows["full_matches"] += _answer(lab.findings) == _answer(gold)
-    n = rows["checked"]
-    rows["danger_error_rate"] = rows["danger_errors"] / n if n else None
-    rows["full_match_rate"] = rows["full_matches"] / n if n else None
-    rows["use_teacher_labels"] = bool(n) and rows["danger_errors"] / n <= MAX_DANGER_ERROR
+        checked += 1
+        danger_errors += _danger(lab.findings, danger_ids) != _danger(gold, danger_ids)
+        full_matches += _answer(lab.findings) == _answer(gold)
+    n = checked
+    rows.update(
+        checked=checked,
+        unlabellable=unlabellable,
+        danger_errors=danger_errors,
+        full_matches=full_matches,
+        danger_error_rate=danger_errors / n if n else None,
+        full_match_rate=full_matches / n if n else None,
+        use_teacher_labels=bool(n) and danger_errors / n <= MAX_DANGER_ERROR,
+    )
     return rows
 
 
