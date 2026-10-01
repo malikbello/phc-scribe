@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Block any push unless CI's exact checks pass locally (scripts/ci_local.sh).
+# On 1 Oct a push went out before its type check finished and main went red once.
+set -euo pipefail
+root="$(git rev-parse --show-toplevel)"
+log="$(mktemp)"
+if "$root/scripts/ci_local.sh" >"$log" 2>&1; then
+  rm -f "$log"
+  exit 0
+fi
+tail -30 "$log" >&2
+echo "pre-push: CI checks failed; push blocked (full log: $log)" >&2
+exit 1
