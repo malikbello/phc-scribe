@@ -93,6 +93,7 @@ export default function GuidePage() {
             <li>Forgot a rule? The <b>book icon</b> at the top shows the five rules below.</li>
           </ul>
           <p className="muted mt-2">About 1 minute per case is normal. Don&apos;t agonise: if unsure, choose your best answer and write a note.</p>
+          <p className="mt-2">You <b>level up every 25 cases</b> (Listener → Note-taker → Scribe → …), and the 🔥 counts your cases this session. On a keyboard, <b>N</b> means Nothing to record. Careful answers matter more than fast ones: there is no prize for speed.</p>
         </Section>
 
         <Section n={clinical || pharmacist ? 4 : 3} title="The five rules that matter">

@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Bar, Burst, Icon, Spinner, Toast, TopBar, useToast } from "@/components/ui";
 import { api, post } from "@/lib/client";
 import { CONCEPTS, CONCEPT_BY_ID } from "@/lib/content";
+import { PER_LEVEL, levelFor, levelUp } from "@/lib/game";
 import type { ClientItem, QueueProgress } from "@/lib/repo";
 import { evidenceLongEnough, isSpeechSource, SPEECH_SKIP_REASONS, type Assertion, type Finding, type SkipReason } from "@/lib/schema";
 import { evidenceFor, tap, tokenize, type Range } from "@/lib/spans";
@@ -127,11 +128,15 @@ export default function LabelPage() {
       if (wasNew) {
         const n = session + 1;
         setSession(n);
-        if (n % 10 === 0) {
+        const before = progress?.mineDone ?? 0;
+        const up = levelUp(before, before + 1);
+        if (up || n % 10 === 0) {
           setBurst(true);
           setTimeout(() => setBurst(false), 1300);
-          showToast(`${n} done this session. Brilliant!`);
-        } else showToast("Saved");
+        }
+        if (up) showToast(`Level ${up.level}! You're now a ${up.rank}.`);
+        else if (n % 10 === 0) showToast(`${n} in a row this session. Brilliant!`);
+        else showToast("Saved");
       } else showToast("Updated");
       await loadNext();
       refreshProgress().catch(() => undefined);
@@ -159,6 +164,7 @@ export default function LabelPage() {
       if (a) { e.preventDefault(); addFinding(a.id); }
       if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); save("labelled"); }
       if (e.key === "Escape") { setRange(null); setConcept(null); }
+      if ((e.key === "n" || e.key === "N") && !findings.length && !e.metaKey && !e.ctrlKey) { e.preventDefault(); save("labelled"); }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -213,9 +219,12 @@ export default function LabelPage() {
       <Burst show={burst} />
       <main className="mx-auto max-w-3xl px-4 pb-40 pt-3">
         {progress && (
-          <div className="mb-3 flex items-center gap-3">
-            <Bar value={mineTotal ? progress.mineDone / mineTotal : 0} />
-            <span className="muted shrink-0 text-xs font-medium tabular-nums">{progress.mineDone}/{mineTotal}</span>
+          <div className="mb-3">
+            <div className="flex items-center gap-3">
+              <Bar value={mineTotal ? progress.mineDone / mineTotal : 0} />
+              <span className="muted shrink-0 text-xs font-medium tabular-nums">{progress.mineDone}/{mineTotal}</span>
+            </div>
+            <LevelStrip done={progress.mineDone} session={session} />
           </div>
         )}
 
@@ -407,8 +416,22 @@ function Guide({ speech, onClose }: { speech: boolean; onClose: () => void }) {
         )}
         <p className="muted mt-4 text-sm">Past pregnancy and now in one sentence? Add two findings: <i>Past pregnancy</i> and <i>Absent</i>. About a minute per item is normal.</p>
         <Link href="/guide" className="btn-ghost mt-4 w-full text-sm">Read the full guide</Link>
-        <p className="faint mt-3 text-xs">Keyboard: 1–4 choose the answer · Ctrl+Enter saves · Esc clears.</p>
+        <p className="faint mt-3 text-xs">Keyboard: 1–4 choose the answer · N = nothing to record · Ctrl+Enter saves · Esc clears.</p>
       </div>
+    </div>
+  );
+}
+
+function LevelStrip({ done, session }: { done: number; session: number }) {
+  const lv = levelFor(done);
+  return (
+    <div className="mt-2 flex items-center gap-2 text-xs font-semibold">
+      <span className="rounded-full bg-gradient-to-r from-leaf-400 to-cyan-400 px-2.5 py-1 text-night-950">Lv {lv.level} · {lv.rank}</span>
+      <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10" aria-label={`${lv.toNext} to the next level`}>
+        <span className="block h-full rounded-full bg-sun-400 transition-all" style={{ width: `${(lv.intoLevel / PER_LEVEL) * 100}%` }} />
+      </span>
+      <span className="muted tabular-nums">{lv.toNext} to Lv {lv.level + 1}</span>
+      {session >= 3 && <span className="rounded-full bg-clay-500/15 px-2 py-1 text-clay-100 ring-1 ring-clay-400/30" title="Labelled this session">🔥 {session}</span>}
     </div>
   );
 }

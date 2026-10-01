@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { agreement, cohensKappa } from "@/lib/agreement";
 import { candidates, pickDouble, teamComplete } from "@/lib/assign";
+import { levelFor, levelUp } from "@/lib/game";
 import { reviewerForCode } from "@/lib/reviewers";
 import type { Label } from "@/lib/schema";
 import { LabelInput, evidenceInTranscript } from "@/lib/schema";
@@ -150,5 +151,18 @@ describe("review content", () => {
     expect([...pharm].every((k) => k.startsWith("medicine"))).toBe(true);
     expect(reviewKeysFor("clinician")).toEqual(REVIEW_KEYS);
     expect(reviewKeysFor("admin")).toEqual(REVIEW_KEYS);
+  });
+});
+
+
+describe("game levels", () => {
+  it("counts levels of 25 and names ranks", () => {
+    expect(levelFor(0)).toEqual({ level: 1, rank: "Listener", intoLevel: 0, toNext: 25 });
+    expect(levelFor(26)).toMatchObject({ level: 2, rank: "Note-taker", intoLevel: 1, toNext: 24 });
+    expect(levelFor(1000).rank).toBe("Master scribe");
+  });
+  it("detects a level-up only when crossing a boundary", () => {
+    expect(levelUp(24, 25)?.level).toBe(2);
+    expect(levelUp(25, 26)).toBeNull();
   });
 });
