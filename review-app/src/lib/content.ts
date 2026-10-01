@@ -12,6 +12,7 @@ export const RULES: Rule[] = data.rules;
 export const PHRASES: Phrase[] = data.phrases;
 export const QUESTIONS: string[] = data.questions;
 export const MEDICATIONS: Medication[] = data.medications;
+export const UYO_MAPPING: { label: string; findings: string[] }[] = data.uyo_mapping;
 /** Shortest evidence quote grounding accepts (serve/phc_scribe/grounding.py). */
 export const MIN_QUOTE_CHARS: number = data.min_quote_chars;
 export const CONCEPT_BY_ID = new Map(CONCEPTS.map((c) => [c.id, c]));
@@ -61,7 +62,7 @@ export const QUESTION_CONTEXT: Record<number, QuestionContext> = {
   },
 };
 
-export type ReviewKind = "question" | "rule" | "concept" | "phrase" | "medicine";
+export type ReviewKind = "question" | "rule" | "concept" | "phrase" | "medicine" | "freeze";
 export type ReviewRow = {
   key: string;
   kind: ReviewKind;
@@ -121,6 +122,31 @@ const MEDICINE_SECTION: ReviewSection = {
   ],
 };
 
+// Two decisions the clinical adviser confirms before the test set is frozen
+// (docs/eval-plan.md §6 and ADR-0019). Question cards: a short written answer each.
+const FREEZE_SECTION: ReviewSection = {
+  id: "freeze",
+  title: "Before the freeze",
+  blurb: "Two quick confirmations we need before we lock the test. A short answer is perfect.",
+  rows: [
+    {
+      key: "freeze:g1-false-alarms",
+      kind: "question",
+      title: "How many extra false alarms are acceptable?",
+      detail:
+        "After training, the app may raise a few more danger flags that turn out to be unnecessary. We plan to accept at most 5 more false alarms per 100 visits than the original model (about one extra unnecessary referral in 20 visits). Is that acceptable for Nigerian primary care? If not, what would be?",
+    },
+    {
+      key: "freeze:uyo-mapping",
+      kind: "question",
+      title: "Do these symptom translations look right?",
+      detail:
+        "We will test the danger-sign rules on 538 real antenatal records from St Luke's Hospital, Uyo. Each record has one symptom written by the clinic. Below is how we translate each clinic symptom into our findings. Reply 'all correct', or name the lines to change and how.",
+      list: { title: "Clinic symptom → our finding(s)", items: UYO_MAPPING.map((m) => `${m.label} → ${m.findings.join(", ")}`) },
+    },
+  ],
+};
+
 // Order matters: reviewers first confirm the rules and the findings they use, then
 // answer the edge-case questions about them, then check note wording, then medicines.
 export const REVIEW_SECTIONS: ReviewSection[] = [
@@ -159,6 +185,7 @@ export const REVIEW_SECTIONS: ReviewSection[] = [
     })),
   },
   MEDICINE_SECTION,
+  FREEZE_SECTION,
 ];
 
 export const REVIEW_KEYS = new Set(REVIEW_SECTIONS.flatMap((s) => s.rows.map((r) => r.key)));

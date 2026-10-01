@@ -563,6 +563,199 @@
   "Which edition and sections of the National Standing Orders should each rule cite?",
   "Are there common local terms (English or Yoruba) for these signs that we are missing?"
  ],
+ "uyo_mapping": [
+  {
+   "label": "bleeding per vaginam",
+   "findings": [
+    "Vaginal bleeding"
+   ]
+  },
+  {
+   "label": "bleeding",
+   "findings": [
+    "Vaginal bleeding"
+   ]
+  },
+  {
+   "label": "swollen legs",
+   "findings": [
+    "Swelling of feet or ankles"
+   ]
+  },
+  {
+   "label": "swollen legs and high bp",
+   "findings": [
+    "Swelling of feet or ankles"
+   ]
+  },
+  {
+   "label": "severe headache",
+   "findings": [
+    "Severe headache"
+   ]
+  },
+  {
+   "label": "headache, pains and cough",
+   "findings": [
+    "Headache (not described as severe)",
+    "Cough"
+   ]
+  },
+  {
+   "label": "difficult breathing",
+   "findings": [
+    "Difficulty breathing"
+   ]
+  },
+  {
+   "label": "abnormal breathing",
+   "findings": [
+    "Difficulty breathing"
+   ]
+  },
+  {
+   "label": "liquor drainage",
+   "findings": [
+    "Leaking or gush of fluid (waters breaking)"
+   ]
+  },
+  {
+   "label": "lower abdominal and waist pain",
+   "findings": [
+    "Abdominal pain (not described as severe)",
+    "Low back pain"
+   ]
+  },
+  {
+   "label": "abdominal pain",
+   "findings": [
+    "Abdominal pain (not described as severe)"
+   ]
+  },
+  {
+   "label": "waist pain",
+   "findings": [
+    "Low back pain"
+   ]
+  },
+  {
+   "label": "dizziness, itching body",
+   "findings": [
+    "Dizziness"
+   ]
+  },
+  {
+   "label": "painful urination",
+   "findings": [
+    "Painful or burning urination"
+   ]
+  },
+  {
+   "label": "pain in urination",
+   "findings": [
+    "Painful or burning urination"
+   ]
+  },
+  {
+   "label": "itching per vaginam and watery discharge",
+   "findings": [
+    "Abnormal vaginal discharge"
+   ]
+  },
+  {
+   "label": "itching pv and watery discharge",
+   "findings": [
+    "Abnormal vaginal discharge"
+   ]
+  },
+  {
+   "label": "heart burn",
+   "findings": [
+    "Heartburn"
+   ]
+  },
+  {
+   "label": "stooling and vomiting",
+   "findings": [
+    "Nausea and vomiting"
+   ]
+  },
+  {
+   "label": "fever, sneezing, and cough",
+   "findings": [
+    "Fever",
+    "Cough"
+   ]
+  },
+  {
+   "label": "itching body, cough and fever",
+   "findings": [
+    "Fever",
+    "Cough"
+   ]
+  },
+  {
+   "label": "boils on the body and fever",
+   "findings": [
+    "Fever"
+   ]
+  },
+  {
+   "label": "body pain and fever",
+   "findings": [
+    "Fever"
+   ]
+  },
+  {
+   "label": "cough and fever",
+   "findings": [
+    "Fever",
+    "Cough"
+   ]
+  },
+  {
+   "label": "cough and catarrh",
+   "findings": [
+    "Cough"
+   ]
+  },
+  {
+   "label": "sore throat and cough",
+   "findings": [
+    "Cough"
+   ]
+  },
+  {
+   "label": "cough and sore throat",
+   "findings": [
+    "Cough"
+   ]
+  },
+  {
+   "label": "severe cough",
+   "findings": [
+    "Cough"
+   ]
+  },
+  {
+   "label": "cough",
+   "findings": [
+    "Cough"
+   ]
+  },
+  {
+   "label": "weakness of the body",
+   "findings": [
+    "Tiredness / weakness"
+   ]
+  },
+  {
+   "label": "protein in urine",
+   "findings": [
+    "Urine protein positive (test)"
+   ]
+  }
+ ],
  "medications": [
   {
    "id": "iron_folic_acid",

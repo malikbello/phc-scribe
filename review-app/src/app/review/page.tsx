@@ -15,6 +15,7 @@ const INTRO: Record<string, string> = {
   question: "7 edge cases about the rules and findings.",
   phrase: "wordings in the practice notes.",
   medicine: "the medicines the app records, and the names people use.",
+  freeze: "two quick confirmations before we lock the test.",
 };
 
 export default function ReviewPage() {

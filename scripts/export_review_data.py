@@ -23,6 +23,7 @@ sys.path[:0] = [str(ROOT / "serve"), str(ROOT), str(ROOT / "scripts")]
 
 from build_review_pack import GUIDELINES, PHRASES, RULES, condition  # noqa: E402
 
+from bench.uyo import SYMPTOM_FINDINGS, URINE_PROTEIN_LABELS  # noqa: E402
 from phc_scribe.encounter import Medication  # noqa: E402
 from phc_scribe.grounding import MIN_QUOTE_CHARS  # noqa: E402
 from phc_scribe.vocab import load_vocabulary  # noqa: E402
@@ -95,6 +96,18 @@ def build() -> str:
             for cid, spec in phrases["concepts"].items()
         ],
         "questions": [_plain(q) for q in questions],
+        # ADR-0019: Uyo symptom label -> our findings, for the clinical adviser to confirm.
+        "uyo_mapping": [
+            {
+                "label": label,
+                "findings": [labels[c] for c in concepts],
+            }
+            for label, concepts in SYMPTOM_FINDINGS.items()
+        ]
+        + [
+            {"label": label, "findings": ["Urine protein positive (test)"]}
+            for label in sorted(URINE_PROTEIN_LABELS)
+        ],
         "medications": [
             {"id": m.value, "label": MEDICATIONS[m.value][0], "definition": MEDICATIONS[m.value][1]}
             for m in Medication

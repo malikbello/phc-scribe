@@ -137,7 +137,7 @@ describe("review content", () => {
     const { QUESTIONS, QUESTION_CONTEXT, REVIEW_SECTIONS } = await import("@/lib/content");
     expect(QUESTIONS.length).toBe(Object.keys(QUESTION_CONTEXT).length);
     QUESTIONS.forEach((_, i) => expect(QUESTION_CONTEXT[i + 1]?.ask).toBeTruthy());
-    expect(REVIEW_SECTIONS.map((s) => s.id)).toEqual(["rule", "concept", "question", "phrase", "medicine"]);
+    expect(REVIEW_SECTIONS.map((s) => s.id)).toEqual(["rule", "concept", "question", "phrase", "medicine", "freeze"]);
   });
 
   it("gives each role its own sign-off steps", async () => {
