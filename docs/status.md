@@ -1,6 +1,6 @@
 # Project status and working agreement
 
-_Last updated: 1 Oct 2026, ~21:00 WAT (end of session 5). Keep this file current; it is the handoff between work sessions._
+_Last updated: 1 Oct 2026, ~23:15 WAT (session 5). Keep this file current; it is the handoff between work sessions._
 
 ## Resume prompt (paste this into a new session)
 > Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`, branch `main`) and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution (the `.githooks/commit-msg` guard rejects "claude", co-author or session lines), no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results. Run `./scripts/ci_local.sh` before every push. Start from "Right now" and "Next steps, in order". Keep only truly human tasks human (labelling, clinical decisions, my approvals); automate the rest robustly. Ask me before anything outward-facing or irreversible (the freeze included). Update this file and the resume prompt at the end of every work block.
@@ -49,7 +49,20 @@ _Last updated: 1 Oct 2026, ~21:00 WAT (end of session 5). Keep this file current
   - `python scripts/kaggle_log.py --save results/trainprep`
   - `python scripts/teacher_check.py build`, then send the file.
 
-**Takada (ADR-0023, accepted 1 Oct):** the health-worker app gets its own private repo, `malikbello/takada-app`. Malik creates the empty repo; this session's GitHub access cannot create repos. It is being built locally at `/home/user/takada-app` in the meantime. Rahmat must sign off the visit-guide question list before the demo.
+**Takada (ADR-0023, accepted 1 Oct): the health-worker app, built locally in `/home/user/takada-app` (8 commits, all checks passing), waiting to be pushed.**
+- **Blocked on Malik:** create the empty private repo `malikbello/takada-app` (github.com/new, no README); this session's GitHub access cannot create repos. Then `add_repo` (push) and `git push -u origin main` from `/home/user/takada-app`.
+- **Built:**
+  - `packages/clinical`: rules, folding and the visit guide, ported to TypeScript and tested against vectors from phc-scribe's Python reference (`scripts/export_clinical_bundle.py` → `exports/clinical-bundle.json`, vendored with a pinned SHA-256).
+  - `packages/protocol`: append-only, hashed visit events; order-independent state; per-device monotonic timestamps.
+  - `apps/mobile`: the offline PWA. Capture, danger alerts with referral note, visit guide with follow-ups, summary so far, hold-to-confirm and amend, pairing and sync, 16 kHz WAV recording, draft button. 71 KB gzipped.
+  - `apps/server`: hub/cloud service. Pairing with hashed tokens and revocation, verified idempotent sync scoped by facility, WAV upload, prioritised drafting queue with retries, FHIR R4 export, health checks; it also serves the PWA.
+  - `deploy/`: Dockerfile, Compose for the clinic hub (HTTPS proxy, optional llama.cpp model), Kubernetes manifests (kubeconform-valid), and CI jobs (image smoke test, Trivy scan, manifest validation). `docs/operations.md`.
+- **Verified end to end on 1 Oct (local):** phone → hub → real phc-scribe API (keyword extractor) → draft back on the phone, with evidence and 4 danger rules firing.
+- **Open:**
+  - Rahmat signs off the visit-guide items (now in her review-app sign-off, step 6).
+  - Measure the hub's drafting throughput (load test).
+  - Choose the $0 cloud host and the uptime monitor.
+  - Verify the Docker image build (blocked locally by the session proxy's certificate; CI builds it).
 
 **Left after that, in order:**
 1. Score Malik's teacher check: `scripts/teacher_check.py score <labels export>`. Teacher labels are used only if danger-sign errors ≤ 1 in 5.
