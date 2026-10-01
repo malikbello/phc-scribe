@@ -41,7 +41,7 @@ OUT = ROOT / "results" / "uyo"
 def download() -> Path:
     if not PATH.exists():
         PATH.parent.mkdir(parents=True, exist_ok=True)
-        with urllib.request.urlopen(URL, timeout=120) as r:  # noqa: S310 (fixed https URL)
+        with urllib.request.urlopen(URL, timeout=120) as r:
             PATH.write_bytes(r.read())
     got = hashlib.sha256(PATH.read_bytes()).hexdigest()
     if got != SHA256:

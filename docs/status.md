@@ -101,7 +101,7 @@ Point [95% bootstrap CI]. Reports: `results/pilot-20261001/`. 30 items is a pilo
 - Network: `kaggleusercontent.com` (Kaggle output files) and `kitala.ai` are blocked; `api.modal.com` is unreachable (gRPC). Intended allowlist: `huggingface.co`, `*.huggingface.co`, `hf.co`, `*.hf.co`, `kaggle.com`, `*.kaggle.com`, `storage.googleapis.com` (+ `api.modal.com`, `modal.com`, `*.modal.run` if Modal is adopted).
 - ✅ **29 Sept, session 3:** HF and Kaggle are reachable. `python scripts/check_access.py` passes: HF identity, the gated `NCAIR1/N-ATLaS` listing (12 files, 4 weight files, no GGUF), the AMR dataset and Kaggle auth.
 - **Modal:** used only through GitHub Actions (`deploy-modal.yml`), because the cloud session cannot reach it.
-- Local dev: `pip install -e ".[dev,data]"` (or `pip install --require-hashes -r requirements/ci.lock && pip install --no-deps -e .`), then `ruff check . && ruff format --check . && pyright && pytest`.
+- **Before every push: `./scripts/ci_local.sh`.** It builds `.venv` from `requirements/ci.lock` with Python 3.12 (CI's exact pinned, hash-checked versions) and runs CI's exact steps, including the review app. Do not trust a system-wide `ruff`/`pyright`: on 1 Oct a newer local ruff passed code that CI's pinned ruff 0.16.9 rejected, and `main` was red for six pushes.
 - N-ATLaS gated access: granted on all 5 NCAIR1 repos (N-ATLaS, Hausa/Yoruba/Igbo ASR, NigerianAccentedEnglish).
 - Dev container: 4 CPU, ~15 GB RAM, ~30 GB free disk, no GPU.
 - **Malik's laptop (offline node):** Dell Latitude 5400, i7-8665U, 16 GB RAM, no usable GPU, Windows 11 + WSL2, Ollama installed. **Disk must be freed to at least 25 GB.**
@@ -142,6 +142,9 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 | Optional: delete the unused `HF_WRITE_TOKEN` on Hugging Face and GitHub | Optional |
 
 ## Progress log
+**1 Oct, session 5 (CI fix):**
+- CI on `main` was red from `de25ff8` to `7fe2a5d` (job `checks`, RUF100: an unused `noqa` that only CI's pinned ruff 0.16.9 reports). Fixed, and `scripts/ci_local.sh` added so local checks use CI's exact versions.
+
 **1 Oct, session 5 (pre-freeze run):**
 - Pre-freeze Kaggle run complete (`results/prefreeze-20261001/`). **Belebele `yor_Latn`: N-ATLaS 42.78%, Llama-3.1 34.44%** → G2 margin m = 3 points (50% of the 8.3-point gain is 4.2; the 3-point cap is stricter). **Unconstrained base comparator: 10/30 valid** (vs 24/30 constrained), recall 0.40: forced JSON helps the base model, so the primary comparator is the generous one.
 - HelpMum dropped as a data route (Malik). Ajagbe emailed by Malik.
