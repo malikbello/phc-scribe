@@ -143,6 +143,7 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 
 ## Progress log
 **1 Oct, session 5 (proposals applied):**
+- WazobiaSpeech fallback queue built from `dev` + `dev_test` (600 items; pools yo 5,584 / pcm 5,591 health clips, 20 / 21 speakers); **speaker check over all shards: 0 shared with `train`** in both languages.
 - Malik approved proposals A–E and the Adeola data. **ADR-0020** (Antenatal Orientation Speech: stratum H of 454 real hard negatives, ASR test, phrase mining) and **ADR-0021** (Llama-3.1 teacher labels on training-split speech, filtered and spot-checked) accepted.
 - Built: `--unconstrained` runner option with `extract_json`; `bench/belebele.py`; Kaggle `PLAN = "prefreeze"`; `scripts/build_adeola_items.py`; QLoRA learning rate 1e-4. 169 tests pass.
 
