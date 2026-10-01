@@ -142,6 +142,10 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 | Optional: delete the unused `HF_WRITE_TOKEN` on Hugging Face and GitHub | Optional |
 
 ## Progress log
+**1 Oct, session 5 (final data search):**
+- **Search closed** after round 7 (`docs/data-sources-survey.md`): MAMAI has no public substitute. Remaining routes are requests: Intron (MAMAI; Malik emailed and connected on LinkedIn), HelpMum (MamaBot messages, evaluation only), Ajagbe (email `saajagbe@pgschool.lautech.edu.ng`, his corresponding-author address on a 2025 paper; draft in chat). HelpMum MamaBench access already accepted; `nig-bench` and MAMAI still pending (1 Oct).
+- Pre-freeze Kaggle run started from the editor 16:01 UTC; check-in booked for 16:55 UTC.
+
 **1 Oct, session 5 (proposals applied):**
 - WazobiaSpeech fallback queue built from `dev` + `dev_test` (600 items; pools yo 5,584 / pcm 5,591 health clips, 20 / 21 speakers); **speaker check over all shards: 0 shared with `train`** in both languages.
 - Malik approved proposals A–E and the Adeola data. **ADR-0020** (Antenatal Orientation Speech: stratum H of 454 real hard negatives, ASR test, phrase mining) and **ADR-0021** (Llama-3.1 teacher labels on training-split speech, filtered and spot-checked) accepted.

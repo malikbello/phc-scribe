@@ -107,3 +107,18 @@ Question: is there any real, licence-clean Nigerian ANC data beyond NigBench-MAM
 | HelpMum (MamaBot), mDoc (Kem), Solayo | Nigerian maternal chatbots | No public data | Upside only (ADR-0016 §5: ask for evaluation-only access). |
 
 **Conclusion:** no source matches MAMAI (real Nigerian women describing pregnancy concerns, CC-BY, in Yoruba and Pidgin). WazobiaSpeech remains the only real-speech fallback (ADR-0018). New and worth using: the **Uyo MNCH records** as a real-data check of the rules engine on real Nigerian antenatal vitals and diagnoses.
+
+## Round 7 (1 Oct, final): deep search before closing the search
+Agreed with Malik as the **last** search. Content was inspected, not just titles. Sources: Hugging Face (contents read), Zenodo API (six maternal/language queries), Lacuna Fund, EqualyzAI / Data Science Nigeria, arXiv/medRxiv 2026, HelpMum's accounts.
+
+| Source | What it actually contains | Verdict |
+|---|---|---|
+| Voice of Care (`Data-Science-Nigeria/voice-of-care-health-dataset`, CC-BY-4.0) | Hausa health speech labelled by speaker type ("patient statement", "patient question", "caregiver statement") and intent ("symptom reporting" 564 of 4,200 test clips); an English source column suggests read, scripted sentences; ~5% maternal | Hausa only, likely scripted. Not an S4 substitute; possible future Hausa extension |
+| `Charley890/naija-pidgin-health-qa-rivers-2026`, `mabera/nigeria-multilingual-health-dataset`, `ictbiortc/hausa-medical-conversations-format-9k` | Tiny authored or generated Q&A / conversations (e.g. scripted doctor replies in Pidgin, statistics Q&A, templated Hausa dialogues) | Not real patient data |
+| NaijaVoices (CC-BY-NC-SA, 1,800 h, 5,000+ speakers, ha/ig/yo) | General culturally rich speech, not health-specific; non-commercial | No |
+| HelpMum MamaBot-Llama (`HelpMumHQ/MamaBot-Llama`; arXiv 2609.22110) | Llama-3.1-8B LoRA on 36,000 **HelpMum-written** English maternal Q&A pairs (not user messages); data not released | No data; useful **precedent**: +4.9% over base Llama-3.1 in a physician-rated evaluation |
+| IyàwóBench v1/v2 | 200 synthetic febrile-illness vignettes | No (not ANC, synthetic) |
+| Zenodo (pregnancy/antenatal × Yoruba/Pidgin/Hausa/Nigeria/audio/transcripts) | Language corpora, survey data, unrelated audio; nothing with real pregnant women's speech or ANC records | No |
+| Lacuna Fund, EqualyzAI 2026 | No maternal release beyond WazobiaSpeech (already used) | No |
+
+**Conclusion, closing the search:** across seven rounds, **NigBench-MAMAI is the only public dataset of real Nigerian women describing pregnancy concerns in Yoruba/Pidgin.** Without it, the plan is final: WazobiaSpeech (ADR-0018) as the counted real-speech set, plus Uyo records (ADR-0019), Adeola hard negatives (ADR-0020) and the generated/MamaBench supplements. Remaining routes are **requests**, not searches: Intron (MAMAI), HelpMum (MamaBot user messages, evaluation only), Ajagbe (clinic recordings of women's questions, if any).
