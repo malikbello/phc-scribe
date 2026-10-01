@@ -1,6 +1,6 @@
 # ADR-0018: If NigBench-MAMAI is refused, the counted benchmark is WazobiaSpeech health speech
 
-- **Status:** Proposed
+- **Status:** Accepted by Malik, 1 Oct 2026 (with the amendment below)
 - **Date:** 2026-09-30
 - **Amends:** ADR-0016 §6 (the fallback only). ADR-0016's decision that the counted benchmark must be real, consented, licence-clean speech is unchanged.
 
@@ -49,3 +49,8 @@
   - Adapt `scripts/fetch_mamai.py` into a WazobiaSpeech fetcher.
   - Labelling is the same as ADR-0016: about 9–10 h for 500 items.
 - **Timing.** Building the queue on 5 Oct leaves about 7 days for labelling, freezing, training and the final run. To protect that, the fetcher and queue can be built **before** 5 Oct without labelling anything, so the switch costs no time if it happens.
+
+## Amendment at acceptance (1 Oct)
+- **Test pool = `dev` + `dev_test`, not `dev_test` alone.** Counting the health clips showed `dev_test` has only 8 Yoruba and 11 Pidgin speakers (1,660 and 2,927 health clips). Adding `dev` gives 20 Yoruba and 21 Pidgin speakers (5,584 and 5,591 health clips). Neither split is used for anything else (the pilot used our own items), and `train` stays for training. Decision §2 and §6 read "`dev` + `dev_test`" from now on.
+- **Statistical consequence, stated in the report:** CIs resample by speaker, so 600 clips from about 41 speakers carry far less information than 600 independent items. The report gives the number of speakers next to every S4-W result.
+- **Built (nothing labelled):** `scripts/fetch_wazobia.py` (pinned revisions yo `353ea9f`, pcm `2bb5618`; text columns only), `bench/label_queue.py` (`ENRICH_TERMS`, `sample_enriched_queue`; tested). Default queue: 300 per language, 60% enriched / 40% random, seed 20261005.

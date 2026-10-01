@@ -21,4 +21,5 @@ Format: context → decision → consequences. A decision changes only through a
 | [0015](0015-hf-space-public-api.md) | Host the public API on a free Hugging Face Space; defer GPU serving | Superseded by 0017 |
 | [0016](0016-licence-clean-benchmark-data.md) | Counted benchmark is real, consented, CC-BY speech data (NigBench-MAMAI); generated notes are a labelled supplement | Accepted |
 | [0017](0017-modal-for-the-cloud-api.md) | Serve the cloud API on Modal, private until submission | **Proposed** |
-| [0018](0018-wazobiaspeech-fallback-benchmark.md) | If NigBench-MAMAI is refused, the counted benchmark is WazobiaSpeech health speech | **Proposed** |
+| [0018](0018-wazobiaspeech-fallback-benchmark.md) | If NigBench-MAMAI is refused, the counted benchmark is WazobiaSpeech health speech | Accepted |
+| [0019](0019-uyo-records-rules-check.md) | Check the danger-sign rules on real Uyo antenatal records | Accepted |

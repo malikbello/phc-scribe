@@ -15,7 +15,7 @@ _Last updated: 1 Oct 2026, ~15:40 WAT (session 5). Keep this file current; it is
 ## Where things stand (1 Oct, session 5)
 | Area | State |
 |---|---|
-| Benchmark design | **ADR-0016 accepted:** counted 500 = real NigBench-MAMAI speech (test split), labelled in the review app. Supplements: 300 generated notes (G), MamaBench ANC slice (kept, Malik 1 Oct), AMR. MAMAI access **still refused (403, 1 Oct)**: follow up with Intron 2 Oct. **ADR-0018 (Proposed):** if MAMAI is refused by 5 Oct, the counted set is WazobiaSpeech `dev_test` health clips (yo + pcm, enriched + random groups). Its fetcher `scripts/fetch_wazobia.py` is built and tested (queue → `data/private/label_queue.s4w.jsonl`, nothing labelled). Due diligence round 6 (1 Oct): no other real source matches MAMAI; the **Uyo MNCH records** (OSF, CC-BY, 538 real antenatal records, structured) can check the rules engine on real vitals (needs an ADR). |
+| Benchmark design | **ADR-0016 accepted:** counted 500 = real NigBench-MAMAI speech (test split), labelled in the review app. Supplements: 300 generated notes (G), MamaBench ANC slice (kept, Malik 1 Oct), AMR. MAMAI access **still refused (403, 1 Oct)**: follow up with Intron 2 Oct. **ADR-0018 (Accepted 1 Oct, amended):** if MAMAI is refused by 5 Oct, the counted set is WazobiaSpeech **`dev` + `dev_test`** health clips (yo + pcm, enriched + random groups; about 20 speakers per language, so CIs are wide and the report says so). Its fetcher `scripts/fetch_wazobia.py` is built and tested (queue → `data/private/label_queue.s4w.jsonl`, nothing labelled). Due diligence round 6 (1 Oct): no other real source matches MAMAI; the **Uyo MNCH records** (OSF, CC-BY, 538 real antenatal records, structured) check the rules engine on real vitals (**ADR-0019 accepted**; mapping awaits Rahmat's confirmation). The **Antenatal Orientation Speech Dataset** turned out to be public (GitHub `Adeola80/Antenatal-Speech`, MIT): nurses' clinic talks in en/yo/pcm, usable for ASR tests, phrase mining and hard negatives (needs an ADR). |
 | Baseline runs | **Done 30 Sept** (Kaggle run 08:04 UTC → finished between 16:01 and 16:11 UTC, all six runs complete). Results below and in `results/baseline-20260930/`. **Llama-3.1-8B few-shot beats N-ATLaS few-shot on every metric on G**; N-ATLaS few-shot is schema-invalid on 57/300. |
 | Pilot | **Done 1 Oct** (see Pilot results). Was run as a saved version started from the notebook editor **1 Oct 13:29 UTC** with `HF_TOKEN` (N-ATLaS few-shot, Llama few-shot, N-ATLaS zero-shot, and a dev-only N-ATLaS few-shot at `max_new_tokens = 1536`, each on the 30 pilot items). The log prints an `=== INVALID` summary per run (how many outputs were cut off). Read it with `scripts/kaggle_log.py`. After it: propose G1/G2 margins → Malik approves → freeze. **G2 set chosen: Belebele `yor_Latn`** (Malik, 1 Oct; `docs/eval-plan.md` §3 and §6). |
 | Fine-tuning | Pipeline built and CPU-smoke-tested; **nothing trained.** Order: pilot → freeze thresholds → `scripts/freeze_test_set.py` → generate training G with a **new** seed → `scripts/build_train_set.py` → `bench/train_qlora.py` on Kaggle. |
@@ -72,12 +72,14 @@ Point [95% bootstrap CI]. Reports: `results/pilot-20261001/`. 30 items is a pilo
 | Review app | https://phc-scribe-review.vercel.app; source `review-app/`; env vars `SESSION_SECRET`, `REVIEWERS` (Malik's admin code is in `REVIEWERS` in the Vercel dashboard) |
 | Modal deploy | `deploy/modal_app.py` (set `PRIVATE = False` on submission day), workflow `.github/workflows/deploy-modal.yml` (manual: Actions → deploy-modal → Run workflow) |
 | GitHub secrets (Actions) | `MODAL_TOKEN_ID`, `MODAL_TOKEN_SECRET`, `HF_WRITE_TOKEN` (spare; was for the HF Space), `HF_READ_TOKEN`, `PHC_API_KEY` (Malik keeps the key in his password manager; services only ever get its SHA-256 hash) |
-| Decisions | `docs/adr/0001`–`0018` (0016 accepted 30 Sept; 0017 and 0018 proposed) |
+| Decisions | `docs/adr/0001`–`0019` (0016 accepted 30 Sept; **0018 and 0019 accepted 1 Oct**; 0017 proposed) |
+| Fine-tuning evidence | `docs/research/finetuning-review.md` (1 Oct): the literature behind the training recipe and margins, with proposals A–E awaiting Malik |
+| Uyo rules check (ADR-0019) | `bench/uyo.py` (fixed mapping, exact CIs; tested), `python scripts/check_uyo.py` (prints the mapping; scores only with `--confirmed-by <adviser>`); data pinned by SHA-256 under `data/private/uyo/` |
 | Benchmark data | `data/bench/g.20261002.jsonl` (300, test supplement G), `data/bench/pilot.20261004.jsonl` (30, dev), `tests/fixtures/smoke_items.jsonl` (6, constructed); private queues in `data/private/` (git-ignored) |
 
 ## Next steps, in order
 1. ~~**Baseline results**~~ **(done 30 Sept; see Baseline results):** read the Kaggle log when the run ends; put the three reports (N-ATLaS few-shot, Llama-3.1 few-shot, N-ATLaS zero-shot on G) in this file. If the 12 h limit cut the last run, re-run only what is missing.
-2. **Pilot: done; margins proposed.** Malik approves or changes G1 (+5 points) and G2 (−3 points) in `docs/eval-plan.md` §6, then a Kaggle job scores base N-ATLaS on Belebele `yor_Latn` (to build), then commit the freeze. (Done so far: reports recorded, truncation settled, cap stays 768; originally: propose G1 (false-alarm margin) and G2 (Belebele `yor_Latn` regression margin) in `docs/eval-plan.md` §6 → Malik approves → commit the freeze. G2 needs a Belebele scoring job on Kaggle for base N-ATLaS (not built yet).
+2. **Pilot: done; margins approved by Malik (1 Oct): G1 +5 points, G2 −3 points.** Before the freeze: Malik decides proposals A–E in `docs/research/finetuning-review.md` (E would set G2 by the FDA-style 50% rule, capped at 3 points); build one Kaggle job that scores N-ATLaS **and** Llama-3.1-8B on Belebele `yor_Latn` (and, if B is approved, runs the unconstrained base comparator on the pilot items); then commit the freeze. (Done so far: reports recorded, truncation settled, cap stays 768; originally: propose G1 (false-alarm margin) and G2 (Belebele `yor_Latn` regression margin) in `docs/eval-plan.md` §6 → Malik approves → commit the freeze. G2 needs a Belebele scoring job on Kaggle for base N-ATLaS (not built yet).
 3. **Freeze the test set** (`scripts/freeze_test_set.py data/bench/g.20261002.jsonl` plus S4 once MAMAI arrives; the script never overwrites an existing freeze, so decide the file list first).
 4. **Training data and QLoRA run** on Kaggle (split long jobs so each stays well under 12 h).
 5. **Modal:** ~~run `deploy-modal`~~ (done 30 Sept 15:21 UTC; unauthenticated requests refused), check `/v1/health` and that requests without proxy auth and without the API key are refused; Malik accepts ADR-0017.
@@ -121,7 +123,10 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 | Invite Rahmat (Clinician), Oseni (Annotator) and the pharmacy graduate (Pharmacist) in the review app; send each their code privately; switch "Calibration · MamaBench ANC" to a practice set | Pending (Malik, 1 Oct) |
 | Confirm Rahmat, Oseni and the pharmacy graduate as named team members (Track B needs 2–5); add the pharmacist's name to Team | Pending |
 | Follow up with Intron on NigBench-MAMAI access (2 Oct); fallback 5 Oct | Pending |
-| Accept or reject ADR-0018 (WazobiaSpeech as the real-data fallback, replacing MamaBench + G) | Pending |
+| Accept or reject ADR-0018 (WazobiaSpeech as the real-data fallback, replacing MamaBench + G) | **Accepted 1 Oct** (amended: dev + dev_test) |
+| Decide proposals A–E in `docs/research/finetuning-review.md` (learning rate, supplementary comparator, multilingual training mix, teacher labels (needs an ADR), G2 by the 50% rule) | Pending |
+| Rahmat confirms the Uyo symptom mapping (`python scripts/check_uyo.py` prints it), then run it with `--confirmed-by` | Pending |
+| Ask Rahmat to confirm the G1 tolerance (+5 points of false alarms) | Pending |
 | Accept ADR-0017 (Modal) after the first successful deploy | Pending |
 | Ask the WazobiaSpeech authors (EqualyzAI / DSN) about the Yoruba licence | Resolved 30 Sept: the card now states CC BY 4.0 |
 | Optional: ask the authors of the Antenatal Orientation Speech Dataset (Springer 10.1007/978-3-031-75147-9_11) for access | Optional |
@@ -134,6 +139,12 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 | Optional: delete the unused `HF_WRITE_TOKEN` on Hugging Face and GitHub | Optional |
 
 ## Progress log
+**1 Oct, session 5 (decisions and research):**
+- Malik: **ADR-0018 accepted**, **ADR-0019 (Uyo rules check) accepted**, **G1/G2 margins approved**. Intron contacted (no reply yet); NigBench access still not granted.
+- ADR-0018 amended at acceptance: `dev_test` has only 8 yo / 11 pcm speakers, so the test pool is `dev` + `dev_test` (20 / 21 speakers).
+- `docs/research/finetuning-review.md`: the base model's loop is a known effect of forced-JSON decoding (fine-tuning fixes it); Llama-3.1-8B reaches human-level extraction with 43–100 examples at learning rate 1e-4 (ours is 2e-4); a few target-language examples transfer strongly; teacher-model labels work; FDA/EMA margin practice. Five proposals for Malik.
+- Antenatal Orientation Speech Dataset located (GitHub, MIT). Uyo check built and tested; not scored yet.
+
 **1 Oct, session 5 (pilot):**
 - **Pilot complete** (see Pilot results). The 768 → 1536 token check showed identical results: the cap is not the cause of N-ATLaS's invalid outputs; the comparator keeps 768. G1 (+5 points) and G2 (−3 points) margins proposed in the eval plan, not frozen.
 

@@ -32,6 +32,7 @@ Revised by ADR-0016 (accepted 30 Sept) and ADR-0018 (proposed 30 Sept). The orig
 | G generated ANC notes | 300 | `data/bench/g.20261002.jsonl`; tests vitals, gestational age and the rules engine | No, reported separately, labelled "generated" |
 | MamaBench ANC slice | 78 | HelpMum MamaBench, clinician-authored vignettes (CC-BY-4.0) | No, reported separately |
 | AMR | 62 | African Medical Records, synthesized OCR/HTR documents | No, reported separately |
+| U Uyo antenatal records | 538 | Real hospital records (St Luke's, Uyo; OSF, CC-BY-4.0): structured vitals, symptom and diagnosis; tests the **rules engine** against clinician diagnoses (ADR-0019) | No, reported separately |
 | R red-team | ~60 | Constructed adversarial cases (negation, hedging, history vs current, third-party symptoms, mixed-language numbers, ASR noise, embedded instructions) | No, reported separately |
 | **G2 general-Yoruba set** | 900 | Belebele `yor_Latn` test (CC-BY-SA-4.0), `facebook/belebele` @ `7899cdf`; chosen by Malik 1 Oct | Guardrail only (§6 G2) |
 
@@ -65,7 +66,7 @@ Reported per stratum, per language and per field, each with 95% bootstrap CIs.
 - **G2 (guardrail):** general-Yoruba regression within **_TBD_** points, measured on Belebele `yor_Latn` (900 items, 4-way multiple choice; set chosen by Malik 1 Oct; scoring proposed as accuracy by answer log-likelihood, to confirm at the freeze; margin set from the pilot)
 - **Significance of danger-sign detection:** McNemar's test on per-item detection, α = 0.05
 
-**Proposed margins (1 Oct, from the pilot; NOT frozen until Malik approves):**
+**Margins approved by Malik, 1 Oct** (frozen with the test set; see the literature check in `docs/research/finetuning-review.md`):
 - **G1:** the upper bound of the 95% paired-bootstrap CI of *false-alarm rate (fine-tuned − base few-shot)* must be **≤ +5 points**. Base few-shot false-alarm rate was 0.385 [0.125, 0.667] on the 30 pilot items and 0.187 [0.127, 0.250] on G; Llama-3.1 few-shot reached 0.000 and 0.020. The pilot is too small to set the margin from its variance, so 5 points is a clinical judgement: a fine-tuned model may not add more than about one extra false referral per 20 visits.
 - **G2:** the lower bound of the 95% paired-bootstrap CI of *Belebele `yor_Latn` accuracy (fine-tuned − base)* must be **≥ −3 points**. With 900 paired items the CI half-width is roughly ±2 points, so a 3-point regression is detectable and still small. Base N-ATLaS has not been scored on Belebele yet (needs a Kaggle job).
 - **Decoding cap:** the base comparator keeps `max_new_tokens = 768`. The pilot ran N-ATLaS few-shot at 768 and 1536: every metric was identical (6/30 invalid in both; failed outputs simply ran on to the new cap, up to 5,052 characters), so the cap is not the cause and raising it would only add compute.

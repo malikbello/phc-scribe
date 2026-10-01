@@ -1,6 +1,6 @@
 """Fetch WazobiaSpeech health transcripts and build the ADR-0018 fallback S4 queue.
 
-    python scripts/fetch_wazobia.py                        # dev_test, yo + pcm, 300 each
+    python scripts/fetch_wazobia.py                        # dev + dev_test, yo + pcm, 300 each
     python scripts/fetch_wazobia.py --per-language 300 --enriched-share 0.6
     python scripts/fetch_wazobia.py --check-speakers       # also check split disjointness
 
@@ -12,7 +12,7 @@ requests), so the audio (about 230 GB for Yoruba alone) is never downloaded. The
 datasets are ungated and CC-BY-4.0 (EqualyzAI / Data Science Nigeria).
 
 Writes (all git-ignored, under data/private/):
-- wazobia/<lang>_<split>_health.jsonl   every health clip's text + metadata
+- wazobia/<lang>_<split>_health.jsonl   every health clip's text + metadata, per held-out split
 - label_queue.s4w.jsonl                 the seeded, two-group (enriched/random) queue
 - label_queue.s4w.meta.json             revision, seed, terms, group sizes
 
@@ -88,28 +88,35 @@ def read_health_rows(lang: Language, split: str) -> list[SourceRow]:
     return rows
 
 
-def speaker_overlap(lang: Language, test_split: str) -> dict[str, int]:
-    """Speakers shared between the test split and each other split, over all shards."""
+def speaker_overlap(lang: Language, test_splits: list[str], workers: int = 16) -> int:
+    """Number of speakers in both the train split and the test pool, over all shards."""
+    from concurrent.futures import ThreadPoolExecutor
+
     import pyarrow.parquet as pq
     from huggingface_hub import HfFileSystem
 
     repo, revision = DATASETS[lang]
     fs = HfFileSystem()
-    speakers: dict[str, set[str]] = {}
-    for split in ("train", "dev", "dev_test"):
-        seen: set[str] = set()
-        for path in _shards(fs, repo, revision, split):
-            with fs.open(path, "rb", block_size=2**20) as f:
-                col = pq.ParquetFile(f).read(columns=["speaker_id"]).column(0)
-            seen.update(str(s) for s in col.to_pylist())
-        speakers[split] = seen
-    return {s: len(speakers[test_split] & speakers[s]) for s in speakers if s != test_split}
+
+    def speakers_in(path: str) -> set[str]:
+        with fs.open(path, "rb", block_size=2**20) as f:
+            col = pq.ParquetFile(f).read(columns=["speaker_id"]).column(0)
+        return {str(s) for s in col.to_pylist()}
+
+    def speakers(splits: list[str]) -> set[str]:
+        paths = [p for split in splits for p in _shards(fs, repo, revision, split)]
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            return set().union(*pool.map(speakers_in, paths))
+
+    return len(speakers(["train"]) & speakers(test_splits))
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--languages", nargs="+", default=["yo", "pcm"], choices=sorted(DATASETS))
-    parser.add_argument("--split", default="dev_test")
+    # Both held-out splits form the test pool (ADR-0018 amendment, 1 Oct): dev_test alone
+    # has only 8 Yoruba and 11 Pidgin speakers. train stays for training.
+    parser.add_argument("--splits", nargs="+", default=["dev", "dev_test"])
     parser.add_argument("--per-language", type=int, default=300)
     parser.add_argument("--enriched-share", type=float, default=0.6)
     parser.add_argument("--seed", type=int, default=20261005)
@@ -123,12 +130,15 @@ def main() -> int:
     pools: dict[str, dict[str, int]] = {}
     for lang in args.languages:
         try:
-            rows = read_health_rows(lang, args.split)
+            rows = [r for split in args.splits for r in read_health_rows(lang, split)]
         except Exception as e:
             fail(f"{lang}: {type(e).__name__}: {str(e).splitlines()[0][:200]}")
             return 1
         OUT_DIR.mkdir(parents=True, exist_ok=True)
-        write_jsonl(OUT_DIR / f"{lang}_{args.split}_health.jsonl", rows)
+        for split in args.splits:
+            write_jsonl(
+                OUT_DIR / f"{lang}_{split}_health.jsonl", [r for r in rows if r.split == split]
+            )
         n_enriched = sum(1 for r in rows if enriched(r.transcript))
         pools[lang] = {
             "health_clips": len(rows),
@@ -136,7 +146,7 @@ def main() -> int:
             "speakers": len({r.speaker_id for r in rows}),
         }
         say(
-            f"{lang}/{args.split}: {len(rows)} health clips, {n_enriched} match the"
+            f"{lang}/{'+'.join(args.splits)}: {len(rows)} health clips, {n_enriched} match the"
             f" enrichment terms, {pools[lang]['speakers']} speakers"
         )
         all_rows.extend(rows)
@@ -144,8 +154,8 @@ def main() -> int:
     overlap = {}
     if args.check_speakers:
         for lang in args.languages:
-            overlap[lang] = speaker_overlap(lang, args.split)
-            say(f"{lang}: speakers shared with {args.split}: {overlap[lang]}")
+            overlap[lang] = speaker_overlap(lang, args.splits)
+            say(f"{lang}: speakers shared between train and the test pool: {overlap[lang]}")
 
     per_language = {lang: int(args.per_language) for lang in args.languages}
     hint_fn = None if args.no_hints else keyword_hints
@@ -165,7 +175,7 @@ def main() -> int:
             lang: {"repo": DATASETS[lang][0], "revision": DATASETS[lang][1]}
             for lang in args.languages
         },
-        "split": args.split,
+        "splits": args.splits,
         "domain": HEALTH_DOMAIN,
         "seed": args.seed,
         "per_language": per_language,
