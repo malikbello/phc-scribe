@@ -14,6 +14,7 @@ annotators could see them.
 from __future__ import annotations
 
 import random
+import re
 from collections import defaultdict
 from collections.abc import Iterable, Mapping, Sequence
 from typing import Literal
@@ -23,6 +24,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from bench.items import BenchItem, Language, Stratum
 from phc_scribe.encounter import Encounter, Finding
 from phc_scribe.grounding import locate
+from phc_scribe.text import fold_text
 
 # NigBench-MAMAI config names -> our language codes. Kanuri, Nupe and Fulfulde are out
 # of scope for v0 (no reviewer on the team reads them).
@@ -66,6 +68,10 @@ class QueueItem(BaseModel):
     source_id: str
     transcript: str
     hints: list[Finding] = Field(default_factory=list)
+    sampling: Literal["enriched", "random"] | None = Field(
+        default=None,
+        description="Sampling group under ADR-0018 (WazobiaSpeech); None for MAMAI queues.",
+    )
 
 
 class Label(BaseModel):
@@ -114,6 +120,108 @@ def sample_queue(
                     hints=hints,
                 )
             )
+    return queue
+
+
+# ADR-0018 enrichment terms, fixed before any sampling. Matched as whole words on
+# diacritic-folded, lower-cased text, so Yoruba tone marks and under-dots don't matter.
+# A clip matching any term goes to the "enriched" group; the rest are "random".
+ENRICH_TERMS: tuple[str, ...] = (
+    # pregnancy and antenatal care (English / Pidgin)
+    "pregnant",
+    "pregnancy",
+    "antenatal",
+    "belle",
+    "pikin",
+    "born",
+    "midwife",
+    "labour",
+    "labor",
+    "miscarriage",
+    "baby",
+    # pregnancy and antenatal care (Yoruba, folded)
+    "oyun",
+    "aboyun",
+    "loyun",
+    "ibimo",
+    "bimo",
+    "omo inu",
+    "agbebi",
+    # danger-sign vocabulary (English / Pidgin)
+    "bleeding",
+    "bleed",
+    "blood",
+    "headache",
+    "convulsion",
+    "fit",
+    "swelling",
+    "swell",
+    "fever",
+    "blurred",
+    "dizzy",
+    "breath",
+    "water break",
+    # danger-sign vocabulary (Yoruba, folded)
+    "eje",
+    "ori fifo",
+    "giri",
+    "wiwu",
+    "iba",
+    "oju",
+    "ese wiwu",
+)
+_ENRICH_RE = re.compile(r"\b(?:" + "|".join(re.escape(t) for t in ENRICH_TERMS) + r")\b")
+
+
+def enriched(transcript: str) -> bool:
+    """True when a transcript matches an ADR-0018 enrichment term."""
+    return bool(_ENRICH_RE.search(fold_text(transcript).lower()))
+
+
+def sample_enriched_queue(
+    rows: Iterable[SourceRow],
+    per_language: Mapping[str, int],
+    enriched_share: float,
+    seed: int,
+    hint_fn=None,
+    prefix: str = "s4w",
+) -> list[QueueItem]:
+    """ADR-0018 sampling: per language, an enriched group and a random group.
+
+    `enriched_share` of each language's quota comes from clips matching ENRICH_TERMS
+    and the rest from the remaining clips, each a seeded simple random sample. If a
+    group is short, the other group fills the gap, so the language quota still holds.
+    Deterministic and input-order independent, like sample_queue.
+    """
+    groups: dict[tuple[str, bool], list[SourceRow]] = defaultdict(list)
+    for r in rows:
+        if r.transcript.strip():
+            groups[(r.language, enriched(r.transcript))].append(r)
+    rng = random.Random(seed)  # noqa: S311 (sampling, not security)
+    queue: list[QueueItem] = []
+    for lang in sorted(per_language):
+        pools = {}
+        for is_enriched in (True, False):
+            pool = sorted(groups.get((lang, is_enriched), []), key=lambda r: r.source_id)
+            rng.shuffle(pool)
+            pools[is_enriched] = pool
+        want_e = min(round(per_language[lang] * enriched_share), len(pools[True]))
+        want_r = min(per_language[lang] - want_e, len(pools[False]))
+        want_e = min(per_language[lang] - want_r, len(pools[True]))
+        for is_enriched, n in ((True, want_e), (False, want_r)):
+            for r in pools[is_enriched][:n]:
+                queue.append(
+                    QueueItem(
+                        item_id=f"{prefix}-{lang}-{r.source_id}",
+                        group_id=f"{r.source}:{r.speaker_id}",
+                        language=r.language,
+                        source=r.source,
+                        source_id=r.source_id,
+                        transcript=r.transcript,
+                        hints=hint_fn(r.transcript) if hint_fn else [],
+                        sampling="enriched" if is_enriched else "random",
+                    )
+                )
     return queue
 
 

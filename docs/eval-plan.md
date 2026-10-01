@@ -23,12 +23,17 @@ All rungs use the same schema-constrained decoding and the same grounding/valida
 6. Fine-tuned N-ATLaS, Q4_K_M GGUF (**primary system: what ships**)
 
 ## 3. Test data (PHC-Scribe-Bench v0)
+Revised by ADR-0016 (accepted 30 Sept) and ADR-0018 (proposed 30 Sept). The original plan (real AMR notes, S1/S3) failed the data audit (`docs/data-audit.md`).
+
 | Stratum | Target size | Source | Counts toward the 500? |
 |---|---|---|---|
-| S1 English, real notes | ~260 | Real Nigerian clinical notes (African Medical Records candidate, subject to the data audit), de-identified | Yes |
-| S3 Yoruba, translated real notes | ~260 | S1 notes translated by a native speaker; clinical meaning checked by the clinical adviser | Yes |
-| R Red-team | ~60 | Constructed adversarial cases (negation, hedging, history vs current, third-party symptoms, mixed-language numbers, ASR noise, embedded instructions) | No, reported separately |
-| S2 Yoruba, real dictations | later | Health-worker dictations after ethics approval | Acceleration phase |
+| **S4** real patient speech | ≥ 500 | NigBench-MAMAI test split, Yoruba + Pidgin (ADR-0016), labelled in the review app. Two inputs: human transcript; audio through N-ATLaS ASR | **Yes** |
+| S4-W (fallback, only if MAMAI is refused by 5 Oct) | ≥ 500 | WazobiaSpeech `dev_test` health clips, Yoruba + Pidgin, enriched + random groups (ADR-0018) | Yes, instead of S4 |
+| G generated ANC notes | 300 | `data/bench/g.20261002.jsonl`; tests vitals, gestational age and the rules engine | No, reported separately, labelled "generated" |
+| MamaBench ANC slice | 78 | HelpMum MamaBench, clinician-authored vignettes (CC-BY-4.0) | No, reported separately |
+| AMR | 62 | African Medical Records, synthesized OCR/HTR documents | No, reported separately |
+| R red-team | ~60 | Constructed adversarial cases (negation, hedging, history vs current, third-party symptoms, mixed-language numbers, ASR noise, embedded instructions) | No, reported separately |
+| **G2 general-Yoruba set** | 900 | Belebele `yor_Latn` test (CC-BY-SA-4.0), `facebook/belebele` @ `7899cdf`; chosen by Malik 1 Oct | Guardrail only (§6 G2) |
 
 - **Splits:** group-wise by source note. Translations stay with their originals. Exact and near-duplicate checks run across splits.
 - **Enrichment:** at least 30% of test items contain at least one danger sign.
@@ -57,7 +62,7 @@ Reported per stratum, per language and per field, each with 95% bootstrap CIs.
 - **P1:** danger-sign recall, fine-tuned Q4 − base few-shot. The lower bound of the 95% paired-bootstrap CI must be > 0, in English **and** in Yoruba.
 - **P2:** micro-F1, same test.
 - **G1 (guardrail):** false-alarm rate not worse than base by more than **_TBD_** points
-- **G2 (guardrail):** general-Yoruba regression within **_TBD_** points
+- **G2 (guardrail):** general-Yoruba regression within **_TBD_** points, measured on Belebele `yor_Latn` (900 items, 4-way multiple choice; set chosen by Malik 1 Oct; scoring proposed as accuracy by answer log-likelihood, to confirm at the freeze; margin set from the pilot)
 - **Significance of danger-sign detection:** McNemar's test on per-item detection, α = 0.05
 - **If any criterion fails, it is reported as failed.** No post-hoc metric switching.
 

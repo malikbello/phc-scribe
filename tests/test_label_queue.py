@@ -111,3 +111,47 @@ def test_committed_labeler_matches_vocabulary():
     spec.loader.exec_module(module)
     committed = (ROOT / "tools" / "labeler" / "labeler.html").read_text(encoding="utf-8")
     assert committed == module.render(), "run: python scripts/build_labeler.py"
+
+
+def test_enrichment_matches_folded_whole_words():
+    from bench.label_queue import enriched
+
+    assert enriched("Ẹ̀jẹ̀ ń jáde lára mi")  # tone marks and under-dots folded
+    assert enriched("mo ti lóyún oṣù mẹ́ta")
+    assert enriched("my belle dey pain me")
+    assert not enriched("fitness training every morning")  # whole words only
+    assert not enriched("the market price of rice")
+
+
+def test_enriched_queue_splits_groups_and_backfills():
+    from bench.label_queue import sample_enriched_queue
+
+    rows = [
+        SourceRow(
+            source="wazobia",
+            source_id=f"e{i}",
+            speaker_id=f"s{i}",
+            language="yo",
+            split="dev_test",
+            transcript=f"ẹ̀jẹ̀ {i}",
+        )
+        for i in range(5)
+    ] + [
+        SourceRow(
+            source="wazobia",
+            source_id=f"r{i}",
+            speaker_id=f"s{i}",
+            language="yo",
+            split="dev_test",
+            transcript=f"ọjà {i}",
+        )
+        for i in range(20)
+    ]
+    q = sample_enriched_queue(rows, {"yo": 10}, enriched_share=0.6, seed=1)
+    assert len(q) == 10
+    # only 5 enriched clips exist, so the random group fills the rest
+    assert sum(x.sampling == "enriched" for x in q) == 5
+    assert sum(x.sampling == "random" for x in q) == 5
+    assert all(x.item_id.startswith("s4w-yo-") for x in q)
+    again = sample_enriched_queue(list(reversed(rows)), {"yo": 10}, enriched_share=0.6, seed=1)
+    assert [x.item_id for x in q] == [x.item_id for x in again]

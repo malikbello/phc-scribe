@@ -1,9 +1,9 @@
 # Project status and working agreement
 
-_Last updated: 30 Sept 2026, ~17:00 WAT (session 5). Keep this file current; it is the handoff between work sessions._
+_Last updated: 1 Oct 2026, ~15:40 WAT (session 5). Keep this file current; it is the handoff between work sessions._
 
 ## Resume prompt (paste this into a new session)
-> Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`, branch `main`; `day1-2-gate1` mirrors it) and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution, no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results. Then: (1) check the Kaggle notebook `bellomalik/phc-scribe-baseline` (read its log through the Kaggle API as described under "Kaggle" below; output files can't be downloaded from the cloud session), record the three baseline score reports in this file and commit; (2) push the 30-item pilot run; (3) continue with "Next steps, in order". Ask me before anything outward-facing or irreversible.
+> Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`, branch `main`) and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution, no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results. Then: (1) run `python scripts/kaggle_log.py --save results/pilot-20261001` to read the pilot run on Kaggle (it started 1 Oct 13:29 UTC from the notebook editor); if it is complete, record the four pilot reports and the truncation verdict (768 vs 1536 tokens) in this file, commit, and draft the G1/G2 margins in `docs/eval-plan.md` §6 for my approval (do not freeze); (2) continue with "Next steps, in order". Ask me before anything outward-facing or irreversible.
 
 ## Snapshot
 - **What:** PHC Scribe. An offline-first AI scribe and safety net for Nigerian primary-health-care workers, built on a fine-tuned N-ATLaS.
@@ -12,17 +12,17 @@ _Last updated: 30 Sept 2026, ~17:00 WAT (session 5). Keep this file current; it 
 - **Validation required:** a 500+ example benchmark vs base N-ATLaS on real data, plus a documented API.
 - **Architecture:** approved 29 Sept (`docs/architecture.md`, ADRs in `docs/adr/`). **Evaluation:** `docs/eval-plan.md` (thresholds frozen after the pilot, before any training).
 
-## Where things stand (30 Sept, end of session 4)
+## Where things stand (1 Oct, session 5)
 | Area | State |
 |---|---|
-| Benchmark design | **ADR-0016 accepted:** counted 500 = real NigBench-MAMAI speech (test split), labelled in the review app. Supplements: 300 generated notes (G), MamaBench, AMR. MAMAI access **still pending** (Intron emailed 29 Sept; follow up 2 Oct; fallback 5 Oct per ADR-0016 §6). |
+| Benchmark design | **ADR-0016 accepted:** counted 500 = real NigBench-MAMAI speech (test split), labelled in the review app. Supplements: 300 generated notes (G), MamaBench ANC slice (kept, Malik 1 Oct), AMR. MAMAI access **still refused (403, 1 Oct)**: follow up with Intron 2 Oct. **ADR-0018 (Proposed):** if MAMAI is refused by 5 Oct, the counted set is WazobiaSpeech `dev_test` health clips (yo + pcm, enriched + random groups). Its fetcher `scripts/fetch_wazobia.py` is built and tested (queue → `data/private/label_queue.s4w.jsonl`, nothing labelled). Due diligence round 6 (1 Oct): no other real source matches MAMAI; the **Uyo MNCH records** (OSF, CC-BY, 538 real antenatal records, structured) can check the rules engine on real vitals (needs an ADR). |
 | Baseline runs | **Done 30 Sept** (Kaggle run 08:04 UTC → finished between 16:01 and 16:11 UTC, all six runs complete). Results below and in `results/baseline-20260930/`. **Llama-3.1-8B few-shot beats N-ATLaS few-shot on every metric on G**; N-ATLaS few-shot is schema-invalid on 57/300. |
-| Pilot | 30 dev items ready (`data/bench/pilot.20261004.jsonl`, stratum `pilot`). The Kaggle job is set to `PLAN = "pilot"` for its next push. After it: propose G1/G2 margins → Malik approves → freeze. **G2 needs a general-Yoruba regression set (not chosen yet).** |
+| Pilot | **Running** on Kaggle: saved version started from the notebook editor **1 Oct 13:29 UTC** with `HF_TOKEN` (N-ATLaS few-shot, Llama few-shot, N-ATLaS zero-shot, and a dev-only N-ATLaS few-shot at `max_new_tokens = 1536`, each on the 30 pilot items). The log prints an `=== INVALID` summary per run (how many outputs were cut off). Read it with `scripts/kaggle_log.py`. After it: propose G1/G2 margins → Malik approves → freeze. **G2 set chosen: Belebele `yor_Latn`** (Malik, 1 Oct; `docs/eval-plan.md` §3 and §6). |
 | Fine-tuning | Pipeline built and CPU-smoke-tested; **nothing trained.** Order: pilot → freeze thresholds → `scripts/freeze_test_set.py` → generate training G with a **new** seed → `scripts/build_train_set.py` → `bench/train_qlora.py` on Kaggle. |
 | API | `/v1` built (extract, check, records, transcribe with NCAIR1 ASR). Contract `docs/openapi.v1.json`, guide `docs/api.md`. 160 tests pass; CI green. |
 | Cloud deploy | **ADR-0017 (Proposed): Modal**, private (proxy auth + API key) until submission, deployed from GitHub Actions. Modal: Starter, $30/month credits, **spend limit $0**. **First successful deploy: 30 Sept 15:21 UTC** (`deploy-modal` run #4, `main` @ `26906eb`) → `https://malikbello--phc-scribe-api-api.modal.run` (keyword extractor, HF ASR). Checked from the cloud session: `/v1/health` and `/v1/extract` without proxy auth return **401**. Still to check (Malik, needs the proxy token + API key): `/v1/health` returns 200 with both, and 401 with proxy auth but no key. Then accept ADR-0017. |
-| Review app | Live at https://phc-scribe-review.vercel.app (Vercel project `phc-scribe-review`, Upstash Redis). Set "Calibration · MamaBench ANC": 20 items, **all** double-labelled. Admin can now delete an unlabelled set; share slider goes to 100%. Rahmat (clinician) and Oseni (annotator) **to be invited by Malik** in Admin → Team. |
-| Data survey | WazobiaSpeech (`Africanvoice/*`): real consented health speech, CC-BY-4.0 for Pidgin/Igbo/Hausa, **Yoruba licence missing** (ask authors). Uses: ASR test, phrase mining, possible hard-negative stratum (needs an ADR). Kitala AI: paid service, not usable. |
+| Review app | Live at https://phc-scribe-review.vercel.app (Vercel project `phc-scribe-review`, Upstash Redis; deploys from `main`). **1 Oct: guided flow.** Each reviewer's home screen has a *Start here* checklist (guide → sign-off for their role → practice set → benchmark labelling, which shows "opens later" until a non-practice set exists), an in-app guide (`/guide`), a **Pharmacist** role (sees only the new *Medicines* sign-off step: 5 medicines + local names + anything missing), and **practice sets** where everyone labels every item (agreement over all pairs; admin toggle per set). Malik to invite Rahmat (Clinician), Oseni (Annotator) and the pharmacy graduate (Pharmacist), and switch "Calibration · MamaBench ANC" to a practice set. |
+| Data survey | Rounds 1–6 in `docs/data-sources-survey.md`. WazobiaSpeech repos were renamed to `Africanvoice/{yoruba,naija,igbo,hausa}_african_voices`; **all four now CC-BY-4.0** (the Yoruba licence was added 30 Sept, in the card text). Pinned 1 Oct: yo `353ea9f`, pcm `2bb5618`. |
 
 ## Baseline results (G, 300 generated English notes; 30 Sept)
 Point estimate [95% group-bootstrap CI]. Prompt-v0.1, greedy, JSON-schema-constrained, `max_new_tokens = 768`. Reports: `results/baseline-20260930/`.
@@ -53,7 +53,8 @@ What this does and does not show:
 | Kaggle code bundle | private dataset https://www.kaggle.com/datasets/bellomalik/phc-scribe-code (built from `git archive HEAD` by `scripts/kaggle_push.py`; no private data) |
 | Kaggle job source | `kaggle/baseline/run.py` (`PLAN` switch) + `kernel-metadata.json` (T4, internet on, private) |
 | Kaggle secrets | **Runs started through the API (`scripts/kaggle_push.py`) do not receive the `HF_TOKEN` secret** (pilot versions 5–7 on 30 Sept all reported it missing, including one pushed after Malik switched it on). Push the code with `kaggle_push.py`, then **start the run from the notebook editor**: Edit → Add-ons → Secrets (HF_TOKEN on) → Save Version → Save & Run All. In `pilot` mode the job exits within a minute if the token is missing. |
-| Reading the Kaggle log from a cloud session | Kaggle API `list_kernel_session_output` (helper written in session 4 at the scratchpad `klog.py`; recreate if gone: `KaggleApi().authenticate()`, `ApiListKernelSessionOutputRequest(user_name="bellomalik", kernel_slug=...)`, read `.log`). The log is only complete after the run ends. |
+| Reading the Kaggle log from a cloud session | `python scripts/kaggle_log.py [--save results/<run>]`: prints status, `=== INVALID` lines and a metric summary per report, and can save each report JSON. The log is only complete after the run ends. |
+| WazobiaSpeech fallback queue (ADR-0018) | `python scripts/fetch_wazobia.py [--check-speakers]` → `data/private/wazobia/*_health.jsonl`, `data/private/label_queue.s4w.jsonl` + `.meta.json` (pools, groups, terms, speaker overlap). Enrichment terms and sampling: `bench/label_queue.py` (`ENRICH_TERMS`, `sample_enriched_queue`). Upload the queue in the review app (Admin → Add a labelling set; **not** a practice set) only if ADR-0018 is accepted and triggered. |
 | Review app | https://phc-scribe-review.vercel.app; source `review-app/`; env vars `SESSION_SECRET`, `REVIEWERS` (Malik's admin code is in `REVIEWERS` in the Vercel dashboard) |
 | Modal deploy | `deploy/modal_app.py` (set `PRIVATE = False` on submission day), workflow `.github/workflows/deploy-modal.yml` (manual: Actions → deploy-modal → Run workflow) |
 | GitHub secrets (Actions) | `MODAL_TOKEN_ID`, `MODAL_TOKEN_SECRET`, `HF_WRITE_TOKEN` (spare; was for the HF Space), `HF_READ_TOKEN`, `PHC_API_KEY` (Malik keeps the key in his password manager; services only ever get its SHA-256 hash) |
@@ -62,11 +63,11 @@ What this does and does not show:
 
 ## Next steps, in order
 1. ~~**Baseline results**~~ **(done 30 Sept; see Baseline results):** read the Kaggle log when the run ends; put the three reports (N-ATLaS few-shot, Llama-3.1 few-shot, N-ATLaS zero-shot on G) in this file. If the 12 h limit cut the last run, re-run only what is missing.
-2. **Pilot:** `python scripts/kaggle_push.py` (the job is already `PLAN = "pilot"`), read the log, propose G1 (false-alarm margin) and G2 (general-Yoruba regression margin, after choosing a licensed general-Yoruba set) in `docs/eval-plan.md` §6 → Malik approves → commit the freeze.
+2. **Pilot (running):** read it with `scripts/kaggle_log.py`, record the reports, settle the truncation question (N-ATLaS at 768 vs 1536 tokens) and decide with Malik whether the base comparator uses the higher cap; propose G1 (false-alarm margin) and G2 (Belebele `yor_Latn` regression margin) in `docs/eval-plan.md` §6 → Malik approves → commit the freeze. G2 needs a Belebele scoring job on Kaggle for base N-ATLaS (not built yet).
 3. **Freeze the test set** (`scripts/freeze_test_set.py data/bench/g.20261002.jsonl` plus S4 once MAMAI arrives; the script never overwrites an existing freeze, so decide the file list first).
 4. **Training data and QLoRA run** on Kaggle (split long jobs so each stays well under 12 h).
 5. **Modal:** ~~run `deploy-modal`~~ (done 30 Sept 15:21 UTC; unauthenticated requests refused), check `/v1/health` and that requests without proxy auth and without the API key are refused; Malik accepts ADR-0017.
-6. **MAMAI:** when access arrives, `scripts/fetch_mamai.py` → upload the S4 queue in the review app → Malik labels (~9–10 h for 500).
+6. **MAMAI or the fallback (decide 5 Oct):** if MAMAI access arrives, `scripts/fetch_mamai.py` → upload `label_queue.s4.jsonl` in the review app → the team labels (~9–10 h for 500). If not, and ADR-0018 is accepted, `scripts/fetch_wazobia.py` → upload `label_queue.s4w.jsonl` instead. Either way, the set counted is the one in the freeze; nothing is swapped in afterwards.
 7. Optional, CPU only: ASR word-error rate on ~100 WazobiaSpeech health clips (greedy vs beam search).
 8. Submission package (last 2 days): README, benchmark report, model card, dataset card, demo video; set `PRIVATE = False` and redeploy; grep public docs for day/gate wording.
 
@@ -103,12 +104,13 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 ## Open items (Malik unless noted)
 | Item | Status |
 |---|---|
-| Invite Rahmat (Clinician) and Oseni (Annotator) in the review app; label the calibration set | Pending |
-| Confirm Rahmat and Oseni as named team members (Track B needs 2–5) | Pending |
+| Invite Rahmat (Clinician), Oseni (Annotator) and the pharmacy graduate (Pharmacist) in the review app; send each their code privately; switch "Calibration · MamaBench ANC" to a practice set | Pending (Malik, 1 Oct) |
+| Confirm Rahmat, Oseni and the pharmacy graduate as named team members (Track B needs 2–5); add the pharmacist's name to Team | Pending |
 | Follow up with Intron on NigBench-MAMAI access (2 Oct); fallback 5 Oct | Pending |
 | Accept or reject ADR-0018 (WazobiaSpeech as the real-data fallback, replacing MamaBench + G) | Pending |
 | Accept ADR-0017 (Modal) after the first successful deploy | Pending |
-| Ask the WazobiaSpeech authors (EqualyzAI / DSN) about the Yoruba licence | Pending |
+| Ask the WazobiaSpeech authors (EqualyzAI / DSN) about the Yoruba licence | Resolved 30 Sept: the card now states CC BY 4.0 |
+| Optional: ask the authors of the Antenatal Orientation Speech Dataset (Springer 10.1007/978-3-031-75147-9_11) for access | Optional |
 | Agent name: Àkọsílẹ̀ / Olùgbọ́ / Magatakarda (Akọ̀wé and Ìtọ́jú are taken) | Pending |
 | Email organisers about the team-size mismatch (track cards say 2–5, FAQ says 1–6) | Pending |
 | Free ≥25 GB of laptop disk (offline node, demo video) | Pending |
@@ -118,6 +120,15 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 | Optional: delete the unused `HF_WRITE_TOKEN` on Hugging Face and GitHub | Optional |
 
 ## Progress log
+**1 Oct, session 5 (cont.):**
+- **Merged to `main`** (fast-forward, 9 commits): baselines, identity guard, ADR-0018, data survey round 5, review-app guided flow. CI green on all four jobs.
+- **Review app guided flow** (see Where things stand). 23 app tests; production build checked; screens checked as pharmacist, nurse and admin.
+- **Pilot:** API-started runs never receive Kaggle secrets (4 attempts, including one after the secret was ticked); runs must be started from the notebook editor (Save Version → Save & Run All). An interactive editor session was also lost (its log is not readable via the API). The saved version started 13:29 UTC is the one to read.
+- **G2 set chosen: Belebele `yor_Latn`** (Malik). Eval plan §3 rewritten to the ADR-0016/0018 strata (it still described the abandoned AMR plan).
+- **ADR-0018 groundwork:** `scripts/fetch_wazobia.py` + `sample_enriched_queue` (tests added); dataset revisions pinned; licences re-checked at those revisions.
+- **Due diligence round 6** (`docs/data-sources-survey.md`): nothing replaces MAMAI; Uyo MNCH records found (real, CC-BY, structured).
+- `scripts/kaggle_log.py` committed (replaces the scratchpad helper).
+
 **30 Sept, session 5:**
 - **Modal deployed** (run #4, 15:21 UTC) after the `MODAL_TOKEN_SECRET` fix; unauthenticated `/v1/health` and `/v1/extract` return 401.
 - Tokens restored mid-session. **Baselines finished** (all six runs); reports recorded above and committed to `results/baseline-20260930/`.

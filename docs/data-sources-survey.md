@@ -93,3 +93,17 @@ Question: if Intron does not grant MAMAI access, is there other **real**, licenc
 | AfriSpeech-200 / AfriSpeech-Dialog, NaijaVoices | Real speech | CC-BY-NC-SA-4.0 | General clinical/accented English; not ANC | Evaluation only at most; not ANC. |
 
 **Conclusion:** Intron is not the only real source. If MAMAI does not arrive, the strongest fallback is **WazobiaSpeech Yoruba + Pidgin health clips** (real, consented, CC-BY, open), with G, MamaBench and AfriMed-QA pregnancy queries as labelled supplements. That keeps the counted benchmark real instead of falling back to MamaBench + G. It changes ADR-0016 §6, so it needs a new ADR and Malik's approval.
+
+## Round 6 (1 Oct): last due diligence before the freeze
+Question: is there any real, licence-clean Nigerian ANC data beyond NigBench-MAMAI and WazobiaSpeech? Web search (papers, Zenodo, OSF, Mendeley, Lanfrica, Zindi, medRxiv) plus Hugging Face (round 5).
+
+| Source | What it is | Licence / access | Verdict |
+|---|---|---|---|
+| **Uyo MNCH records** (St Luke's General Hospital, Anua, Uyo, 2014–2019; OSF `j9zh8`, paper PMC12815018) | **Real** structured hospital records: 538 antenatal mothers (diagnosis from 29 labels incl. Eclampsia 16, Hypertension 28, Proteinuria 19; symptom from 51 short labels incl. "Bleeding per vaginam" 12, "Swollen legs" 11, "High blood pressure" 45; real BP, temperature, weight), plus 720 neonatal and 425 child records | **CC-BY-4.0**, open download (GPS columns restricted) | Not free text, so it cannot test extraction. It **can** test the danger-sign rules on real values (e.g. BP ≥ 140/90 vs recorded Hypertension/Eclampsia) and calibrate vital-sign distributions for G. Candidate real-data supplement; needs an ADR if reported. |
+| **Antenatal Orientation Speech Dataset** (Springer chapter, 10.1007/978-3-031-75147-9_11) | Recordings in six Nigerian antenatal clinics, English/Yoruba/Pidgin, about 55 h; nurse health-education talks aligned with WHO ANC | No public repository found | Clinic speech, but nurses teaching, not women reporting symptoms. Useful for ASR/phrases if the authors share it; ask. Not a counted source. |
+| **NigBench** (`intronhealth/nig-bench`, medRxiv 2026.07.05) | 7,289 real point-of-care questions from Nigerian CHEWs, 2,054 in local languages, 1,142 as audio | CC-BY-NC-SA-4.0, gated (access pending) | Health-worker questions, not ANC records; non-commercial. Evaluation-only supplement at most. |
+| Zenodo "Midwives Transcripts" (20765849) | 8 anonymised midwife interviews | CC-BY-4.0 | Country and topic not stated; not usable as a benchmark. |
+| Maternal QA sets: Zindi MSRH, Dialogues of Delivery, English–Akan | QA pairs | Various | East/West African languages other than ours (Akan, Swahili, Luganda…); none Yoruba/Pidgin. Out of scope. |
+| HelpMum (MamaBot), mDoc (Kem), Solayo | Nigerian maternal chatbots | No public data | Upside only (ADR-0016 §5: ask for evaluation-only access). |
+
+**Conclusion:** no source matches MAMAI (real Nigerian women describing pregnancy concerns, CC-BY, in Yoruba and Pidgin). WazobiaSpeech remains the only real-speech fallback (ADR-0018). New and worth using: the **Uyo MNCH records** as a real-data check of the rules engine on real Nigerian antenatal vitals and diagnoses.
