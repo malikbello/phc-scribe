@@ -142,8 +142,12 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 | Optional: delete the unused `HF_WRITE_TOKEN` on Hugging Face and GitHub | Optional |
 
 ## Progress log
+**1 Oct, session 5 (pre-freeze run):**
+- Pre-freeze Kaggle run complete (`results/prefreeze-20261001/`). **Belebele `yor_Latn`: N-ATLaS 42.78%, Llama-3.1 34.44%** → G2 margin m = 3 points (50% of the 8.3-point gain is 4.2; the 3-point cap is stricter). **Unconstrained base comparator: 10/30 valid** (vs 24/30 constrained), recall 0.40: forced JSON helps the base model, so the primary comparator is the generous one.
+- HelpMum dropped as a data route (Malik). Ajagbe emailed by Malik.
+
 **1 Oct, session 5 (final data search):**
-- **Search closed** after round 7 (`docs/data-sources-survey.md`): MAMAI has no public substitute. Remaining routes are requests: Intron (MAMAI; Malik emailed and connected on LinkedIn), HelpMum (MamaBot messages, evaluation only), Ajagbe (email `saajagbe@pgschool.lautech.edu.ng`, his corresponding-author address on a 2025 paper; draft in chat). HelpMum MamaBench access already accepted; `nig-bench` and MAMAI still pending (1 Oct).
+- **Search closed** after round 7 (`docs/data-sources-survey.md`): MAMAI has no public substitute. Remaining routes are requests: Intron (MAMAI; Malik emailed and connected on LinkedIn), Ajagbe (email `saajagbe@pgschool.lautech.edu.ng`, his corresponding-author address on a 2025 paper; draft in chat). HelpMum MamaBench access already accepted; `nig-bench` and MAMAI still pending (1 Oct).
 - Pre-freeze Kaggle run started from the editor 16:01 UTC; check-in booked for 16:55 UTC.
 
 **1 Oct, session 5 (proposals applied):**

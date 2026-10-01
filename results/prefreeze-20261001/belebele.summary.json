@@ -1,0 +1,10 @@
+{
+  "belebele_yor_Latn_accuracy": {
+    "natlas": 0.4278,
+    "llama31": 0.3444
+  },
+  "n_items": 900,
+  "revision": "7899cdfa4e1e0d733fd77c848e2c273cb1d32be2",
+  "gain_natlas_over_llama31_points": 8.34,
+  "g2_margin_points": 3.0
+}
