@@ -1,9 +1,64 @@
 # Project status and working agreement
 
-_Last updated: 1 Oct 2026, ~19:00 WAT (session 5). Keep this file current; it is the handoff between work sessions._
+_Last updated: 1 Oct 2026, ~21:00 WAT (end of session 5). Keep this file current; it is the handoff between work sessions._
 
 ## Resume prompt (paste this into a new session)
-> Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`, branch `main`) and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution, no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results. Then continue with "Next steps, in order" (the pilot is done; the proposed G1/G2 margins in `docs/eval-plan.md` §6 wait for my approval). Ask me before anything outward-facing or irreversible.
+> Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`, branch `main`) and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution (the `.githooks/commit-msg` guard rejects "claude", co-author or session lines), no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results. Run `./scripts/ci_local.sh` before every push. Start from "Right now" and "Next steps, in order". Keep only truly human tasks human (labelling, clinical decisions, my approvals); automate the rest robustly. Ask me before anything outward-facing or irreversible (the freeze included). Update this file and the resume prompt at the end of every work block.
+
+## Right now (handoff, 1 Oct ~21:00 WAT)
+**Done in session 5:**
+- **Results and settings:**
+  - Baseline, pilot and pre-freeze runs recorded.
+  - Margins G1/G2 approved, with G2 m = 3 points measured.
+  - Proposals A–E approved.
+  - ADRs 0018–0022 accepted.
+- **Data search closed:** HelpMum dropped. MAMAI still refused; Intron and Ajagbe emailed.
+- **Review app:**
+  - Guided, role-aware flow; phone-first labelling with levels and streaks.
+  - Real-speech rules (guidelines §10), enforced server-side.
+  - Automatic settling of agreed items; only clinical disagreements go to Rahmat.
+  - Gold export.
+- **S4-W sets uploaded by Malik:**
+  - "Practice · real speech (S4-W)", 20 clips.
+  - "Benchmark · real health speech (S4-W)", 600 clips, 20% double-labelled, hints off.
+- **Two-stage freeze built** (ADR-0022).
+- **Kaggle `trainprep` job pushed** (notebook version 12): teacher labels plus the base model on H.
+- **CI fixed;** `scripts/ci_local.sh` added.
+- **Other repos:** oye refresh pipeline fixed.
+
+**Waiting on people (only these are human):**
+1. **Malik:**
+   - Start the Kaggle run from the editor (Save Version → Save & Run All, HF_TOKEN attached).
+   - Invite Rahmat (Clinician), Oseni (Annotator) and the pharmacist (Pharmacist), and send each their code privately.
+   - Say "yes" to the stage-1 freeze on 5 Oct.
+   - Label the 50-clip teacher check when the file arrives.
+2. **Team:** follow *Start here* in the app: guide → sign-off → 20-clip practice → main set.
+3. **Rahmat:**
+   - Settle disagreements in the app.
+   - Confirm the G1 tolerance and the Uyo mapping (both in her sign-off, *Before the freeze*).
+4. **Intron / Ajagbe:** replies about data access.
+
+**Scheduled check-ins (this session wakes itself):**
+- **2 Oct 06:00 WAT** (`trig_01WvXGqsAeD53xPzKuhqmUmk`):
+  - Read the Kaggle log.
+  - If the run is done: `kaggle_log.py --save results/trainprep`, record the results, `scripts/teacher_check.py build`, and send Malik the 50-clip file with upload steps.
+  - If not done: re-arm in about 3 hours.
+- **5 Oct 08:00 WAT** (`trig_01GSBkh1kn7uA3AGx4A2Fd3W`): check MAMAI access, apply ADR-0018, prepare the stage-1 freeze command and ask Malik for "yes".
+- **If this session is gone, a new session does the same by hand:**
+  - `python scripts/kaggle_log.py`
+  - `python scripts/kaggle_log.py --save results/trainprep`
+  - `python scripts/teacher_check.py build`, then send the file.
+
+**Left after that, in order:**
+1. Score Malik's teacher check: `scripts/teacher_check.py score <labels export>`. Teacher labels are used only if danger-sign errors ≤ 1 in 5.
+2. Stage-1 freeze (5 Oct).
+3. Training set: G with a new seed + kept teacher labels → `scripts/build_train_set.py`.
+4. QLoRA on Kaggle (lr 1e-4).
+5. Labelling done and settled → gold → stage-2 freeze.
+6. Score the fine-tuned model vs base on everything.
+7. Uyo check once Rahmat confirms the mapping.
+8. Benchmark report, model card, dataset card, demo, submission (target 11 Oct).
+9. Deferred: ASR WER on the Adeola recordings.
 
 ## Snapshot
 - **What:** PHC Scribe. An offline-first AI scribe and safety net for Nigerian primary-health-care workers, built on a fine-tuned N-ATLaS.
@@ -19,10 +74,11 @@ _Last updated: 1 Oct 2026, ~19:00 WAT (session 5). Keep this file current; it is
 | Baseline runs | **Done 30 Sept** (Kaggle run 08:04 UTC → finished between 16:01 and 16:11 UTC, all six runs complete). Results below and in `results/baseline-20260930/`. **Llama-3.1-8B few-shot beats N-ATLaS few-shot on every metric on G**; N-ATLaS few-shot is schema-invalid on 57/300. |
 | Pilot | **Done 1 Oct** (see Pilot results). Was run as a saved version started from the notebook editor **1 Oct 13:29 UTC** with `HF_TOKEN` (N-ATLaS few-shot, Llama few-shot, N-ATLaS zero-shot, and a dev-only N-ATLaS few-shot at `max_new_tokens = 1536`, each on the 30 pilot items). The log prints an `=== INVALID` summary per run (how many outputs were cut off). Read it with `scripts/kaggle_log.py`. After it: propose G1/G2 margins → Malik approves → freeze. **G2 set chosen: Belebele `yor_Latn`** (Malik, 1 Oct; `docs/eval-plan.md` §3 and §6). |
 | Fine-tuning | Pipeline built and CPU-smoke-tested; **nothing trained.** Order: freeze stage 1 (items, ADR-0022) → generate training G with a **new** seed + real yo/pcm (teacher labels, ADR-0021) → `scripts/build_train_set.py` → `bench/train_qlora.py` on Kaggle → labels adjudicated → freeze stage 2 → score. |
-| S4-W labelling | **Ready to upload (1 Oct).** Guidelines §10: the speaker is the patient, general talk is "Nothing to record", skips only for unlabellable clips (the app enforces this on `wazobia` items and shows a *Real speech* banner and guide section). Hints off. Calibration set of 20 (`data/private/label_queue.s4w-cal.jsonl`) and the counted queue of 600 (`data/private/label_queue.s4w.jsonl`, hints stripped) are built; nothing labelled. Upload steps: Next steps 3. |
+| S4-W labelling | **Uploaded by Malik, 1 Oct; team not yet invited** (labelling count visible only on the admin page). Practice 20 + counted 600 (20% double, hints off). Guidelines §10: the speaker is the patient, general talk is "Nothing to record", skips only for unlabellable clips (enforced server-side on `wazobia` items). Settling is automatic except clinical disagreements, which go to Rahmat (guidelines §10.8). |
+| Teacher labels (ADR-0021) | Kaggle `PLAN = "trainprep"` pushed 1 Oct (version 12), **to be started by Malik from the editor**. Then Malik does the blind 50-clip spot check (`scripts/teacher_check.py`). |
 | API | `/v1` built (extract, check, records, transcribe with NCAIR1 ASR). Contract `docs/openapi.v1.json`, guide `docs/api.md`. 160 tests pass; CI green. |
 | Cloud deploy | **ADR-0017 (Proposed): Modal**, private (proxy auth + API key) until submission, deployed from GitHub Actions. Modal: Starter, $30/month credits, **spend limit $0**. **First successful deploy: 30 Sept 15:21 UTC** (`deploy-modal` run #4, `main` @ `26906eb`) → `https://malikbello--phc-scribe-api-api.modal.run` (keyword extractor, HF ASR). Checked from the cloud session: `/v1/health` and `/v1/extract` without proxy auth return **401**. Still to check (Malik, needs the proxy token + API key): `/v1/health` returns 200 with both, and 401 with proxy auth but no key. Then accept ADR-0017. |
-| Review app | Live at https://phc-scribe-review.vercel.app (Vercel project `phc-scribe-review`, Upstash Redis; deploys from `main`). **1 Oct: guided flow.** Each reviewer's home screen has a *Start here* checklist (guide → sign-off for their role → practice set → benchmark labelling, which shows "opens later" until a non-practice set exists), an in-app guide (`/guide`), a **Pharmacist** role (sees only the new *Medicines* sign-off step: 5 medicines + local names + anything missing), and **practice sets** where everyone labels every item (agreement over all pairs; admin toggle per set). Malik to invite Rahmat (Clinician), Oseni (Annotator) and the pharmacy graduate (Pharmacist), and switch "Calibration · MamaBench ANC" to a practice set. |
+| Review app | Live at https://phc-scribe-review.vercel.app (Vercel project `phc-scribe-review`, Upstash Redis; deploys from `main`). **1 Oct: guided flow, phone-first labelling (one step at a time, levels, streaks), real-speech rules, automatic settling with a "Settle disagreements" step for the clinician (`/adjudicate/[queueId]`), gold export (`kind=gold`).** Each reviewer's home screen has a *Start here* checklist (guide → sign-off for their role → practice set → benchmark labelling, which shows "opens later" until a non-practice set exists), an in-app guide (`/guide`), a **Pharmacist** role (sees only the new *Medicines* sign-off step: 5 medicines + local names + anything missing), and **practice sets** where everyone labels every item (agreement over all pairs; admin toggle per set). Malik to invite Rahmat (Clinician), Oseni (Annotator) and the pharmacy graduate (Pharmacist). |
 | Data survey | Rounds 1–6 in `docs/data-sources-survey.md`. WazobiaSpeech repos were renamed to `Africanvoice/{yoruba,naija,igbo,hausa}_african_voices`; **all four now CC-BY-4.0** (the Yoruba licence was added 30 Sept, in the card text). Pinned 1 Oct: yo `353ea9f`, pcm `2bb5618`. |
 
 ## Baseline results (G, 300 generated English notes; 30 Sept)
@@ -73,16 +129,19 @@ Point [95% bootstrap CI]. Reports: `results/pilot-20261001/`. 30 items is a pilo
 | Review app | https://phc-scribe-review.vercel.app; source `review-app/`; env vars `SESSION_SECRET`, `REVIEWERS` (Malik's admin code is in `REVIEWERS` in the Vercel dashboard) |
 | Modal deploy | `deploy/modal_app.py` (set `PRIVATE = False` on submission day), workflow `.github/workflows/deploy-modal.yml` (manual: Actions → deploy-modal → Run workflow) |
 | GitHub secrets (Actions) | `MODAL_TOKEN_ID`, `MODAL_TOKEN_SECRET`, `HF_WRITE_TOKEN` (spare; was for the HF Space), `HF_READ_TOKEN`, `PHC_API_KEY` (Malik keeps the key in his password manager; services only ever get its SHA-256 hash) |
-| Decisions | `docs/adr/0001`–`0021` (0016 accepted 30 Sept; **0018–0021 accepted 1 Oct**; 0017 proposed) |
+| Decisions | `docs/adr/0001`–`0022` (0016 accepted 30 Sept; **0018–0022 accepted 1 Oct**; 0017 proposed) |
 | Hard negatives (ADR-0020) | `python scripts/build_adeola_items.py` → `data/bench/h.adeola.jsonl` (454 items, MIT notice in `h.adeola.LICENSE`); source files checksum-pinned, cached in `data/private/adeola/` (incl. the three MP3s for the ASR test) |
 | Belebele (G2) | `python -m bench.belebele --model ... --out ...` (zero-shot letter likelihood, pinned revision); runs on Kaggle with `PLAN = "prefreeze"` |
-| Fine-tuning evidence | `docs/research/finetuning-review.md` (1 Oct): the literature behind the training recipe and margins, with proposals A–E awaiting Malik |
+| Fine-tuning evidence | `docs/research/finetuning-review.md` (1 Oct): the literature behind the training recipe and margins; proposals A–E approved 1 Oct |
 | Uyo rules check (ADR-0019) | `bench/uyo.py` (fixed mapping, exact CIs; tested), `python scripts/check_uyo.py` (prints the mapping; scores only with `--confirmed-by <adviser>`); data pinned by SHA-256 under `data/private/uyo/` |
+| Settling and gold (review app) | Rules: `review-app/src/lib/adjudicate.ts` (single / agreed / majority without a danger-sign split; everything else to the clinician). Clinician screen `/adjudicate/[queueId]`; admin *Gold labels* panel (counts, causes, rule pointers); export `/api/admin/export?kind=gold&queue=<id>` → `python scripts/build_s4_items.py <gold> --set s4w --strict` → `data/bench/s4w.jsonl` + `s4w.excluded.txt` |
+| Teacher labels | `bench/teacher.py` (fetch train clips, ADR-0021 filter), `bench/wazobia.py` (text-only reader), Kaggle `PLAN = "trainprep"`; results come back through the log: `python scripts/kaggle_log.py --save results/trainprep` → `data/private/kaggle/teacher.kept.jsonl`. Spot check: `python scripts/teacher_check.py build` / `score <labels export>` |
+| Freeze | `scripts/freeze_test_set.py items <files>` (stage 1) / `labels --labelled <queue>=<gold> [--exclude …]` (stage 2); `bench/freeze.py`; manifest `data/bench/test-manifest.json` (ADR-0022) |
 | Benchmark data | `data/bench/g.20261002.jsonl` (300, test supplement G), `data/bench/pilot.20261004.jsonl` (30, dev), `tests/fixtures/smoke_items.jsonl` (6, constructed); private queues in `data/private/` (git-ignored) |
 
 ## Next steps, in order
 1. ~~**Baseline results**~~ **(done 30 Sept; see Baseline results):** read the Kaggle log when the run ends; put the three reports (N-ATLaS few-shot, Llama-3.1 few-shot, N-ATLaS zero-shot on G) in this file. If the 12 h limit cut the last run, re-run only what is missing.
-2. **Pre-freeze Kaggle run (`PLAN = "prefreeze"`, pushed 1 Oct):** Malik starts it from the notebook editor (Save Version → Save & Run All). It scores N-ATLaS and Llama-3.1 on Belebele `yor_Latn` (G2 margin m) and runs the unconstrained base comparator on the pilot items (B). Read with `scripts/kaggle_log.py` (`=== BELEBELE` lines). Then fill m in `docs/eval-plan.md` §6, get Rahmat's G1 confirmation, and commit the freeze. Margins and proposals A–E were approved by Malik on 1 Oct. (Done so far: reports recorded, truncation settled, cap stays 768; originally: propose G1 (false-alarm margin) and G2 (Belebele `yor_Latn` regression margin) in `docs/eval-plan.md` §6 → Malik approves → commit the freeze. G2 needs a Belebele scoring job on Kaggle for base N-ATLaS (not built yet).
+2. ~~**Pre-freeze Kaggle run**~~ **(done 1 Oct; m = 3 points):** Malik starts it from the notebook editor (Save Version → Save & Run All). It scores N-ATLaS and Llama-3.1 on Belebele `yor_Latn` (G2 margin m) and runs the unconstrained base comparator on the pilot items (B). Read with `scripts/kaggle_log.py` (`=== BELEBELE` lines). Then fill m in `docs/eval-plan.md` §6, get Rahmat's G1 confirmation, and commit the freeze. Margins and proposals A–E were approved by Malik on 1 Oct. (Done so far: reports recorded, truncation settled, cap stays 768; originally: propose G1 (false-alarm margin) and G2 (Belebele `yor_Latn` regression margin) in `docs/eval-plan.md` §6 → Malik approves → commit the freeze. G2 needs a Belebele scoring job on Kaggle for base N-ATLaS (not built yet).
 3. **S4-W labelling (started 1 Oct, Malik: "label wazobia now")**. Rules: annotation guidelines §10; ADR-0018 amendment 2.
    - **Both sets uploaded by Malik (1 Oct):**
      - "Practice · real speech (S4-W)": 20 clips, practice set.
@@ -98,7 +157,8 @@ Point [95% bootstrap CI]. Reports: `results/pilot-20261001/`. 30 items is a pilo
 3b. **Freeze, two stages (ADR-0022, accepted 1 Oct):**
    - **Stage 1** on 5 Oct, after the MAMAI decision: `python scripts/freeze_test_set.py items data/bench/g.20261002.jsonl data/bench/h.adeola.jsonl data/private/label_queue.s4w.jsonl` (plus the MamaBench slice, if built, or the MAMAI queue instead of S4-W if it arrives). Commit the manifest, then `scripts/build_train_set.py` can run.
    - **Stage 2** when labelling is adjudicated: `python scripts/freeze_test_set.py labels --labelled data/private/label_queue.s4w.jsonl=data/bench/s4w.jsonl [--exclude …]`. This must happen before any fine-tuned model sees a counted item.
-4. **Training data and QLoRA run** on Kaggle (split long jobs so each stays well under 12 h).
+3c. **Kaggle `trainprep` (pushed 1 Oct, version 12; Malik starts it from the editor):** teacher labels → Malik's blind 50-clip check (`scripts/teacher_check.py build`, upload as "Check · teacher labels", 0% double, practice off, suggestions off; then `score`) → keep or drop teacher labels by the 1-in-5 rule. Base N-ATLaS on H is scored in the same run.
+4. **Training data and QLoRA run** on Kaggle (split long jobs so each stays well under 12 h): after stage 1, `scripts/build_train_set.py` on G (new seed) + `data/private/kaggle/teacher.kept.jsonl` if the check passes.
 5. **Modal:** ~~run `deploy-modal`~~ (done 30 Sept 15:21 UTC; unauthenticated requests refused), check `/v1/health` and that requests without proxy auth and without the API key are refused; Malik accepts ADR-0017.
 6. **MAMAI or the fallback (decide 5 Oct):** if MAMAI access arrives, `scripts/fetch_mamai.py` → upload `label_queue.s4.jsonl` in the review app → the team labels (~9–10 h for 500). If not, and ADR-0018 is accepted, `scripts/fetch_wazobia.py` → upload `label_queue.s4w.jsonl` instead. Either way, the set counted is the one in the freeze; nothing is swapped in afterwards.
 7. Optional, CPU only: ASR word-error rate on ~100 WazobiaSpeech health clips (greedy vs beam search).
@@ -137,12 +197,15 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 ## Open items (Malik unless noted)
 | Item | Status |
 |---|---|
-| Invite Rahmat (Clinician), Oseni (Annotator) and the pharmacy graduate (Pharmacist) in the review app; send each their code privately; switch "Calibration · MamaBench ANC" to a practice set | Pending (Malik, 1 Oct) |
+| Invite Rahmat (Clinician), Oseni (Annotator) and the pharmacy graduate (Pharmacist) in the review app; send each their code privately | Pending (Malik, 1 Oct) |
+| Start the Kaggle `trainprep` run from the notebook editor (HF_TOKEN attached) | Pending (Malik) |
+| Label the 50-clip teacher check when it arrives (~25 min) | Pending (Malik; file sent by the 2 Oct check-in) |
+| Say "yes" to the stage-1 freeze on 5 Oct | Pending (Malik) |
 | Confirm Rahmat, Oseni and the pharmacy graduate as named team members (Track B needs 2–5); add the pharmacist's name to Team | Pending |
 | Follow up with Intron on NigBench-MAMAI access (2 Oct); fallback 5 Oct | Pending |
 | Accept or reject ADR-0018 (WazobiaSpeech as the real-data fallback, replacing MamaBench + G) | **Accepted 1 Oct** (amended: dev + dev_test) |
 | Decide proposals A–E in `docs/research/finetuning-review.md` | **Approved 1 Oct**: A applied (`configs/qlora.v0.yaml` lr 1e-4), B built (`--unconstrained`), C and D in the training plan (ADR-0021), E in eval plan §6 |
-| Start the pre-freeze Kaggle run from the notebook editor | Pending (Malik) |
+| Start the pre-freeze Kaggle run from the notebook editor | Done 1 Oct |
 | Rahmat confirms the Uyo symptom mapping (`python scripts/check_uyo.py` prints it), then run it with `--confirmed-by` | Pending |
 | Ask Rahmat to confirm the G1 tolerance (+5 points of false alarms) | Pending |
 | Accept ADR-0017 (Modal) after the first successful deploy | Pending |
