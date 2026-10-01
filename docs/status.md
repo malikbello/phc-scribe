@@ -49,8 +49,7 @@ _Last updated: 1 Oct 2026, ~23:15 WAT (session 5). Keep this file current; it is
   - `python scripts/kaggle_log.py --save results/trainprep`
   - `python scripts/teacher_check.py build`, then send the file.
 
-**Takada (ADR-0023, accepted 1 Oct): the health-worker app, built locally in `/home/user/takada-app` (8 commits, all checks passing), waiting to be pushed.**
-- **Blocked on Malik:** create the empty private repo `malikbello/takada-app` (github.com/new, no README); this session's GitHub access cannot create repos. Then `add_repo` (push) and `git push -u origin main` from `/home/user/takada-app`.
+**Takada (ADR-0023, accepted 1 Oct): the health-worker app, live at https://github.com/malikbello/takada-app (private; pushed 1 Oct, redesign v2 on 2 Oct). It is an installable web app (PWA) for Android and iPhone from one codebase; a native wrapper (Capacitor) for the app stores is optional later.**
 - **Built:**
   - `packages/clinical`: rules, folding and the visit guide, ported to TypeScript and tested against vectors from phc-scribe's Python reference (`scripts/export_clinical_bundle.py` → `exports/clinical-bundle.json`, vendored with a pinned SHA-256).
   - `packages/protocol`: append-only, hashed visit events; order-independent state; per-device monotonic timestamps.
