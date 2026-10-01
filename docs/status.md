@@ -221,7 +221,10 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 | Item | Status |
 |---|---|
 | Invite Rahmat (Clinician), Oseni (Annotator) and the pharmacy graduate (Pharmacist) in the review app; send each their code privately | Pending (Malik, 1 Oct) |
-| Start the Kaggle `trainprep` run from the notebook editor (HF_TOKEN attached) | Pending (Malik) |
+| Start the Kaggle `trainprep` run from the notebook editor (HF_TOKEN attached) | **Running** (started by Malik; checked 2 Oct ~00:30 WAT) |
+| Check the Yorùbá tone marks in Takada (Ẹ káàárọ̀ / Ẹ káàsán / Ẹ káalẹ́ / Ẹ káàbọ̀) and get the Hausa, Igbo and Pidgin greetings checked | Pending (Malik) |
+| Try Takada on a real iPhone and Android phone | Pending (Malik; needs a link: Claude to deploy) |
+| Choose the $0 host for the Takada cloud server and the uptime monitor | Pending (Malik decides) |
 | Label the 50-clip teacher check when it arrives (~25 min) | Pending (Malik; file sent by the 2 Oct check-in) |
 | Say "yes" to the stage-1 freeze on 5 Oct | Pending (Malik) |
 | Confirm Rahmat, Oseni and the pharmacy graduate as named team members (Track B needs 2–5); add the pharmacist's name to Team | Pending |
@@ -234,7 +237,7 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 | Accept ADR-0017 (Modal) after the first successful deploy | Pending |
 | Ask the WazobiaSpeech authors (EqualyzAI / DSN) about the Yoruba licence | Resolved 30 Sept: the card now states CC BY 4.0 |
 | Optional: ask the authors of the Antenatal Orientation Speech Dataset (Springer 10.1007/978-3-031-75147-9_11) for access | Optional |
-| Agent name: Àkọsílẹ̀ / Olùgbọ́ / Magatakarda (Akọ̀wé and Ìtọ́jú are taken) | Pending |
+| Agent name | **Decided 1 Oct: Takada, written tákàdá** (trademark and domain check still due before public launch) |
 | Email organisers about the team-size mismatch (track cards say 2–5, FAQ says 1–6) | Pending |
 | Free ≥25 GB of laptop disk (offline node, demo video) | Pending |
 | Nurse review of annotation guidelines, vocabulary and rules (now done in the review app's sign-off) | Pending |
