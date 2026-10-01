@@ -49,6 +49,8 @@ _Last updated: 1 Oct 2026, ~21:00 WAT (end of session 5). Keep this file current
   - `python scripts/kaggle_log.py --save results/trainprep`
   - `python scripts/teacher_check.py build`, then send the file.
 
+**Takada (ADR-0023, accepted 1 Oct):** the health-worker app gets its own private repo, `malikbello/takada-app`. Malik creates the empty repo; this session's GitHub access cannot create repos. It is being built locally at `/home/user/takada-app` in the meantime. Rahmat must sign off the visit-guide question list before the demo.
+
 **Left after that, in order:**
 1. Score Malik's teacher check: `scripts/teacher_check.py score <labels export>`. Teacher labels are used only if danger-sign errors ≤ 1 in 5.
 2. Stage-1 freeze (5 Oct).

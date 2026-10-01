@@ -26,3 +26,4 @@ Format: context → decision → consequences. A decision changes only through a
 | [0020](0020-antenatal-orientation-speech.md) | Antenatal Orientation Speech Dataset: hard negatives, ASR test, phrases | Accepted |
 | [0021](0021-teacher-labels.md) | Teacher labels from Llama-3.1-8B for real training speech | Accepted |
 | [0022](0022-two-stage-freeze.md) | Freeze the test set in two stages: items first, labels before scoring | Accepted |
+| [0023](0023-takada-health-worker-app.md) | Takada health-worker app: own repo; phone + clinic hub + cloud; protocol-driven visit guide; container- and Kubernetes-ready | Accepted |
