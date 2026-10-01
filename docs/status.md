@@ -49,7 +49,7 @@ _Last updated: 1 Oct 2026, ~23:15 WAT (session 5). Keep this file current; it is
   - `python scripts/kaggle_log.py --save results/trainprep`
   - `python scripts/teacher_check.py build`, then send the file.
 
-**Takada (ADR-0023, accepted 1 Oct): the health-worker app, live at https://github.com/malikbello/takada-app (private; pushed 1 Oct, redesign v2 on 2 Oct). It is an installable web app (PWA) for Android and iPhone from one codebase; a native wrapper (Capacitor) for the app stores is optional later.**
+**Takada (ADR-0023, accepted 1 Oct): the health-worker app, live at https://github.com/malikbello/takada-app (private; pushed 1 Oct, redesign v2 on 2 Oct). It is an installable web app (PWA) for Android and iPhone from one codebase; a native wrapper (Capacitor) for the app stores is optional later. Phone app (no hub) deployed 2 Oct to https://takada-app.vercel.app (Vercel project takada-app, team hontime2023; deploy steps in takada-app docs/operations.md); live check passed with no console errors.**
 - **Design v3.2 "warm care" (2 Oct):**
   - New t-cradle logo; the name is written **tákàdá**.
   - White default with a peach/rose/violet palette; danger crimson is reserved for alerts.
@@ -223,7 +223,8 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 | Invite Rahmat (Clinician), Oseni (Annotator) and the pharmacy graduate (Pharmacist) in the review app; send each their code privately | Pending (Malik, 1 Oct) |
 | Start the Kaggle `trainprep` run from the notebook editor (HF_TOKEN attached) | **Running** (started by Malik; checked 2 Oct ~00:30 WAT) |
 | Check the Yorùbá tone marks in Takada (Ẹ káàárọ̀ / Ẹ káàsán / Ẹ káalẹ́ / Ẹ káàbọ̀) and get the Hausa, Igbo and Pidgin greetings checked | Pending (Malik) |
-| Try Takada on a real iPhone and Android phone | Pending (Malik; needs a link: Claude to deploy) |
+| Try Takada on a real iPhone and Android phone: https://takada-app.vercel.app (iPhone: Safari → Share → Add to Home Screen; Android: Chrome → Install app) | Pending (Malik) |
+| Delete the stray Vercel project `dist` (dist-one-woad-17.vercel.app), created by a mis-targeted deploy on 2 Oct; it serves the same public app build, no data | Pending (Malik to approve deletion) |
 | Choose the $0 host for the Takada cloud server and the uptime monitor | Pending (Malik decides) |
 | Label the 50-clip teacher check when it arrives (~25 min) | Pending (Malik; file sent by the 2 Oct check-in) |
 | Say "yes" to the stage-1 freeze on 5 Oct | Pending (Malik) |
