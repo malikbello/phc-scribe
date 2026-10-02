@@ -1,0 +1,268 @@
+{
+  "system": [
+    "n-atlas-fewshot-prompt-v0.1"
+  ],
+  "n_items": 454,
+  "overall": {
+    "danger_recall": {
+      "point": null,
+      "low": null,
+      "high": null,
+      "n_items": 454,
+      "n_groups": 3
+    },
+    "micro_f1": {
+      "point": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n_items": 454,
+      "n_groups": 3
+    },
+    "false_alarm_rate": {
+      "point": 0.185,
+      "low": 0.1216,
+      "high": 0.2468,
+      "n_items": 454,
+      "n_groups": 3
+    },
+    "item_danger_detection": {
+      "point": null,
+      "low": null,
+      "high": null,
+      "n_items": 454,
+      "n_groups": 3
+    },
+    "bp_exact": {
+      "point": null,
+      "low": null,
+      "high": null,
+      "n_items": 454,
+      "n_groups": 3
+    },
+    "ga_exact": {
+      "point": null,
+      "low": null,
+      "high": null,
+      "n_items": 454,
+      "n_groups": 3
+    },
+    "schema_valid_rate": {
+      "point": 0.8965,
+      "low": 0.8378,
+      "high": 0.9367,
+      "n_items": 454,
+      "n_groups": 3
+    },
+    "ungrounded_rate": {
+      "point": 0.0767,
+      "low": 0.0562,
+      "high": 0.1037,
+      "n_items": 454,
+      "n_groups": 3
+    },
+    "rule_flag_recall": {
+      "point": null,
+      "low": null,
+      "high": null,
+      "n_items": 454,
+      "n_groups": 3
+    }
+  },
+  "by_language": {
+    "en": {
+      "danger_recall": {
+        "point": null,
+        "low": null,
+        "high": null,
+        "n_items": 148,
+        "n_groups": 1
+      },
+      "micro_f1": {
+        "point": 0.0,
+        "low": 0.0,
+        "high": 0.0,
+        "n_items": 148,
+        "n_groups": 1
+      },
+      "false_alarm_rate": {
+        "point": 0.1216,
+        "low": 0.1216,
+        "high": 0.1216,
+        "n_items": 148,
+        "n_groups": 1
+      },
+      "item_danger_detection": {
+        "point": null,
+        "low": null,
+        "high": null,
+        "n_items": 148,
+        "n_groups": 1
+      },
+      "bp_exact": {
+        "point": null,
+        "low": null,
+        "high": null,
+        "n_items": 148,
+        "n_groups": 1
+      },
+      "ga_exact": {
+        "point": null,
+        "low": null,
+        "high": null,
+        "n_items": 148,
+        "n_groups": 1
+      },
+      "schema_valid_rate": {
+        "point": 0.8378,
+        "low": 0.8378,
+        "high": 0.8378,
+        "n_items": 148,
+        "n_groups": 1
+      },
+      "ungrounded_rate": {
+        "point": 0.0595,
+        "low": 0.0595,
+        "high": 0.0595,
+        "n_items": 148,
+        "n_groups": 1
+      },
+      "rule_flag_recall": {
+        "point": null,
+        "low": null,
+        "high": null,
+        "n_items": 148,
+        "n_groups": 1
+      }
+    },
+    "pcm": {
+      "danger_recall": {
+        "point": null,
+        "low": null,
+        "high": null,
+        "n_items": 148,
+        "n_groups": 1
+      },
+      "micro_f1": {
+        "point": 0.0,
+        "low": 0.0,
+        "high": 0.0,
+        "n_items": 148,
+        "n_groups": 1
+      },
+      "false_alarm_rate": {
+        "point": 0.1824,
+        "low": 0.1824,
+        "high": 0.1824,
+        "n_items": 148,
+        "n_groups": 1
+      },
+      "item_danger_detection": {
+        "point": null,
+        "low": null,
+        "high": null,
+        "n_items": 148,
+        "n_groups": 1
+      },
+      "bp_exact": {
+        "point": null,
+        "low": null,
+        "high": null,
+        "n_items": 148,
+        "n_groups": 1
+      },
+      "ga_exact": {
+        "point": null,
+        "low": null,
+        "high": null,
+        "n_items": 148,
+        "n_groups": 1
+      },
+      "schema_valid_rate": {
+        "point": 0.9122,
+        "low": 0.9122,
+        "high": 0.9122,
+        "n_items": 148,
+        "n_groups": 1
+      },
+      "ungrounded_rate": {
+        "point": 0.0562,
+        "low": 0.0562,
+        "high": 0.0562,
+        "n_items": 148,
+        "n_groups": 1
+      },
+      "rule_flag_recall": {
+        "point": null,
+        "low": null,
+        "high": null,
+        "n_items": 148,
+        "n_groups": 1
+      }
+    },
+    "yo": {
+      "danger_recall": {
+        "point": null,
+        "low": null,
+        "high": null,
+        "n_items": 158,
+        "n_groups": 1
+      },
+      "micro_f1": {
+        "point": 0.0,
+        "low": 0.0,
+        "high": 0.0,
+        "n_items": 158,
+        "n_groups": 1
+      },
+      "false_alarm_rate": {
+        "point": 0.2468,
+        "low": 0.2468,
+        "high": 0.2468,
+        "n_items": 158,
+        "n_groups": 1
+      },
+      "item_danger_detection": {
+        "point": null,
+        "low": null,
+        "high": null,
+        "n_items": 158,
+        "n_groups": 1
+      },
+      "bp_exact": {
+        "point": null,
+        "low": null,
+        "high": null,
+        "n_items": 158,
+        "n_groups": 1
+      },
+      "ga_exact": {
+        "point": null,
+        "low": null,
+        "high": null,
+        "n_items": 158,
+        "n_groups": 1
+      },
+      "schema_valid_rate": {
+        "point": 0.9367,
+        "low": 0.9367,
+        "high": 0.9367,
+        "n_items": 158,
+        "n_groups": 1
+      },
+      "ungrounded_rate": {
+        "point": 0.1037,
+        "low": 0.1037,
+        "high": 0.1037,
+        "n_items": 158,
+        "n_groups": 1
+      },
+      "rule_flag_recall": {
+        "point": null,
+        "low": null,
+        "high": null,
+        "n_items": 158,
+        "n_groups": 1
+      }
+    }
+  }
+}

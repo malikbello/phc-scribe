@@ -1,11 +1,31 @@
 # Project status and working agreement
 
-_Last updated: 1 Oct 2026, ~23:15 WAT (session 5). Keep this file current; it is the handoff between work sessions._
+_Last updated: 2 Oct 2026, ~20:00 WAT (session 6). Keep this file current; it is the handoff between work sessions._
 
 ## Resume prompt (paste this into a new session)
 > Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`, branch `main`) and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution (the `.githooks/commit-msg` guard rejects "claude", co-author or session lines), no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results. Run `./scripts/ci_local.sh` before every push. Start from "Right now" and "Next steps, in order". Keep only truly human tasks human (labelling, clinical decisions, my approvals); automate the rest robustly. Ask me before anything outward-facing or irreversible (the freeze included). Update this file and the resume prompt at the end of every work block.
 
-## Right now (handoff, 1 Oct ~21:00 WAT)
+## Right now (handoff, 2 Oct ~20:00 WAT, session 6)
+**Done in session 6 (2 Oct):**
+- **Kaggle `trainprep` run complete** (read 2 Oct; `results/trainprep/`):
+  - **Teacher labels (ADR-0021):** 600 clips (300 yo + 300 pcm) → **460 kept**: 230 with findings, 230 with none. Dropped:
+    - 30 invalid (16 cut off mid-JSON);
+    - 55 with a quote not found in the clip;
+    - 4 not verbatim;
+    - 51 empty answers over the half-empty cap.
+  - The kept file is restored to `data/private/kaggle/teacher.kept.jsonl` (git-ignored).
+  - **Base N-ATLaS few-shot on H (454 hard negatives):**
+    - false-alarm rate **0.185**, so the base model invents a finding on about 1 in 5 talks that contain none;
+    - 47/454 outputs invalid (42 cut off);
+    - recall and rule-flag recall are undefined here (H has no danger signs by construction).
+- **50-clip teacher check built** (`scripts/teacher_check.py build`): 25 yo + 25 pcm → `data/private/label_queue.teacher-check.jsonl`. **Malik:** upload it and label it.
+- `scripts/kaggle_log.py` no longer crashes on a metric that is undefined for a stratum.
+- **Team invited by Malik (2 Oct).** Clinical sign-off progress at ~19:00 WAT:
+  - Rahmat 131/131 and Nurse Success 131/131;
+  - pharmacist 3/7;
+  - Malik 1/131 and Doc Abdullahi 0/131.
+- **The scheduled check-ins below were never created as routines** (checked 2 Oct: neither ID exists). Recreate any check-in as a real routine, and confirm it exists.
+
 **Done in session 5:**
 - **Results and settings:**
   - Baseline, pilot and pre-freeze runs recorded.
@@ -28,10 +48,10 @@ _Last updated: 1 Oct 2026, ~23:15 WAT (session 5). Keep this file current; it is
 
 **Waiting on people (only these are human):**
 1. **Malik:**
-   - Start the Kaggle run from the editor (Save Version → Save & Run All, HF_TOKEN attached).
-   - Invite Rahmat (Clinician), Oseni (Annotator) and the pharmacist (Pharmacist), and send each their code privately.
+   - ~~Start the Kaggle run~~ (done; complete 2 Oct).
+   - ~~Invite the team~~ (done 2 Oct).
+   - Upload and label the 50-clip teacher check (~25 min). In the review app: Admin → Add a labelling set, title "Check · teacher labels", double-labelled 0%, practice off, suggestions off.
    - Say "yes" to the stage-1 freeze on 5 Oct.
-   - Label the 50-clip teacher check when the file arrives.
 2. **Team:** follow *Start here* in the app: guide → sign-off → 20-clip practice → main set.
 3. **Rahmat:**
    - Settle disagreements in the app.

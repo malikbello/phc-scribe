@@ -84,7 +84,9 @@ def main() -> int:
     found = reports(text)
     for name, rep in found.items():
         overall = rep.get("overall", {})
-        cells = [f"{k} {overall[k]['point']:.3f}" for k in METRICS if k in overall]
+        # a metric can be undefined for a stratum (no danger signs in the hard negatives)
+        points = {k: overall[k].get("point") for k in METRICS if k in overall}
+        cells = [f"{k} {'n/a' if p is None else format(p, '.3f')}" for k, p in points.items()]
         print(f"{name} (n={rep.get('n_items')}): " + ", ".join(cells))
     if args.save and found:
         args.save.mkdir(parents=True, exist_ok=True)
