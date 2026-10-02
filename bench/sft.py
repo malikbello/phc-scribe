@@ -3,6 +3,7 @@ record as the assistant turn. Only the assistant tokens are trained (see label_m
 
 from __future__ import annotations
 
+import re
 from collections.abc import Sequence
 
 from bench.freeze import Overlap, TestItem
@@ -43,3 +44,29 @@ def label_mask(prompt_ids: Sequence[int], full_ids: Sequence[int]) -> list[int]:
     if list(full_ids[: len(prompt_ids)]) != list(prompt_ids):
         raise ValueError("the prompt tokens are not a prefix of the full example")
     return [-100] * len(prompt_ids) + list(full_ids[len(prompt_ids) :])
+
+
+# Safety-weighted loss (ADR-0024, stage 1). The clinical meaning of a record sits in a
+# few tokens: each finding's concept and assertion. The rest is JSON boilerplate.
+_CRITICAL = re.compile(r'"(?:concept|assertion)": "([^"]*)"')
+
+
+def critical_char_spans(answer: str) -> list[tuple[int, int]]:
+    """Character spans of every concept and assertion value in a gold JSON answer."""
+    return [m.span(1) for m in _CRITICAL.finditer(answer)]
+
+
+def token_weights(
+    offsets: Sequence[tuple[int, int]],
+    spans: Sequence[tuple[int, int]],
+    weight: float,
+    shift: int = 0,
+) -> list[float]:
+    """Per-token loss weights: `weight` for a token overlapping any span (spans are relative
+    to the answer, which starts at character `shift` of the tokenised text), else 1."""
+    absolute = [(a + shift, b + shift) for a, b in spans]
+    out = []
+    for start, end in offsets:
+        hit = end > start and any(start < b and a < end for a, b in absolute)
+        out.append(weight if hit else 1.0)
+    return out

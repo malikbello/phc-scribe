@@ -1,0 +1,24 @@
+# ADR-0024 stage 1, run C: QLoRA on base N-ATLaS, safety-weighted SFT (concept and assertion tokens x3).
+# B and C differ only in critical_weight; the better one on dev is kept (decided on dev only).
+run_name: natlas-qlora-v1-weighted
+model: NCAIR1/N-ATLaS
+revision: e294476928aca9030e924ca27bb8e085e8581273   # pinned 2 Oct 2026
+load_in_4bit: true
+train_file: data/train/sft.v1.jsonl
+max_seq_len: 1536
+seed: 20261003
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+train:
+  epochs: 2
+  learning_rate: 1.0e-4   # proposal A (docs/research/finetuning-review.md §2.2)
+  batch_size: 1
+  grad_accum: 16
+  warmup_ratio: 0.03
+  lr_scheduler: cosine
+  logging_steps: 10
+  gradient_checkpointing: true
+  critical_weight: 3.0

@@ -129,3 +129,21 @@ def test_stage2_records_declared_exclusions_only(tmp_path):
     assert stage2.files[0].frozen_as == "queue.jsonl"
     (tmp_path / "m.json").write_text(stage2.model_dump_json())
     assert len(load_frozen_items(tmp_path / "m.json", tmp_path)) == 5
+
+
+def test_critical_spans_cover_concept_and_assertion_values_only():
+    from bench.sft import critical_char_spans
+
+    answer = (
+        '{"findings": [{"concept": "fever", "assertion": "present", "evidence": {"text": "hot"}}]}'
+    )
+    assert [answer[a:b] for a, b in critical_char_spans(answer)] == ["fever", "present"]
+
+
+def test_token_weights_mark_overlapping_tokens_with_shift():
+    from bench.sft import token_weights
+
+    # text = "<pre>" + answer; answer chars 2-7 are critical
+    offsets = [(0, 5), (5, 7), (7, 12), (12, 14), (0, 0)]
+    w = token_weights(offsets, [(2, 7)], weight=3.0, shift=5)
+    assert w == [1.0, 1.0, 3.0, 1.0, 1.0]  # special tokens (empty span) stay at 1

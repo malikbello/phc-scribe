@@ -1,0 +1,116 @@
+# Rare danger signs in Yoruba and Pidgin (ADR-0024, stage 0). DRAFT.
+#
+# Why: the real Yoruba/Pidgin training labels have no examples of reduced fetal movement
+# or unconscious, and 2 each of convulsions and severe abdominal pain.
+#
+# Before use, both approvals below must be filled in; scripts/build_train_set.py refuses
+# this file until they are (bench.train_data.load_phrasebank).
+#   language: Malik checks every Yoruba and Pidgin sentence (spelling, tone marks, natural
+#             phrasing). Fix or delete any sentence; add your own.
+#   clinical: Rahmat checks each concept and assertion is right for the sentence.
+#
+# Rules:
+# - `evidence` must be copied word for word from `text` (it is checked).
+# - Negated and hedged sentences teach the cue, not the word:
+#   absent = clearly denied; possible = hedged or unsure.
+# - Contrast items use the non-danger concept (abdominal pain without "severe").
+# - Constructed items: tagged origin "constructed", capped at 15% of training, disclosed in
+#   the model card, never used for testing.
+approved_by:
+  language: null
+  clinical: null
+
+entries:
+  # --- reduced fetal movement -------------------------------------------------------
+  - {id: rfm-yo-01, language: yo, concept: reduced_fetal_movement, assertion: present,
+     text: "Ọmọ inú mi kò mì dáadáa bí ti tẹ́lẹ̀ mọ́.", evidence: "Ọmọ inú mi kò mì dáadáa bí ti tẹ́lẹ̀ mọ́"}
+  - {id: rfm-yo-02, language: yo, concept: reduced_fetal_movement, assertion: present,
+     text: "Láti àná, ọmọ inú mi kò mì rárá.", evidence: "ọmọ inú mi kò mì rárá"}
+  - {id: rfm-yo-03, language: yo, concept: reduced_fetal_movement, assertion: present,
+     text: "Mi ò rí i kí ọmọ náà mì láti òwúrọ̀.", evidence: "Mi ò rí i kí ọmọ náà mì láti òwúrọ̀"}
+  - {id: rfm-yo-04, language: yo, concept: reduced_fetal_movement, assertion: possible,
+     text: "Ó dàbí ẹni pé ọmọ inú mi kò mì bíi ti àtẹ̀yìnwá.", evidence: "Ó dàbí ẹni pé ọmọ inú mi kò mì bíi ti àtẹ̀yìnwá"}
+  - {id: rfm-yo-05, language: yo, concept: reduced_fetal_movement, assertion: absent,
+     text: "Ọmọ inú mi ń mì dáadáa, kò sí ìṣòro.", evidence: "Ọmọ inú mi ń mì dáadáa"}
+  - {id: rfm-yo-06, language: yo, concept: reduced_fetal_movement, assertion: present,
+     text: "Ọmọ náà kò fi bẹ́ẹ̀ mì lónìí, ẹ̀rù ń bà mí.", evidence: "Ọmọ náà kò fi bẹ́ẹ̀ mì lónìí"}
+  - {id: rfm-yo-07, language: yo, concept: reduced_fetal_movement, assertion: absent,
+     text: "Ọmọ ṣì ń mì bí ó ṣe yẹ.", evidence: "Ọmọ ṣì ń mì bí ó ṣe yẹ"}
+  - {id: rfm-pcm-01, language: pcm, concept: reduced_fetal_movement, assertion: present,
+     text: "Pikin for my belle no dey move like before.", evidence: "Pikin for my belle no dey move like before"}
+  - {id: rfm-pcm-02, language: pcm, concept: reduced_fetal_movement, assertion: present,
+     text: "Since yesterday the baby no move at all.", evidence: "the baby no move at all"}
+  - {id: rfm-pcm-03, language: pcm, concept: reduced_fetal_movement, assertion: present,
+     text: "The pikin dey move small small, no be like before.", evidence: "The pikin dey move small small, no be like before"}
+  - {id: rfm-pcm-04, language: pcm, concept: reduced_fetal_movement, assertion: possible,
+     text: "I no too sure, but e be like say pikin no dey kick again.", evidence: "e be like say pikin no dey kick again"}
+  - {id: rfm-pcm-05, language: pcm, concept: reduced_fetal_movement, assertion: absent,
+     text: "Pikin dey move well well, e dey kick me every time.", evidence: "Pikin dey move well well"}
+  - {id: rfm-pcm-06, language: pcm, concept: reduced_fetal_movement, assertion: present,
+     text: "Baby movement don reduce since two days.", evidence: "Baby movement don reduce since two days"}
+  - {id: rfm-pcm-07, language: pcm, concept: reduced_fetal_movement, assertion: absent,
+     text: "No wahala, the baby still dey move.", evidence: "the baby still dey move"}
+  - {id: rfm-pcm-08, language: pcm, concept: reduced_fetal_movement, assertion: present,
+     text: "I never feel am move since morning.", evidence: "I never feel am move since morning"}
+
+  # --- unconscious --------------------------------------------------------------------
+  - {id: unc-yo-01, language: yo, concept: unconscious, assertion: present,
+     text: "Mo dákú lánàá, wọn kò lè jí mi fún ìgbà díẹ̀.", evidence: "Mo dákú lánàá, wọn kò lè jí mi"}
+  - {id: unc-yo-02, language: yo, concept: unconscious, assertion: present,
+     text: "Ó dákú nílé kí wọ́n tó gbé e wá, kò mọ nǹkan kan.", evidence: "Ó dákú nílé kí wọ́n tó gbé e wá, kò mọ nǹkan kan"}
+  - {id: unc-yo-03, language: yo, concept: unconscious, assertion: absent,
+     text: "Mi ò dákú rí nígbà oyún yìí.", evidence: "Mi ò dákú rí nígbà oyún yìí"}
+  - {id: unc-yo-04, language: yo, concept: unconscious, assertion: absent,
+     text: "Ó ṣe mí bí ẹni pé mo fẹ́ dákú, ṣùgbọ́n mi ò dákú.", evidence: "mi ò dákú"}
+  - {id: unc-pcm-01, language: pcm, concept: unconscious, assertion: present,
+     text: "She faint for house, she no wake for some minutes.", evidence: "She faint for house, she no wake for some minutes"}
+  - {id: unc-pcm-02, language: pcm, concept: unconscious, assertion: present,
+     text: "I faint yesterday, dem no fit wake me quick.", evidence: "I faint yesterday, dem no fit wake me quick"}
+  - {id: unc-pcm-03, language: pcm, concept: unconscious, assertion: present,
+     text: "When dem carry am come, she no dey respond.", evidence: "she no dey respond"}
+  - {id: unc-pcm-04, language: pcm, concept: unconscious, assertion: absent,
+     text: "I never faint since I get belle.", evidence: "I never faint since I get belle"}
+  - {id: unc-pcm-05, language: pcm, concept: unconscious, assertion: absent,
+     text: "E be like say I wan faint, but I no faint.", evidence: "I no faint"}
+  - {id: unc-pcm-06, language: pcm, concept: unconscious, assertion: present,
+     text: "She don wake now, but she no dey conscious before dem bring am.", evidence: "she no dey conscious before dem bring am"}
+
+  # --- convulsions --------------------------------------------------------------------
+  - {id: con-yo-01, language: yo, concept: convulsions, assertion: present,
+     text: "Mo ní gìrì lánàá.", evidence: "Mo ní gìrì lánàá"}
+  - {id: con-yo-02, language: yo, concept: convulsions, assertion: present,
+     text: "Ó ní gìrì nílé kí wọ́n tó gbé e wá.", evidence: "Ó ní gìrì nílé"}
+  - {id: con-yo-03, language: yo, concept: convulsions, assertion: possible,
+     text: "Ara mi ń gbọ̀n jìnnìjìnnì, ó dàbí gìrì.", evidence: "Ara mi ń gbọ̀n jìnnìjìnnì, ó dàbí gìrì"}
+  - {id: con-yo-04, language: yo, concept: convulsions, assertion: absent,
+     text: "Mi ò ní gìrì rí.", evidence: "Mi ò ní gìrì rí"}
+  - {id: con-pcm-01, language: pcm, concept: convulsions, assertion: present,
+     text: "I get fit yesterday, my whole body dey shake.", evidence: "I get fit yesterday"}
+  - {id: con-pcm-02, language: pcm, concept: convulsions, assertion: present,
+     text: "She dey convulse for house before dem carry am come.", evidence: "She dey convulse for house"}
+  - {id: con-pcm-03, language: pcm, concept: convulsions, assertion: possible,
+     text: "My body dey jerk, e fit be say na fit?", evidence: "My body dey jerk, e fit be say na fit"}
+  - {id: con-pcm-04, language: pcm, concept: convulsions, assertion: absent,
+     text: "I never get fit before.", evidence: "I never get fit before"}
+  - {id: con-pcm-05, language: pcm, concept: convulsions, assertion: absent,
+     text: "No convulsion at all.", evidence: "No convulsion at all"}
+
+  # --- severe abdominal pain (with non-severe contrasts) --------------------------------
+  - {id: sap-yo-01, language: yo, concept: severe_abdominal_pain, assertion: present,
+     text: "Ikùn mi ń dùn mí gidigidi.", evidence: "Ikùn mi ń dùn mí gidigidi"}
+  - {id: sap-yo-02, language: yo, concept: severe_abdominal_pain, assertion: present,
+     text: "Inú mi ń ro mí lọ́nà tí kò ṣeé fara dà.", evidence: "Inú mi ń ro mí lọ́nà tí kò ṣeé fara dà"}
+  - {id: sap-yo-03, language: yo, concept: abdominal_pain, assertion: present,
+     text: "Inú mi ń dùn mí díẹ̀, ṣùgbọ́n kò le.", evidence: "Inú mi ń dùn mí díẹ̀"}
+  - {id: sap-yo-04, language: yo, concept: abdominal_pain, assertion: absent,
+     text: "Ikùn mi kò dùn mí rárá.", evidence: "Ikùn mi kò dùn mí rárá"}
+  - {id: sap-pcm-01, language: pcm, concept: severe_abdominal_pain, assertion: present,
+     text: "My belle dey pain me well well, I no fit stand.", evidence: "My belle dey pain me well well"}
+  - {id: sap-pcm-02, language: pcm, concept: severe_abdominal_pain, assertion: present,
+     text: "The pain for my belle strong die.", evidence: "The pain for my belle strong die"}
+  - {id: sap-pcm-03, language: pcm, concept: severe_abdominal_pain, assertion: present,
+     text: "The pain for upper belle dey very bad since night.", evidence: "The pain for upper belle dey very bad"}
+  - {id: sap-pcm-04, language: pcm, concept: abdominal_pain, assertion: present,
+     text: "Belle dey pain me small, e no too bad.", evidence: "Belle dey pain me small"}
+  - {id: sap-pcm-05, language: pcm, concept: abdominal_pain, assertion: absent,
+     text: "Belle no dey pain me at all.", evidence: "Belle no dey pain me at all"}
