@@ -36,6 +36,33 @@ _Last updated: 2 Oct 2026, ~20:00 WAT (session 6). Keep this file current; it is
   - **Shipping:** imatrix Q4.
 
   Run plan and timeline are in the ADR.
+- **ADR-0024 build, done 2 Oct:**
+  - **Decoding bounds:** 10 items each on findings, tests and medications, for every rung. Recorded in eval plan §6 before the freeze.
+  - **Teacher audit:**
+    - 42 `looks_very_ill` labels removed by definition;
+    - after the empty cap, 376 teacher items remain (188 with findings, 188 without);
+    - dev split by speaker: 319 train / 57 dev, 20 dev speakers, no overlap.
+  - **Teacher check scorer:** now gives per-concept precision. The decision applies to the audited labels.
+  - **Safety-weighted SFT:** CPU-verified; weights land exactly on concept/assertion tokens, and weight 1 equals the plain loss.
+  - **Configs:** runs B (plain) and C (×3), with N-ATLaS pinned at `e294476`.
+  - **`build_train_set.py`:** applies the audit, the teacher-check drops and the phrase bank, and writes `sft.v1.jsonl` + `sft.v1.dev.jsonl`.
+- **Malik:**
+  - correct the draft rare-sign phrase bank `data/train/phrasebank.rare.v0.yaml` (43 yo/pcm entries), then set `approved_by.language`;
+  - Rahmat checks the concepts and assertions and sets `approved_by.clinical`.
+
+  The builder refuses the file until both are set.
+- **Labelling, 2 Oct evening (admin stats):**
+  - benchmark 0/600;
+  - practice 3/20 (Success);
+  - calibration 0/20;
+  - teacher check not uploaded yet.
+
+  The benchmark needs 720 labels by about 8 Oct, so about 60 a day per labeller from 3 Oct.
+- **Still to build:**
+  - Run A (N-ATLaS ASR over the training audio, two views, evidence re-located);
+  - the stage-2 pair builder and DPO trainer;
+  - the scaled merge, GGUF and imatrix;
+  - the Yoruba perplexity proxy for choosing the scale.
 
 **Done in session 5:**
 - **Results and settings:**
