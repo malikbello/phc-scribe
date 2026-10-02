@@ -33,6 +33,7 @@ from _safe_output import fail, say  # noqa: E402
 
 from bench.items import BenchItem, read_jsonl, write_jsonl  # noqa: E402
 from bench.label_queue import Label, QueueItem  # noqa: E402
+from bench.train_data import audit_teacher, concept_precision, concepts_to_drop  # noqa: E402
 from phc_scribe.vocab import load_vocabulary  # noqa: E402
 
 KEPT = ROOT / "data" / "private" / "kaggle" / "teacher.kept.jsonl"
@@ -82,13 +83,15 @@ def _answer(findings) -> set[tuple[str, str]]:
 def score(kept: list[BenchItem], labels: list[Label]) -> dict:
     danger_ids = load_vocabulary().danger_sign_ids
     teacher = {f"tc-{i.item_id}": i for i in kept}
-    rows: dict[str, int | float | bool | None] = {
+    rows: dict[str, object] = {
         "checked": 0,
         "unlabellable": 0,
         "danger_errors": 0,
         "full_matches": 0,
     }
-    checked = unlabellable = danger_errors = full_matches = 0
+    checked = unlabellable = danger_errors = full_matches = audited_errors = 0
+    audited = {f"tc-{i.item_id}": i for i in audit_teacher(kept, empty_cap=1.0)[0]}
+    pairs = []
     latest: dict[str, Label] = {}
     for lab in labels:
         if lab.item_id in teacher and (
@@ -101,9 +104,15 @@ def score(kept: list[BenchItem], labels: list[Label]) -> dict:
             continue
         gold = teacher[item_id].gold.findings
         checked += 1
-        danger_errors += _danger(lab.findings, danger_ids) != _danger(gold, danger_ids)
+        human = _danger(lab.findings, danger_ids)
+        danger_errors += human != _danger(gold, danger_ids)
+        audited_errors += human != _danger(audited[item_id].gold.findings, danger_ids)
         full_matches += _answer(lab.findings) == _answer(gold)
+        pairs.append(
+            (teacher[item_id].gold, {f.concept for f in lab.findings if f.assertion in POSITIVE})
+        )
     n = checked
+    precision = concept_precision(pairs)
     rows.update(
         checked=checked,
         unlabellable=unlabellable,
@@ -111,7 +120,13 @@ def score(kept: list[BenchItem], labels: list[Label]) -> dict:
         full_matches=full_matches,
         danger_error_rate=danger_errors / n if n else None,
         full_match_rate=full_matches / n if n else None,
-        use_teacher_labels=bool(n) and danger_errors / n <= MAX_DANGER_ERROR,
+        # ADR-0024: the decision applies to the labels training actually uses, i.e. after the
+        # definitional audit (looks_very_ill removed from patient speech). Both rates are reported.
+        danger_errors_after_audit=audited_errors,
+        danger_error_rate_after_audit=audited_errors / n if n else None,
+        use_teacher_labels=bool(n) and audited_errors / n <= MAX_DANGER_ERROR,
+        concept_precision=precision,
+        concepts_to_drop=concepts_to_drop(precision),
     )
     return rows
 

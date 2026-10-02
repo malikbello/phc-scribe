@@ -54,3 +54,27 @@ def test_score_counts_danger_errors_and_applies_the_one_in_five_rule():
     assert r["checked"] == 3 and r["unlabellable"] == 1
     assert r["danger_errors"] == 1 and r["full_matches"] == 1
     assert r["use_teacher_labels"] is False  # 1/3 > 1/5
+
+
+def test_decision_uses_the_audited_labels_and_reports_concept_precision():
+    # ADR-0024: a teacher `looks_very_ill` on patient speech is removed by definition, so a
+    # checker who (correctly) left it unlabelled is not counted as a danger-sign error.
+    kept = to_items(_rows(10), per_language=5, enriched_share=0.5)
+    kept = [_with(kept[0], "looks_very_ill"), kept[1], kept[2], kept[3], kept[4]]
+
+    def lab(i):
+        return Label.model_validate(
+            {
+                "item_id": f"tc-{kept[i].item_id}",
+                "status": "labelled",
+                "findings": [],
+                "labeller": "admin",
+                "labelled_at": "2026-10-02T10:00:00Z",
+            }
+        )
+
+    r = score(kept, [lab(i) for i in range(5)])
+    assert r["danger_errors"] == 1  # raw teacher label disagrees with the checker
+    assert r["danger_errors_after_audit"] == 0
+    assert r["use_teacher_labels"] is True
+    assert r["concept_precision"]["looks_very_ill"]["precision"] == 0.0
