@@ -22,7 +22,8 @@ OUT = ROOT / "docs" / "openapi.v1.json"
 
 
 def render() -> str:
-    with tempfile.TemporaryDirectory() as tmp:
+    # Windows cannot delete the SQLite file while the app holds it open
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
         app = create_app(Settings(env="dev", db_path=str(Path(tmp) / "x.sqlite3")))
         spec = app.openapi()
     return json.dumps(spec, indent=2, ensure_ascii=False, sort_keys=True) + "\n"

@@ -2,14 +2,29 @@
 # Run the exact CI checks locally, with CI's pinned, hash-checked tool versions
 # (.github/workflows/ci.yml, jobs "checks" and "review-app"). Run before every push.
 # Builds .venv once from requirements/ci.lock with Python 3.12, as CI does.
+# Works on Linux, macOS and Windows (Git Bash).
 set -e
 cd "$(dirname "$0")/.."
-if [ ! -x .venv/bin/ruff ]; then
+case "$(uname -s)" in
+  MINGW* | MSYS* | CYGWIN*)
+    bin=.venv/Scripts
+    # the lock is resolved for Linux; on Windows install exactly the locked
+    # packages, plus the timezone data that Windows lacks
+    nodeps=--no-deps
+    export PYTHONUTF8=1
+    ;;
+  *)
+    bin=.venv/bin
+    nodeps=
+    ;;
+esac
+if [ ! -x "$bin/ruff" ] && [ ! -x "$bin/ruff.exe" ]; then
   uv venv -q -p python3.12 .venv
-  VIRTUAL_ENV=.venv uv pip install -q --require-hashes -r requirements/ci.lock
+  VIRTUAL_ENV=.venv uv pip install -q --require-hashes $nodeps -r requirements/ci.lock
+  if [ -n "$nodeps" ]; then VIRTUAL_ENV=.venv uv pip install -q tzdata; fi
   VIRTUAL_ENV=.venv uv pip install -q --no-deps -e .
 fi
-PATH="$PWD/.venv/bin:$PATH"
+PATH="$PWD/$bin:$PATH"
 ruff check .
 ruff format --check .
 pyright
