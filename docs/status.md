@@ -25,7 +25,7 @@ _Last updated: 2 Oct 2026, ~20:00 WAT (session 6). Keep this file current; it is
   - pharmacist 3/7;
   - Malik 1/131 and Doc Abdullahi 0/131.
 - **The scheduled check-ins below were never created as routines** (checked 2 Oct: neither ID exists). Recreate any check-in as a real routine, and confirm it exists.
-- **ADR-0024 proposed: the fine-tuning recipe** (Malik: "keep this close"; approval needed before any training). Two findings from the teacher labels drive it:
+- **ADR-0024 accepted (2 Oct): the fine-tuning recipe** (Malik: "keep this close"). Two findings from the teacher labels drive it:
   - zero real yo/pcm examples of reduced fetal movement and unconscious, and 2 each of convulsions and severe abdominal pain;
   - `looks_very_ill` over-assigned on patient speech: 42 items, most of them general talk or negations.
 

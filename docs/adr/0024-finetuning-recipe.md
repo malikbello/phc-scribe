@@ -1,6 +1,6 @@
 # ADR-0024: Fine-tuning recipe: data first, failure-targeted objectives, evaluated as shipped
 
-- **Status:** Proposed, 2 Oct 2026. Needs Malik's approval before any training run.
+- **Status:** Accepted by Malik, 2 Oct 2026.
 - **Date:** 2026-10-02
 - **Changes:** extends architecture §6 (QLoRA) and `configs/qlora.v0.yaml`. Builds on ADR-0004 (constrained decoding and grounding), ADR-0009 (evaluate what we ship), ADR-0021 (teacher labels) and ADR-0022 (two-stage freeze). The pre-registered metrics and margins (`docs/eval-plan.md` §6) do **not** change.
 
