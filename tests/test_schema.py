@@ -29,6 +29,24 @@ def test_decoding_schema_has_no_offsets():
     assert set(evidence["properties"]) == {"text"}
 
 
+def test_decoding_schema_bounds_generated_lists_but_published_schema_does_not():
+    # ADR-0024: a loop that repeats an item cannot run to the token cap
+    dec = decoding_schema()
+    assert dec["properties"]["findings"]["maxItems"] == 10
+    assert dec["$defs"]["Anc"]["properties"]["tests"]["maxItems"] == 10
+    assert dec["$defs"]["Anc"]["properties"]["medications"]["maxItems"] == 10
+    published = json.loads(dumps_json_schema())
+    assert "maxItems" not in published["properties"]["findings"]
+
+
+def test_list_bound_is_above_every_real_gold_record():
+    # the bound must never cut a genuine record (largest real record: 5 findings)
+    for path in (ROOT / "data" / "bench").glob("*.jsonl"):
+        for line in path.read_text(encoding="utf-8").splitlines():
+            gold = json.loads(line).get("gold") or {}
+            assert len(gold.get("findings", [])) <= 10, path.name
+
+
 def test_vocabulary_has_danger_signs():
     vocab = load_vocabulary()
     assert "vaginal_bleeding" in vocab.danger_sign_ids

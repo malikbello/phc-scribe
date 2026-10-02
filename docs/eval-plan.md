@@ -77,6 +77,10 @@ Reported per stratum, per language and per field, each with 95% bootstrap CIs.
 - **G1 confirmation:** the +5-point tolerance is a clinical judgement; Rahmat is asked to confirm it before the freeze.
 - **Supplementary comparator (proposal B, reported, not a pass/fail criterion):** base N-ATLaS few-shot with unconstrained generation then JSON extraction (`--unconstrained`), so the base model is also shown without the forced-JSON handicap. **Measured 1 Oct on the 30 pilot items:** unconstrained N-ATLaS few-shot is *worse* (10/30 valid, most failures are schema violations; recall 0.40), so constrained decoding helps the base model and the primary comparator is the more generous one.
 - **Decoding cap:** the base comparator keeps `max_new_tokens = 768`. The pilot ran N-ATLaS few-shot at 768 and 1536: every metric was identical (6/30 invalid in both; failed outputs simply ran on to the new cap, up to 5,052 characters), so the cap is not the cause and raising it would only add compute.
+- **List bounds in the decoding schema (added 2 Oct, before the freeze; ADR-0024):**
+  - `findings`, `anc.tests` and `anc.medications` are capped at 10 items each, in the schema every system decodes against (`decoding_schema()`). The cap applies to the base comparator and the fine-tuned model alike.
+  - The largest real gold record has 5 findings, so the cap never cuts a genuine answer; it stops a loop from repeating an item until the token cap.
+  - The baseline and pilot numbers above were decoded without it. The final comparison re-scores the base model under the bounded schema, so both sides are decoded identically.
 - **If any criterion fails, it is reported as failed.** No post-hoc metric switching.
 
 ## 7. Analysis hygiene

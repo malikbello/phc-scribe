@@ -251,10 +251,24 @@ def dumps_json_schema() -> str:
     return json.dumps(json_schema(), indent=2, ensure_ascii=False, sort_keys=True) + "\n"
 
 
+# Upper bounds on the lists a model may generate (ADR-0024). The largest real gold
+# records have 5 findings, 1 test and 2 medications, so these never cut a genuine
+# record; they stop a degenerate loop that repeats an item until the token cap.
+DECODING_MAX_ITEMS = {"findings": 10, "tests": 10, "medications": 10}
+
+
 def decoding_schema() -> dict[str, Any]:
-    """Schema for constrained decoding. The model quotes evidence; it never writes offsets."""
+    """Schema for constrained decoding. The model quotes evidence; it never writes offsets.
+
+    Every system is decoded against this same schema, so the list bounds apply to the
+    base model and the fine-tuned model alike. The published schema stays unbounded.
+    """
     schema = json_schema()
     evidence = schema["$defs"]["Evidence"]
     evidence["properties"] = {"text": evidence["properties"]["text"]}
     evidence["required"] = ["text"]
+    schema["properties"]["findings"]["maxItems"] = DECODING_MAX_ITEMS["findings"]
+    anc = schema["$defs"]["Anc"]["properties"]
+    anc["tests"]["maxItems"] = DECODING_MAX_ITEMS["tests"]
+    anc["medications"]["maxItems"] = DECODING_MAX_ITEMS["medications"]
     return schema
