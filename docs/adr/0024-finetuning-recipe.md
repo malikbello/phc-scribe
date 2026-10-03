@@ -128,6 +128,12 @@ About 12 h in total, within the weekly free quota. Runs A–D can be prepared be
 | 8–9 Oct | Labelling settled → stage-2 freeze (labels) → run G |
 | 10–11 Oct | Benchmark report, model card (with ablations and failures), demo, submission |
 
+## Note, 4 Oct 2026: the ASR view comes from the shipped ASR
+ADR-0026 replaced the base N-ATLaS ASR with fine-tuned models, so the two-view training data now uses the fine-tuned transcripts (`data/private/kaggle/asr-ft-train.jsonl`). The LLM trains on the kind of text it will receive in service.
+- **Out-of-sample:** the 460 training clips were excluded from the ASR fine-tune, so their transcripts are not memorised.
+- **WER on these clips:** Pidgin 23.6% and Yoruba 33.0%, against 53.1% and 36.1% for the base ASR.
+- **Yield:** 349 ASR views from 376 audited teacher items (333 with the base ASR).
+
 ## Consequences
 - **Each measured failure has a named countermeasure and a dev-set ablation,** so the report can show what helped and by how much: the rigour judges look for.
 - **More N-ATLaS integration:** N-ATLaS ASR is part of the trained system, not just the demo.

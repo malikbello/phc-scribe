@@ -57,6 +57,12 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 
 - **PPI estimator built** (`bench/ppi.py`, ADR-0025): in simulation it removes a +14-point committee bias in recall, and its CIs cover the truth 98% of the time. Wire-up to the review-app export comes when the human sample is labelled.
 
+- **ASR view from the shipped ASR** (`kaggle/asrview`, 4 Oct): the 460 LLM training clips (held out of the ASR fine-tune) were re-transcribed with the fine-tuned models.
+  - WER on them: Pidgin 23.6% (base 53.1%), Yoruba 33.0% (base 36.1%).
+  - Two-view yield: **349 ASR views** from the 376 audited teacher items (base ASR: 333; quotes lost 27 vs 43).
+  - `build_train_set.py --asr data/private/kaggle/asr-ft-train.jsonl` uses it.
+- **Modal training works** (`deploy/modal_train.py`, smoke test passed 4 Oct): A10G, about 2.7 examples/s, so runs B and C take about 10 minutes each. **Blocked only on Malik's "yes freeze"** (`build_train_set.py` refuses to run before the stage-1 freeze).
+
 **Malik's decisions, 3 Oct:** ADR-0026 (ASR fine-tune) **accepted**; G1 tightened to **+2 points** (eval plan §6), as both nurses asked; reviews he holds are open issues (#8 phrase bank, #9 teacher check, #10 start the Kaggle run); he will say when he wants to do them, and Claude guides.
 
 **Kaggle:**
