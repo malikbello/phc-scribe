@@ -19,6 +19,10 @@ ASR_MODELS = {
     "en": "NCAIR1/NigerianAccentedEnglish",
     "pcm": "NCAIR1/NigerianAccentedEnglish",
 }
+# Whisper language token for each model. The NCAIR1 generation configs leave the language
+# unset, so Whisper detects it per 30-second window; forcing the model's own language stops
+# a window being decoded as another language (Pidgin has no Whisper language: English).
+WHISPER_LANGUAGE = {"yo": "yoruba", "ha": "hausa", "ig": "igbo", "en": "english", "pcm": "english"}
 SAMPLE_RATE = 16_000
 
 
@@ -60,8 +64,9 @@ def read_wav(data: bytes) -> tuple[list[float], float]:
 class HfWhisperTranscriber:
     """The NCAIR1 models through the transformers speech-recognition pipeline (CPU or GPU)."""
 
-    def __init__(self, models: dict[str, str] | None = None):
+    def __init__(self, models: dict[str, str] | None = None, force_language: bool = False):
         self.models = models or ASR_MODELS
+        self.force_language = force_language
         self._pipes: dict[str, object] = {}
 
     def model_for(self, language: str) -> str:
@@ -80,10 +85,17 @@ class HfWhisperTranscriber:
             )
         return self._pipes[model_id]
 
-    def transcribe(self, samples: list[float], language: str) -> str:
+    def transcribe(self, samples: list[float], language: str, force: bool | None = None) -> str:
+        """`force` overrides the instance setting for one call (used to compare the two)."""
         import numpy as np
 
         pipe = self._pipe(self.model_for(language))
         audio = {"raw": np.asarray(samples, dtype=np.float32), "sampling_rate": SAMPLE_RATE}
-        out = pipe(audio)  # pyright: ignore[reportCallIssue]
+        forced = self.force_language if force is None else force
+        kwargs = (
+            {"generate_kwargs": {"language": WHISPER_LANGUAGE[language], "task": "transcribe"}}
+            if forced
+            else {}
+        )
+        out = pipe(audio, **kwargs)  # pyright: ignore[reportCallIssue]
         return str(out["text"]).strip()  # pyright: ignore[reportIndexIssue, reportArgumentType]

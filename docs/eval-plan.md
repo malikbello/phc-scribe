@@ -81,6 +81,13 @@ Reported per stratum, per language and per field, each with 95% bootstrap CIs.
   - `findings`, `anc.tests` and `anc.medications` are capped at 10 items each, in the schema every system decodes against (`decoding_schema()`). The cap applies to the base comparator and the fine-tuned model alike.
   - The largest real gold record has 5 findings, so the cap never cuts a genuine answer; it stops a loop from repeating an item until the token cap.
   - The baseline and pilot numbers above were decoded without it. The final comparison re-scores the base model under the bounded schema, so both sides are decoded identically.
+- **Repetition penalty for the base comparator (added 3 Oct, before the freeze and before the result):**
+  - The N-ATLaS model card's usage example sets `repetition_penalty = 1.12`. Our base runs used greedy decoding without it, so a reviewer could say the base model was not run as its makers intend.
+  - The pre-freeze `checks` run scores base N-ATLaS few-shot with 1.12 on the 30 pilot (dev) items.
+  - **Rule:**
+    - The primary base comparator uses 1.12 if, on the pilot items, its danger-sign recall is at least as high as without it and its schema-valid count is no lower. Otherwise it stays at 1.0.
+    - Either way, the other setting is reported as a supplementary comparator, and the fine-tuned model is decoded with the same setting as the primary comparator.
+    - This follows the principle above: the base model gets the more generous comparator.
 - **If any criterion fails, it is reported as failed.** No post-hoc metric switching.
 
 ## 7. Analysis hygiene

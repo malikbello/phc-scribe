@@ -74,3 +74,11 @@ def test_items_without_asr_are_counted_not_invented():
 
 def test_relocate_keeps_a_leading_negation_cue():
     assert relocate("no be blood", "e nor be blood wey i see") == "nor be blood"
+
+
+def test_wer_counts_edits_over_folded_words():
+    from bench.wer import corpus_wer, edit_errors
+
+    assert edit_errors("Ọmọ inú mi kò mì", "omo inu mi ko mi") == (0, 5)  # tone marks folded
+    assert edit_errors("the baby no move", "di baby move") == (2, 4)  # 1 substitution, 1 deletion
+    assert corpus_wer([("a b c d", "a b c d"), ("a b", "x b")]) == 1 / 6  # pooled, not averaged

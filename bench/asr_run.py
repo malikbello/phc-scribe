@@ -48,9 +48,9 @@ def resample(samples, rate: int, target: int = TARGET_RATE):
     return resample_poly(x, target // g, rate // g).astype(np.float32)
 
 
-def shard_hits(fs, path: str, wanted: set[str]) -> list[tuple[str, bytes]]:
-    """(audio_id, encoded audio) for every wanted clip in one shard, reading only the row
-    groups that contain one."""
+def shard_hits(fs, path: str, wanted: set[str]) -> list[tuple[str, bytes, str]]:
+    """(audio_id, encoded audio, the dataset's human transcript) for every wanted clip in one
+    shard, reading only the row groups that contain one."""
     import pyarrow.parquet as pq
 
     with fs.open(path, "rb", block_size=2**20) as f:
@@ -63,9 +63,10 @@ def shard_hits(fs, path: str, wanted: set[str]) -> list[tuple[str, bytes]]:
         for rg in range(pf.num_row_groups):
             n = pf.metadata.row_group(rg).num_rows
             if any(start <= i < start + n for i in hit_rows):
-                table = pf.read_row_group(rg, columns=["audio_id", "audio_path"]).to_pylist()
+                cols = ["audio_id", "audio_path", "transcript"]
+                table = pf.read_row_group(rg, columns=cols).to_pylist()
                 out += [
-                    (r["audio_id"], r["audio_path"]["bytes"])
+                    (r["audio_id"], r["audio_path"]["bytes"], r["transcript"] or "")
                     for r in table
                     if r["audio_id"] in wanted
                 ]
@@ -75,7 +76,7 @@ def shard_hits(fs, path: str, wanted: set[str]) -> list[tuple[str, bytes]]:
 
 def shard_hits_retrying(
     fs, path: str, wanted: set[str], attempts: int = 4
-) -> list[tuple[str, bytes]]:
+) -> list[tuple[str, bytes, str]]:
     """shard_hits with exponential backoff: a transient HTTP or read error on one shard must
     not end the run. A shard that keeps failing is reported, and its clips count as missing."""
     for attempt in range(attempts):
@@ -99,6 +100,17 @@ def main() -> int:
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--workers", type=int, default=8)
     parser.add_argument("--limit", type=int, default=0, help="for smoke tests only")
+    parser.add_argument(
+        "--force-language", action="store_true", help="force each model's Whisper language"
+    )
+    parser.add_argument(
+        "--compare-language",
+        type=int,
+        default=0,
+        metavar="N",
+        help="check: N training clips per language, transcribed with and without the forced"
+        " language; prints WER against the dataset's transcripts",
+    )
     args = parser.parse_args()
 
     import soundfile as sf  # pyright: ignore[reportMissingImports]
@@ -109,6 +121,14 @@ def main() -> int:
     targets = [
         json.loads(line) for line in args.targets.read_text(encoding="utf-8").splitlines() if line
     ]
+    if args.compare_language:
+        per: dict[str, int] = defaultdict(int)
+        picked = []
+        for t in targets:
+            if t["split"] == "train" and per[t["language"]] < args.compare_language:
+                per[t["language"]] += 1
+                picked.append(t)
+        targets = picked
     if args.limit:
         targets = targets[: args.limit]
     groups: dict[tuple[str, str], set[str]] = defaultdict(set)
@@ -116,7 +136,10 @@ def main() -> int:
         groups[(t["language"], t["split"])].add(t["audio_id"])
 
     fs = HfFileSystem()
-    asr = HfWhisperTranscriber()
+    from bench.wer import edit_errors
+
+    asr = HfWhisperTranscriber(force_language=args.force_language)
+    errs: dict[tuple[str, str], list[int]] = defaultdict(lambda: [0, 0])
     args.out.parent.mkdir(parents=True, exist_ok=True)
     done: set[str] = set()
     t0 = time.time()
@@ -130,27 +153,32 @@ def main() -> int:
             model = asr.model_for(lang)
             found = 0
             for hits in pool.map(lambda p, w=wanted: shard_hits_retrying(fs, p, w), paths):
-                for audio_id, data in hits:
+                for audio_id, data, reference in hits:
                     if audio_id in done:
                         continue
                     samples, rate = sf.read(io.BytesIO(data))
                     x = resample(samples, rate)
                     audio_seconds += len(x) / TARGET_RATE
-                    text = asr.transcribe(x, lang)  # pyright: ignore[reportArgumentType]
-                    out.write(
-                        json.dumps(
-                            {
-                                "audio_id": audio_id,
-                                "language": lang,
-                                "split": split,
-                                "model": model,
-                                "text": text,
-                                "seconds": round(len(x) / TARGET_RATE, 2),
-                            },
-                            ensure_ascii=False,
-                        )
-                        + "\n"
-                    )
+                    row: dict = {
+                        "audio_id": audio_id,
+                        "language": lang,
+                        "split": split,
+                        "model": model,
+                        "forced_language": args.force_language,
+                        "reference": reference,
+                        "seconds": round(len(x) / TARGET_RATE, 2),
+                    }
+                    if args.compare_language:
+                        modes = {"auto": False, "forced": True}
+                    else:
+                        modes = {"forced" if args.force_language else "auto": None}
+                    for mode, force in modes.items():
+                        text = asr.transcribe(x, lang, force=force)  # pyright: ignore[reportArgumentType]
+                        row["text" if force is None else f"text_{mode}"] = text
+                        e, n = edit_errors(reference, text)
+                        errs[(lang, mode)][0] += e
+                        errs[(lang, mode)][1] += n
+                    out.write(json.dumps(row, ensure_ascii=False) + "\n")
                     out.flush()
                     done.add(audio_id)
                     found += 1
@@ -159,6 +187,9 @@ def main() -> int:
                 f" ({time.time() - t0:.0f}s elapsed)",
                 flush=True,
             )
+    for (lang, mode), (e, n) in sorted(errs.items()):
+        if n:
+            print(f"=== WER {lang} {mode}: {e / n:.3f} over {n} reference words", flush=True)
     missing = len(targets) - len(done)
     print(
         f"=== ASR done: {len(done)} clips, {audio_seconds / 60:.1f} min of audio,"

@@ -106,8 +106,12 @@ def hf_generator(
     revision: str | None = None,
     adapter: str | None = None,
     constrained: bool = True,
+    repetition_penalty: float = 1.0,
 ) -> Generate:
-    """Greedy generation with transformers; schema-constrained with xgrammar unless told not to."""
+    """Greedy generation with transformers; schema-constrained with xgrammar unless told not to.
+
+    `repetition_penalty` 1.12 is what the N-ATLaS model card's usage example sets; 1.0 is off.
+    """
     # Optional GPU-side dependencies: not installed in CI.
     import torch  # pyright: ignore[reportMissingImports]
     import xgrammar as xgr  # pyright: ignore[reportMissingImports]
@@ -158,6 +162,7 @@ def hf_generator(
                 attention_mask=mask,
                 max_new_tokens=max_new_tokens,
                 do_sample=False,
+                repetition_penalty=repetition_penalty,
                 logits_processor=LogitsProcessorList(processors),
                 eos_token_id=eos,
                 pad_token_id=tok.eos_token_id,
@@ -185,12 +190,20 @@ def main() -> int:
         action="store_true",
         help="free generation, then parse the first JSON object (supplementary comparator only)",
     )
+    parser.add_argument(
+        "--repetition-penalty",
+        type=float,
+        default=1.0,
+        help="1.12 = the N-ATLaS model card's setting; 1.0 = off",
+    )
     args = parser.parse_args()
 
     items = list(read_jsonl(args.items, BenchItem))
     if args.limit:
         items = items[: args.limit]
     suffix = "-unconstrained" if args.unconstrained else ""
+    if args.repetition_penalty != 1.0:
+        suffix += f"-rp{args.repetition_penalty:g}"
     system = (
         args.system or f"{args.model.split('/')[-1].lower()}-{args.mode}{suffix}-{PROMPT_VERSION}"
     )
@@ -201,6 +214,7 @@ def main() -> int:
         revision=args.revision,
         adapter=args.adapter,
         constrained=not args.unconstrained,
+        repetition_penalty=args.repetition_penalty,
     )
     preds = run(items, generate, system, args.mode, lenient=args.unconstrained)
     write_jsonl(args.out, preds)

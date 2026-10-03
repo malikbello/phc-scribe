@@ -38,6 +38,10 @@ RUNS: list[tuple[str, str, str, list[str]]] = [
 # "asr": Run A of ADR-0024. N-ATLaS ASR over the training clips and the test pool's audio
 # (public clip ids in data/asr/targets.v1.jsonl; no labels travel). Feeds the two-view
 # training data and the "audio through N-ATLaS ASR" test condition.
+# "checks": two pre-freeze settings checks (3 Oct). (1) Base N-ATLaS few-shot on the pilot
+# (dev) items with the model card's repetition penalty 1.12, against the recorded run without
+# it; the eval plan keeps the more generous base comparator. (2) N-ATLaS ASR with each model's
+# language forced vs auto-detected, on training clips, WER against the dataset transcripts.
 PLAN = "asr"
 ITEM_SETS = {
     "baseline": ["tests/fixtures/smoke_items.jsonl", "data/bench/g.20261002.jsonl"],
@@ -45,6 +49,7 @@ ITEM_SETS = {
     "prefreeze": ["data/bench/pilot.20261004.jsonl"],
     "trainprep": ["data/bench/h.adeola.jsonl"],
     "asr": [],
+    "checks": ["data/bench/pilot.20261004.jsonl"],
 }[PLAN]
 TEACHER = ("llama31-fewshot", "unsloth/Llama-3.1-8B-Instruct")
 BELEBELE_MODELS = [("natlas", "NCAIR1/N-ATLaS"), ("llama31", "unsloth/Llama-3.1-8B-Instruct")]
@@ -54,6 +59,10 @@ if PLAN == "trainprep":
     RUNS[:] = [("natlas-fewshot", "NCAIR1/N-ATLaS", "fewshot", [])]
 if PLAN == "asr":
     RUNS[:] = []
+if PLAN == "checks":
+    RUNS[:] = [
+        ("natlas-fewshot-rp1.12", "NCAIR1/N-ATLaS", "fewshot", ["--repetition-penalty", "1.12"])
+    ]
 if PLAN == "pilot":
     # Dev-only check: are N-ATLaS's schema-invalid outputs cut off at the 768-token cap?
     RUNS.append(("natlas-fewshot-1536", "NCAIR1/N-ATLaS", "fewshot", ["--max-new-tokens", "1536"]))
@@ -152,6 +161,24 @@ def teacher(out: Path) -> None:
         emit_file(kept)
 
 
+def asr_language_check(out: Path) -> None:
+    """Forced vs auto-detected Whisper language, 30 training clips per language."""
+    dest = out / "asr-language-check.jsonl"
+    sh(
+        sys.executable,
+        "-m",
+        "bench.asr_run",
+        "--targets",
+        "data/asr/targets.v1.jsonl",
+        "--out",
+        str(dest),
+        "--compare-language",
+        "30",
+        "--workers",
+        "16",
+    )
+
+
 def asr(out: Path) -> None:
     """ADR-0024 Run A: transcribe the target clips with the NCAIR1 ASR models."""
     dest = out / "asr.jsonl"
@@ -178,7 +205,7 @@ def main() -> None:
     token = hf_token()
     if token:
         os.environ["HF_TOKEN"] = token
-    elif PLAN in ("pilot", "prefreeze", "trainprep", "asr"):
+    elif PLAN in ("pilot", "prefreeze", "trainprep", "asr", "checks"):
         # The pilot exists to measure N-ATLaS; fail fast instead of spending GPU time without it.
         sys.exit("HF_TOKEN secret not attached: attach it (Add-ons -> Secrets) and re-run")
     else:
@@ -189,6 +216,8 @@ def main() -> None:
         teacher(out)
     if PLAN == "asr":
         asr(out)
+    if PLAN == "checks":
+        asr_language_check(out)
     if PLAN == "prefreeze":
         for name, model in BELEBELE_MODELS:
             dest = out / f"belebele.{name}.json"
