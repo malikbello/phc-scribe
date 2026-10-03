@@ -28,3 +28,4 @@ Format: context → decision → consequences. A decision changes only through a
 | [0022](0022-two-stage-freeze.md) | Freeze the test set in two stages: items first, labels before scoring | Accepted |
 | [0023](0023-takada-health-worker-app.md) | Takada health-worker app: own repo; phone + clinic hub + cloud; protocol-driven visit guide; container- and Kubernetes-ready | Accepted |
 | [0024](0024-finetuning-recipe.md) | Fine-tuning recipe: data first (concept audit, rare-sign phrase bank, ASR two-view), safety-weighted SFT, bounded output, on-policy DPO if needed, scaled merge, imatrix Q4 | Accepted |
+| [0025](0025-committee-triage-labelling.md) | Committee pre-labelling (3 non-Llama open models), humans label every possible-danger or disagreement clip plus a random audit, stratified PPI for the estimates | **Proposed** |
