@@ -1,6 +1,7 @@
-"""Publish the code bundle to a private Kaggle dataset and start the baseline GPU job.
+"""Publish the code bundle to a private Kaggle dataset and start a GPU job.
 
-    python scripts/kaggle_push.py            # bundle + push kernel
+    python scripts/kaggle_push.py                       # bundle + push the baseline kernel
+    python scripts/kaggle_push.py --kernel committee    # bundle + push kaggle/committee
     python scripts/kaggle_push.py --bundle-only
 
 The bundle is `git archive HEAD` minus the review app, docs and tools: committed code,
@@ -21,7 +22,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 DATASET = "bellomalik/phc-scribe-code"
-KERNEL_DIR = REPO / "kaggle" / "baseline"
+KERNELS = REPO / "kaggle"
 EXCLUDE = ("review-app", "docs", "tools")
 
 
@@ -63,6 +64,11 @@ def push_dataset(folder: Path, sha: str) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--bundle-only", action="store_true")
+    parser.add_argument(
+        "--kernel",
+        default="baseline",
+        choices=sorted(p.name for p in KERNELS.iterdir() if (p / "kernel-metadata.json").exists()),
+    )
     args = parser.parse_args()
     sha = run("git", "rev-parse", "--short", "HEAD").strip()
     with tempfile.TemporaryDirectory() as tmp:
@@ -73,7 +79,7 @@ def main() -> int:
     if not args.bundle_only:
         with tempfile.TemporaryDirectory() as tmp:
             kdir = Path(tmp) / "k"
-            shutil.copytree(KERNEL_DIR, kdir)
+            shutil.copytree(KERNELS / args.kernel, kdir)
             print(run("kaggle", "kernels", "push", "-p", str(kdir)))
     return 0
 

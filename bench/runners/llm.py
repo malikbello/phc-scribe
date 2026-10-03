@@ -27,6 +27,8 @@ from bench.prompts import PROMPT_VERSION, Mode, build_messages
 from phc_scribe.encounter import Encounter, decoding_schema
 
 Generate = Callable[[list[dict[str, str]]], tuple[str, int]]  # messages -> (text, prompt tokens)
+# Several conversations at once -> one (text, prompt tokens) per conversation, in order.
+BatchGenerate = Callable[[list[list[dict[str, str]]]], list[tuple[str, int]]]
 
 
 def extract_json(text: str) -> str:
@@ -98,6 +100,58 @@ def run(
     return preds
 
 
+def run_batched(
+    items: Sequence[BenchItem],
+    generate_batch: BatchGenerate,
+    system: str,
+    mode: Mode,
+    batch_size: int,
+    lenient: bool = False,
+) -> list[Prediction]:
+    """`run` with several items per generate call (committee labelling, ADR-0025).
+
+    Items keep their input order in the output. A failed batch marks each of its items
+    as an error, as a failed single generation does in `run`. Latency is the batch's
+    wall time divided by its size.
+    """
+    preds: list[Prediction] = []
+    for start in range(0, len(items), batch_size):
+        chunk = items[start : start + batch_size]
+        t0 = time.perf_counter()
+        try:
+            outs = generate_batch([build_messages(i.transcript, mode) for i in chunk])
+            failure = None
+        except Exception as e:
+            outs, failure = [], f"{type(e).__name__}: {e}"
+            print(f"  {system}: batch failed at {chunk[0].item_id}: {failure}", file=sys.stderr)
+        per_item = round((time.perf_counter() - t0) * 1000 / len(chunk), 1)
+        for k, item in enumerate(chunk):
+            if failure is None:
+                raw, prompt_tokens = outs[k]
+                record, error = parse_record(raw, lenient)
+            else:
+                raw, prompt_tokens, record, error = None, None, None, failure
+            preds.append(
+                Prediction(
+                    item_id=item.item_id,
+                    system=system,
+                    raw_output=raw,
+                    record=record,
+                    error=error,
+                    latency_ms=per_item,
+                    prompt_tokens=prompt_tokens,
+                )
+            )
+        ok = sum(p.record is not None for p in preds)
+        print(
+            f"  {system}: {len(preds)}/{len(items)} done, {ok} schema-valid,"
+            f" {per_item / 1000:.1f} s/item",
+            file=sys.stderr,
+            flush=True,
+        )
+    return preds
+
+
 def hf_generator(
     model_id: str,
     *,
@@ -107,9 +161,11 @@ def hf_generator(
     adapter: str | None = None,
     constrained: bool = True,
     repetition_penalty: float = 1.0,
-) -> Generate:
+) -> tuple[Generate, BatchGenerate]:
     """Greedy generation with transformers; schema-constrained with xgrammar unless told not to.
 
+    Returns a one-conversation generator (every evaluated system uses it) and a batched one
+    (left-padded, one grammar matcher per row; committee labelling only, ADR-0025).
     `repetition_penalty` 1.12 is what the N-ATLaS model card's usage example sets; 1.0 is off.
     """
     # Optional GPU-side dependencies: not installed in CI.
@@ -139,7 +195,9 @@ def hf_generator(
         model = PeftModel.from_pretrained(model, adapter)
     model.eval()
 
-    vocab_size = AutoConfig.from_pretrained(model_id, revision=revision).vocab_size
+    config = AutoConfig.from_pretrained(model_id, revision=revision)
+    # Multimodal configs (Gemma 3) keep the vocabulary on the text config.
+    vocab_size = getattr(config, "vocab_size", None) or config.get_text_config().vocab_size
     info = xgr.TokenizerInfo.from_huggingface(tok, vocab_size=vocab_size)
     compiler = xgr.GrammarCompiler(info)
     grammar = compiler.compile_json_schema(json.dumps(decoding_schema()))
@@ -149,10 +207,17 @@ def hf_generator(
         if isinstance(t, int) and t >= 0
     ]
 
+    # Qwen3 would otherwise open a thinking block; the grammar forbids it anyway.
+    template_kwargs = {"enable_thinking": False} if "qwen3" in model_id.lower() else {}
+
     def generate(messages: list[dict[str, str]]) -> tuple[str, int]:
         # return_dict=True gives the same shape on transformers 4.x and 5.x.
         enc = tok.apply_chat_template(
-            messages, add_generation_prompt=True, return_tensors="pt", return_dict=True
+            messages,
+            add_generation_prompt=True,
+            return_tensors="pt",
+            return_dict=True,
+            **template_kwargs,
         ).to(model.device)
         ids, mask = enc["input_ids"], enc["attention_mask"]
         processors = [xgr.contrib.hf.LogitsProcessor(grammar)] if constrained else []  # fresh state
@@ -170,7 +235,38 @@ def hf_generator(
         text = tok.decode(out[0, ids.shape[1] :], skip_special_tokens=True)
         return text.strip(), int(ids.shape[1])
 
-    return generate
+    def generate_batch(batch: list[list[dict[str, str]]]) -> list[tuple[str, int]]:
+        if len(batch) == 1:
+            return [generate(batch[0])]
+        tok.padding_side = "left"  # generation continues from the right edge
+        if tok.pad_token is None:
+            tok.pad_token = tok.eos_token
+        enc = tok.apply_chat_template(
+            batch,
+            add_generation_prompt=True,
+            return_tensors="pt",
+            return_dict=True,
+            padding=True,
+            **template_kwargs,
+        ).to(model.device)
+        ids, mask = enc["input_ids"], enc["attention_mask"]
+        processors = [xgr.contrib.hf.LogitsProcessor(grammar)] if constrained else []
+        with torch.no_grad():
+            out = model.generate(
+                ids,
+                attention_mask=mask,
+                max_new_tokens=max_new_tokens,
+                do_sample=False,
+                repetition_penalty=repetition_penalty,
+                logits_processor=LogitsProcessorList(processors),
+                eos_token_id=eos,
+                pad_token_id=tok.pad_token_id,
+            )
+        lengths = mask.sum(dim=1).tolist()
+        texts = tok.batch_decode(out[:, ids.shape[1] :], skip_special_tokens=True)
+        return [(t.strip(), int(n)) for t, n in zip(texts, lengths, strict=True)]
+
+    return generate, generate_batch
 
 
 def main() -> int:
@@ -185,6 +281,12 @@ def main() -> int:
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--load-in-4bit", action="store_true")
     parser.add_argument("--max-new-tokens", type=int, default=768)
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=1,
+        help="items per generate call; >1 only for committee labelling (ADR-0025)",
+    )
     parser.add_argument(
         "--unconstrained",
         action="store_true",
@@ -207,7 +309,7 @@ def main() -> int:
     system = (
         args.system or f"{args.model.split('/')[-1].lower()}-{args.mode}{suffix}-{PROMPT_VERSION}"
     )
-    generate = hf_generator(
+    generate, generate_batch = hf_generator(
         args.model,
         load_in_4bit=args.load_in_4bit,
         max_new_tokens=args.max_new_tokens,
@@ -216,7 +318,12 @@ def main() -> int:
         constrained=not args.unconstrained,
         repetition_penalty=args.repetition_penalty,
     )
-    preds = run(items, generate, system, args.mode, lenient=args.unconstrained)
+    if args.batch_size > 1:
+        preds = run_batched(
+            items, generate_batch, system, args.mode, args.batch_size, lenient=args.unconstrained
+        )
+    else:
+        preds = run(items, generate, system, args.mode, lenient=args.unconstrained)
     write_jsonl(args.out, preds)
     ok = sum(p.record is not None for p in preds)
     print(f"wrote {len(preds)} predictions ({ok} schema-valid) to {args.out}")
