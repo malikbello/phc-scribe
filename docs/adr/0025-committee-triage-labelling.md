@@ -54,7 +54,16 @@
 - The committee is still three families (Qwen, Microsoft Phi, Mistral), none of them Llama-3.1 or N-ATLaS.
 - **Rules made exact before the full run** (`bench/committee.py`): stratum A also covers disagreement on blood pressure or gestational-age weeks, which are scored too; the committee gold is the 2-of-3 answer field by field; sample seed 20261009.
 
-## Consequences
+## Estimator implemented (3 Oct 2026, before any human label of the sample)
+`bench/ppi.py`, tested in `tests/test_ppi.py`:
+- For each ratio metric, the numerator and denominator totals are estimated as the committee total plus the scaled human-minus-committee correction within each stratum.
+- The CI comes from a cluster bootstrap that resamples speakers within strata, recomputing N_k/n_k each time. Paired differences use the same resamples for both systems.
+- The safety stop uses an exact Clopper–Pearson upper bound. With 60 audited stratum-B clips, one miss gives a bound of about 7.7%, so **any missed danger sign in the B audit triggers full human labelling of B**.
+- **Simulation** (400 items; the committee misses the hard danger signs the system also misses; 200 random human samples of 60 + 30):
+  - the committee alone overstates the system's recall by **+14.1 points** (0.893 vs 0.753);
+  - the PPI estimate averages 0.757;
+  - its 95% CI covers the truth in **98%** of samples.
+
 - **Human labelling falls from 720 labels to about 220,** spread over three people who have already shown they deliver.
 - **Statistical guarantee:** stratified PPI uses the random human sample to correct the committee's labels, so the estimates and confidence intervals are valid whatever the committee gets wrong. Fewer human labels mean wider intervals, which is the honest price.
   - The sample size per stratum can grow if the intervals are too wide to decide P1.

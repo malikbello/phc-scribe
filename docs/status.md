@@ -55,6 +55,8 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 - **ASR language forcing:** no effect (identical WER auto vs forced).
 - Log noise: a non-fatal `KeyError: 'event_id'` traceback appears several times (a background thread); every step completed.
 
+- **PPI estimator built** (`bench/ppi.py`, ADR-0025): in simulation it removes a +14-point committee bias in recall, and its CIs cover the truth 98% of the time. Wire-up to the review-app export comes when the human sample is labelled.
+
 **Malik's decisions, 3 Oct:** ADR-0026 (ASR fine-tune) **accepted**; G1 tightened to **+2 points** (eval plan §6), as both nurses asked; reviews he holds are open issues (#8 phrase bank, #9 teacher check, #10 start the Kaggle run); he will say when he wants to do them, and Claude guides.
 
 **Kaggle:**
