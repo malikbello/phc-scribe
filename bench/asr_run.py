@@ -104,6 +104,16 @@ def main() -> int:
         "--force-language", action="store_true", help="force each model's Whisper language"
     )
     parser.add_argument(
+        "--models",
+        nargs="*",
+        default=[],
+        metavar="LANG=PATH",
+        help="replace a language's model, e.g. yo=/kaggle/working/asr-ft/yo (ADR-0026)",
+    )
+    parser.add_argument(
+        "--split", choices=sorted(SPLITS), help="only the targets of this split (default: all)"
+    )
+    parser.add_argument(
         "--compare-language",
         type=int,
         default=0,
@@ -116,7 +126,7 @@ def main() -> int:
     import soundfile as sf  # pyright: ignore[reportMissingImports]
     from huggingface_hub import HfFileSystem
 
-    from phc_scribe.api.asr import HfWhisperTranscriber
+    from phc_scribe.api.asr import ASR_MODELS, HfWhisperTranscriber
 
     targets = [
         json.loads(line) for line in args.targets.read_text(encoding="utf-8").splitlines() if line
@@ -129,6 +139,8 @@ def main() -> int:
                 per[t["language"]] += 1
                 picked.append(t)
         targets = picked
+    if args.split:
+        targets = [t for t in targets if t["split"] == args.split]
     if args.limit:
         targets = targets[: args.limit]
     groups: dict[tuple[str, str], set[str]] = defaultdict(set)
@@ -138,7 +150,10 @@ def main() -> int:
     fs = HfFileSystem()
     from bench.wer import edit_errors
 
-    asr = HfWhisperTranscriber(force_language=args.force_language)
+    overrides = dict(m.split("=", 1) for m in args.models)
+    asr = HfWhisperTranscriber(
+        models={**ASR_MODELS, **overrides}, force_language=args.force_language
+    )
     errs: dict[tuple[str, str], list[int]] = defaultdict(lambda: [0, 0])
     args.out.parent.mkdir(parents=True, exist_ok=True)
     done: set[str] = set()

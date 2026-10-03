@@ -42,7 +42,10 @@ RUNS: list[tuple[str, str, str, list[str]]] = [
 # (dev) items with the model card's repetition penalty 1.12, against the recorded run without
 # it; the eval plan keeps the more generous base comparator. (2) N-ATLaS ASR with each model's
 # language forced vs auto-detected, on training clips, WER against the dataset transcripts.
-PLAN = "checks"
+# "checks_asrft": "checks", then ADR-0026: fine-tune N-ATLaS ASR for Yoruba (GPU 0) and
+# Pidgin (GPU 1) at the same time, then transcribe the 600-clip test pool with the base
+# models (language forced) and the fine-tuned ones. One editor start for both (HF_TOKEN).
+PLAN = "checks_asrft"
 ITEM_SETS = {
     "baseline": ["tests/fixtures/smoke_items.jsonl", "data/bench/g.20261002.jsonl"],
     "pilot": ["data/bench/pilot.20261004.jsonl"],
@@ -50,6 +53,7 @@ ITEM_SETS = {
     "trainprep": ["data/bench/h.adeola.jsonl"],
     "asr": [],
     "checks": ["data/bench/pilot.20261004.jsonl"],
+    "checks_asrft": ["data/bench/pilot.20261004.jsonl"],
 }[PLAN]
 TEACHER = ("llama31-fewshot", "unsloth/Llama-3.1-8B-Instruct")
 BELEBELE_MODELS = [("natlas", "NCAIR1/N-ATLaS"), ("llama31", "unsloth/Llama-3.1-8B-Instruct")]
@@ -59,7 +63,7 @@ if PLAN == "trainprep":
     RUNS[:] = [("natlas-fewshot", "NCAIR1/N-ATLaS", "fewshot", [])]
 if PLAN == "asr":
     RUNS[:] = []
-if PLAN == "checks":
+if PLAN in ("checks", "checks_asrft"):
     RUNS[:] = [
         ("natlas-fewshot-rp1.12", "NCAIR1/N-ATLaS", "fewshot", ["--repetition-penalty", "1.12"])
     ]
@@ -205,7 +209,7 @@ def main() -> None:
     token = hf_token()
     if token:
         os.environ["HF_TOKEN"] = token
-    elif PLAN in ("pilot", "prefreeze", "trainprep", "asr", "checks"):
+    elif PLAN in ("pilot", "prefreeze", "trainprep", "asr", "checks", "checks_asrft"):
         # The pilot exists to measure N-ATLaS; fail fast instead of spending GPU time without it.
         sys.exit("HF_TOKEN secret not attached: attach it (Add-ons -> Secrets) and re-run")
     else:
@@ -216,7 +220,7 @@ def main() -> None:
         teacher(out)
     if PLAN == "asr":
         asr(out)
-    if PLAN == "checks":
+    if PLAN in ("checks", "checks_asrft"):
         asr_language_check(out)
     if PLAN == "prefreeze":
         for name, model in BELEBELE_MODELS:
@@ -277,5 +281,59 @@ def main() -> None:
                 print(f"=== REPORT {name}.{tag} ===\n{report.read_text()}", flush=True)
 
 
+def asr_finetune(out: Path) -> None:
+    """ADR-0026: one language per GPU in parallel, then the test pool with base and
+    fine-tuned models (both with the language forced, so the comparison is paired)."""
+    import json
+
+    ft = WORK / "asr-ft"
+    env = {**os.environ, "PYTHONPATH": f"{REPO / 'serve'}:{REPO}"}
+    procs = {}
+    for gpu, lang in enumerate(("yo", "pcm")):
+        log = open(out / f"asrft.{lang}.log", "w")  # noqa: SIM115 (closed below)
+        cmd = [sys.executable, "-m", "bench.asr_finetune", "--language", lang,
+               "--out", str(ft / lang)]  # fmt: skip
+        print("+", " ".join(cmd), f"(GPU {gpu})", flush=True)
+        procs[lang] = (
+            subprocess.Popen(  # noqa: S603 (fixed argv)
+                cmd,
+                cwd=REPO,
+                env={**env, "CUDA_VISIBLE_DEVICES": str(gpu)},
+                stdout=log,
+                stderr=subprocess.STDOUT,
+            ),
+            log,
+        )
+    for lang, (proc, log) in procs.items():
+        code = proc.wait()
+        log.close()
+        text = (out / f"asrft.{lang}.log").read_text(errors="replace")
+        for line in text.splitlines():
+            if line.startswith("=== ASRFT") or "Error" in line:
+                print(line, flush=True)
+        print(f"=== ASRFT {lang} exit {code}", flush=True)
+        summary = ft / lang / "asrft-summary.json"
+        if summary.exists():
+            print(f"=== ASRFT {lang} summary {json.dumps(json.loads(summary.read_text()))}")
+    for name, models in (
+        ("asr-base-forced", []),
+        (
+            "asr-ft-forced",
+            [f"{lang}={ft / lang}" for lang in ("yo", "pcm") if (ft / lang).exists()],
+        ),
+    ):
+        if name == "asr-ft-forced" and not models:
+            print("run failed: no fine-tuned ASR model to evaluate", flush=True)
+            continue
+        dest = out / f"{name}.jsonl"
+        sh(sys.executable, "-m", "bench.asr_run", "--targets", "data/asr/targets.v1.jsonl",
+           "--split", "dev_pool", "--force-language", "--out", str(dest), "--workers", "16",
+           *(["--models", *models] if models else []))  # fmt: skip
+        if dest.exists():
+            emit_file(dest)
+
+
 if __name__ == "__main__":
     main()
+    if PLAN == "checks_asrft":
+        asr_finetune(WORK / "preds")

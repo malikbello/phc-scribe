@@ -1,6 +1,6 @@
 # ADR-0026: Fine-tune N-ATLaS ASR on Yoruba and Pidgin speech (health-domain evaluation)
 
-- **Status:** Proposed, 3 Oct 2026. Needs Malik's approval.
+- **Status:** Accepted by Malik, 3 Oct 2026 ("Yes, let us do this"). Baseline from Run A: test-pool WER 51.1% Pidgin, 44.7% Yoruba (`results/asr/base-wer.20261003.json`).
 - **Date:** 2026-10-03
 - **Changes:** adds a second fine-tuned N-ATLaS component. Architecture §6 fine-tuned the LLM only; ASR used the NCAIR1 models as released.
 

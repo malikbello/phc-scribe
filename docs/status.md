@@ -44,6 +44,17 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 - **Uyo mapping:** both answered with specific mappings, so the ADR-0019 check can now run with `--confirmed-by`.
 - **Phrases, guide and rules:** 31 change requests, mostly local and lay phrasings (e.g. "running temperature", "serious stomach pain", "spotting", "pale +++", ">3 vomits a day") and follow-up tests (urinalysis every visit; PCV with bleeding). To be applied via a traceability matrix (each note → applied, or declined with a reason).
 
+## Right now (handoff, 3 Oct ~20:00 WAT, session 7)
+**Malik's decisions, 3 Oct:** ADR-0026 (ASR fine-tune) **accepted**; G1 tightened to **+2 points** (eval plan §6), as both nurses asked; reviews he holds are open issues (#8 phrase bank, #9 teacher check, #10 start the Kaggle run); he will say when he wants to do them, and Claude guides.
+
+**Kaggle:**
+- `phc-scribe-baseline` v16 (`checks`, pushed through the API) stopped at once: no HF_TOKEN. Superseded.
+- **`phc-scribe-committee` (ADR-0025), no secrets, started through the API:**
+  - smoke run (16 items × 4 models): Qwen3-14B 16/16 valid, Phi-4 16/16; Gemma-3-12B and Mistral-Small-24B ran out of memory at batch 8; all were slow (30–50 s/item) because the 4-bit checkpoints compute in bfloat16, which the T4 emulates;
+  - fixed: float16 compute on GPUs without bfloat16 (`bench/runners/llm.py`); **Phi-4 replaces Gemma-3-12B** (Gemma 3 overflows in float16; ADR-0025 amendment); Mistral at batch 4; predictions written every 64 items; an 11-hour budget split across members;
+  - **full run (v3, 3 models × 600) running.** When done: `python scripts/kaggle_log.py --slug phc-scribe-committee --save results/committee`, then `python -m bench.committee triage --queue data/private/label_queue.s4w.jsonl --pred data/private/kaggle/committee.qwen3-14b.jsonl --pred data/private/kaggle/committee.phi-4-14b.jsonl --pred data/private/kaggle/committee.mistral-small-24b.jsonl --out-dir data/private/committee`, then upload `label_queue.committee-sample.jsonl` (about 180 clips) to the review app as a new set.
+- **ADR-0026 built:** `bench/asr_finetune.py` (recipe in its docstring; CPU smoke test passed with whisper-tiny), `bench/asr_run.py --models/--split`, `scripts/asr_compare.py` (paired speaker bootstrap; reproduces Run A exactly; base CER 28.8% pcm, 26.1% yo). **`phc-scribe-baseline` plan `checks_asrft`**: the checks, then Yoruba on GPU 0 and Pidgin on GPU 1 in parallel, then the test pool with base-forced and fine-tuned-forced models. **Malik starts it from the editor (HF_TOKEN), issue #10.** Then: `kaggle_log.py --save results/asrft`, `python scripts/asr_compare.py --base data/private/kaggle/asr-base-forced.jsonl --candidate data/private/kaggle/asr-ft-forced.jsonl --out results/asr/ft-vs-base.json`. Models are saved in the run's `/kaggle/working/asr-ft/{yo,pcm}` (download with `kaggle kernels output`).
+
 ## Right now (handoff, 2 Oct ~20:00 WAT, session 6)
 **Done in session 6 (2 Oct):**
 - **Kaggle `trainprep` run complete** (read 2 Oct; `results/trainprep/`):
