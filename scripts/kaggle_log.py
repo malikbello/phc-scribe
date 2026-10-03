@@ -70,17 +70,25 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--slug", default=KERNEL_SLUG)
     parser.add_argument("--save", type=Path, help="directory to write <name>.report.json files")
+    parser.add_argument(
+        "--tail", type=int, default=0, help="also print the log's last N lines (files left out)"
+    )
     args = parser.parse_args()
 
     status, text = fetch(args.slug)
     print(f"status: {status}")
     for line in text.splitlines():
         if (
-            line.startswith(("=== INVALID", "=== BELEBELE", "=== TEACHER"))
+            line.startswith(
+                ("=== INVALID", "=== BELEBELE", "=== TEACHER", "=== MEMBER", "=== COMMITTEE")
+            )
             or "secret not attached" in line
             or line.startswith("run failed")
         ):
             print(line)
+    if args.tail:
+        plain = re.sub(r"=== FILE (\S+) ===\n.*?\n=== END FILE ===", r"[file \1]", text, flags=re.S)
+        print("\n".join(plain.splitlines()[-args.tail :]))
     found = reports(text)
     for name, rep in found.items():
         overall = rep.get("overall", {})

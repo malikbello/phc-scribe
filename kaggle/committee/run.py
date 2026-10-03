@@ -33,10 +33,15 @@ BATCH = 8
 
 def unpack() -> None:
     bundles = glob.glob("/kaggle/input/**/phc-scribe.tar.gz", recursive=True)
-    if not bundles:
+    if bundles:
+        with tarfile.open(bundles[0]) as tar:
+            tar.extractall(SRC, filter="data")
+        return
+    # Kaggle usually unpacks the archive when it builds the dataset version.
+    trees = glob.glob("/kaggle/input/**/phc-scribe/pyproject.toml", recursive=True)
+    if not trees:
         sys.exit("code bundle not found under /kaggle/input: attach the phc-scribe-code dataset")
-    with tarfile.open(bundles[0]) as tar:
-        tar.extractall(SRC, filter="data")
+    shutil.copytree(Path(trees[0]).parent, REPO)
 
 
 def sh(*args: str) -> int:
