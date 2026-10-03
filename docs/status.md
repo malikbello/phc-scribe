@@ -58,11 +58,21 @@ _Last updated: 2 Oct 2026, ~20:00 WAT (session 6). Keep this file current; it is
   - teacher check not uploaded yet.
 
   The benchmark needs 720 labels by about 8 Oct, so about 60 a day per labeller from 3 Oct.
+- **Run A built, 3 Oct (ready to run; Kaggle `PLAN = "asr"`, needs HF_TOKEN, start from the editor):**
+  - `bench/asr_run.py` transcribes 1,060 clips: 460 training clips and the 600-clip test pool. Only the parquet row groups holding a target are read; shard reads retry.
+  - `bench/two_view.py` builds the ASR view of each teacher clip, with evidence moved onto the ASR words.
+  - `build_train_set.py --asr` adds those views.
+  - **Verified locally on 2 test-pool Pidgin clips:** both found among 86 shards and transcribed.
+  - **WER vs human transcript: 42.7% and 55.7%.** Only 2 clips, but a warning: Pidgin goes through NCAIR1's Nigerian-accented English model, so the ASR-input condition will be much harder. Run A gives the real per-language WER over all clips, which is a reportable validation result.
+  - **After Run A:** `python scripts/kaggle_log.py --save results/asr` restores `data/private/kaggle/asr.jsonl`.
+- **Test queue recovered:** `data/private/label_queue.s4w.jsonl` (600) and `label_queue.s4w-cal.jsonl` (20) were in Malik's Downloads (1 Oct 19:52, the files he uploaded). They are now in `data/private/` on the laptop, so the stage-1 freeze can run from here.
+  - Checked: 300 yo + 300 pcm, 35 speakers, no hints, no overlap with the practice set.
+  - The review app's database tokens are Vercel "sensitive" variables and cannot be read back, so item-by-item verification against the app is not possible. The counts and the file's provenance match.
 - **Still to build:**
-  - Run A (N-ATLaS ASR over the training audio, two views, evidence re-located);
   - the stage-2 pair builder and DPO trainer;
   - the scaled merge, GGUF and imatrix;
-  - the Yoruba perplexity proxy for choosing the scale.
+  - the Yoruba perplexity proxy for choosing the scale;
+  - per-language ASR WER reporting after Run A.
 
 **Done in session 5:**
 - **Results and settings:**
