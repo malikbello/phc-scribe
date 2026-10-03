@@ -97,7 +97,15 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
   - teacher check not uploaded yet.
 
   The benchmark needs 720 labels by about 8 Oct, so about 60 a day per labeller from 3 Oct.
-- **Run A built, 3 Oct (ready to run; Kaggle `PLAN = "asr"`, needs HF_TOKEN, start from the editor):**
+- **Run A done, 3 Oct (Kaggle version 15; restored to `data/private/kaggle/asr.jsonl`, 1,060 clips, no empty outputs).** Base N-ATLaS ASR, language auto-detected as released, pooled WER vs WazobiaSpeech human transcripts (`results/asr/base-wer.20261003.json`):
+
+  | Language (model) | Test pool | Training clips |
+  |---|---|---|
+  | Pidgin (NigerianAccentedEnglish) | **51.1%** (300 clips, 1.17 h) | 53.1% (242 clips) |
+  | Yoruba (Yoruba-ASR) | **44.7%** (300 clips, 1.36 h) | 36.1% (218 clips) |
+
+  About one word in two is wrong on Pidgin and nearly one in two on Yoruba, so the ASR-input condition is much harder than the transcript condition. This is the evidence for ADR-0026 (health-domain ASR fine-tune; proposed, needs Malik's approval). Next on Kaggle: `PLAN = "checks"` (repetition penalty 1.12 on the pilot items, and auto vs forced language on 30 training clips per language).
+- **Run A build notes:**
   - `bench/asr_run.py` transcribes 1,060 clips: 460 training clips and the 600-clip test pool. Only the parquet row groups holding a target are read; shard reads retry.
   - `bench/two_view.py` builds the ASR view of each teacher clip, with evidence moved onto the ASR words.
   - `build_train_set.py --asr` adds those views.
@@ -111,7 +119,6 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
   - the stage-2 pair builder and DPO trainer;
   - the scaled merge, GGUF and imatrix;
   - the Yoruba perplexity proxy for choosing the scale;
-  - per-language ASR WER reporting after Run A.
 
 **Done in session 5:**
 - **Results and settings:**

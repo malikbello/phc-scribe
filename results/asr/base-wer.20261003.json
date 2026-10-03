@@ -1,0 +1,39 @@
+{
+  "run": "Run A (ADR-0024), Kaggle notebook version 15, 3 Oct 2026",
+  "models": {
+    "yo": "NCAIR1/Yoruba-ASR",
+    "pcm": "NCAIR1/NigerianAccentedEnglish"
+  },
+  "decoding": "transformers pipeline, chunk 30 s, language auto-detected (as released)",
+  "metric": "pooled WER over folded text (bench/wer.py) vs WazobiaSpeech human transcripts",
+  "results": {
+    "pcm/test_pool": {
+      "clips": 300,
+      "errors": 4956,
+      "reference_words": 9708,
+      "audio_hours": 1.17,
+      "wer": 0.5105
+    },
+    "pcm/train": {
+      "clips": 242,
+      "errors": 5783,
+      "reference_words": 10899,
+      "audio_hours": 1.31,
+      "wer": 0.5306
+    },
+    "yo/test_pool": {
+      "clips": 300,
+      "errors": 4231,
+      "reference_words": 9473,
+      "audio_hours": 1.36,
+      "wer": 0.4466
+    },
+    "yo/train": {
+      "clips": 218,
+      "errors": 1744,
+      "reference_words": 4833,
+      "audio_hours": 0.73,
+      "wer": 0.3609
+    }
+  }
+}

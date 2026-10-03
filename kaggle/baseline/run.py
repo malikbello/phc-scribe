@@ -42,7 +42,7 @@ RUNS: list[tuple[str, str, str, list[str]]] = [
 # (dev) items with the model card's repetition penalty 1.12, against the recorded run without
 # it; the eval plan keeps the more generous base comparator. (2) N-ATLaS ASR with each model's
 # language forced vs auto-detected, on training clips, WER against the dataset transcripts.
-PLAN = "asr"
+PLAN = "checks"
 ITEM_SETS = {
     "baseline": ["tests/fixtures/smoke_items.jsonl", "data/bench/g.20261002.jsonl"],
     "pilot": ["data/bench/pilot.20261004.jsonl"],
