@@ -5,7 +5,7 @@
         [--drop-concepts c1,c2]            # from scripts/teacher_check.py score
         [--phrasebank data/train/phrasebank.rare.v0.yaml] \
         [--asr data/private/kaggle/asr.jsonl]   # Run A: the ASR view of teacher clips
-        --out data/train/sft.v1.jsonl      # also writes sft.v1.dev.jsonl
+        --out data/train/sft.v1.jsonl      # also sft.v1.dev.jsonl and sft.v1.dev.items.jsonl
 
 Refuses to run before the test set is frozen (scripts/freeze_test_set.py) or if a frozen
 file changed. Then, in this order:
@@ -31,7 +31,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "serve"), str(ROOT)]
 
 from bench.freeze import load_frozen_items  # noqa: E402
-from bench.items import BenchItem, read_jsonl  # noqa: E402
+from bench.items import BenchItem, read_jsonl, write_jsonl  # noqa: E402
 from bench.sft import build  # noqa: E402
 from bench.train_data import (  # noqa: E402
     audit_teacher,
@@ -100,8 +100,12 @@ def main() -> int:
     dev_path = args.out.with_name(args.out.stem + ".dev.jsonl")
     write(args.out, train)
     write(dev_path, dev)
+    # The same dev items in benchmark form, for scoring with bench.harness (dev only).
+    kept_dev = {e["item_id"] for e in dev}
+    dev_items_path = args.out.with_name(args.out.stem + ".dev.items.jsonl")
+    write_jsonl(dev_items_path, [i for i in dev_items if i.item_id in kept_dev])
     print(f"{len(train)} training examples -> {args.out}")
-    print(f"{len(dev)} dev examples -> {dev_path}")
+    print(f"{len(dev)} dev examples -> {dev_path} (items: {dev_items_path})")
     print(f"{len(dropped_train) + len(dropped_dev)} dropped for overlapping the test set")
     return 0
 
