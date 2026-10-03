@@ -80,7 +80,15 @@ def main() -> int:
     for line in text.splitlines():
         if (
             line.startswith(
-                ("=== INVALID", "=== BELEBELE", "=== TEACHER", "=== MEMBER", "=== COMMITTEE")
+                (
+                    "=== INVALID",
+                    "=== BELEBELE",
+                    "=== TEACHER",
+                    "=== MEMBER",
+                    "=== COMMITTEE",
+                    "=== ASR",
+                    "=== WER",
+                )
             )
             or "secret not attached" in line
             or line.startswith("run failed")

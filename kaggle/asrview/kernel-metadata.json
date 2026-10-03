@@ -1,0 +1,15 @@
+{
+  "id": "bellomalik/phc-scribe-asrview",
+  "title": "phc-scribe-asrview",
+  "code_file": "run.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": true,
+  "machine_shape": "NvidiaTeslaT4",
+  "dataset_sources": ["bellomalik/phc-scribe-code"],
+  "competition_sources": [],
+  "kernel_sources": ["bellomalik/phc-scribe-baseline"],
+  "model_sources": []
+}
