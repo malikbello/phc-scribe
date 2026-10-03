@@ -1,6 +1,6 @@
 # ADR-0025: Committee pre-labelling, risk-based human review and stratified PPI for the benchmark
 
-- **Status:** Proposed, 3 Oct 2026. Needs Malik's approval (and Rahmat's view) before use.
+- **Status:** Accepted by Malik, 3 Oct 2026: "the best way to do this without having to rely on people". Labellers: Malik, Rahmat and Success (the two nurses who completed the clinical sign-off).
 - **Date:** 2026-10-03
 - **Changes:** how the counted benchmark's gold labels are produced (ADR-0016 §4, ADR-0018, eval plan §4). The stage-1 freeze (items, ADR-0022) is unaffected; the stage-2 freeze (labels) applies to the result.
 
@@ -27,14 +27,16 @@
 2. **Two strata, fixed before the committee runs:**
    - **A, human review:** any member reports a danger sign (present or possible), or the members disagree on the set of findings, or any member's output is invalid or ungrounded.
    - **B, committee consensus:** all three agree exactly, with no danger sign.
-3. **Humans label:**
-   - **every stratum-A clip** (with 20% double-labelled for κ, and clinical disagreements settled by Rahmat, as now);
-   - **a uniform random audit sample of stratum B:** 20%, at least 60 clips.
+3. **Humans label a stratified random sample, not every hard clip** (Malik's decision, 3 Oct):
+   - **from stratum A:** a random 120 clips, or all of A if it is smaller;
+   - **from stratum B:** a random 60 clips;
+   - 20% of the sample double-labelled for κ; Rahmat settles clinical disagreements.
+   - About 220 labels in total, roughly 70 each for Malik, Rahmat and Success.
 
-   **Blind:** the committee's answers are never shown to labellers.
+   **Blind:** the committee's answers are never shown to labellers. **The sample is random within each stratum,** drawn with a fixed seed before anyone labels, so the PPI estimates stay unbiased.
 4. **Gold:**
-   - human labels for stratum A and the audit sample;
-   - committee consensus for the rest of B.
+   - **for every clip,** the committee's majority answer;
+   - **for sampled clips,** the human answer, which always overrides it.
 
    Every gold label records its source.
 5. **Estimation, pre-registered here:**
@@ -45,7 +47,10 @@
 7. **Disclosure:** the benchmark card reports how many gold labels are human, how many are committee-labelled and audited, and the audit's results.
 
 ## Consequences
-- **Human labelling falls from 720 labels to roughly the size of stratum A plus the audit.** That's an estimated 300–430 labels if 35–50% of clips land in A (the enriched sampling puts many danger signs in A). The real figure is known as soon as the committee runs.
+- **Human labelling falls from 720 labels to about 220,** spread over three people who have already shown they deliver.
+- **Statistical guarantee:** stratified PPI uses the random human sample to correct the committee's labels, so the estimates and confidence intervals are valid whatever the committee gets wrong. Fewer human labels mean wider intervals, which is the honest price.
+  - The sample size per stratum can grow if the intervals are too wide to decide P1.
+  - Stratum A gets most of the sample because the committee is least reliable there.
 - **Human time goes to the clips that decide the safety metric:** any possible danger sign, and any disagreement.
 - **Labels already given in the review app are kept:** a human label always overrides the committee.
 - **Cost:** about 3 GPU hours on Kaggle on 4 Oct.

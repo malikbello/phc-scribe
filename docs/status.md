@@ -1,9 +1,48 @@
 # Project status and working agreement
 
-_Last updated: 2 Oct 2026, ~20:00 WAT (session 6). Keep this file current; it is the handoff between work sessions._
+_Last updated: 3 Oct 2026, afternoon WAT (session 6). Keep this file current; it is the handoff between work sessions._
 
 ## Resume prompt (paste this into a new session)
 > Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`, branch `main`) and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution (the `.githooks/commit-msg` guard rejects "claude", co-author or session lines), no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results. Run `./scripts/ci_local.sh` before every push. Start from "Right now" and "Next steps, in order". Keep only truly human tasks human (labelling, clinical decisions, my approvals); automate the rest robustly. Ask me before anything outward-facing or irreversible (the freeze included). Update this file and the resume prompt at the end of every work block.
+
+## Plan to win (agreed 3 Oct, session 6). Submission target 11 Oct; deadline 12 Oct 23:59 WAT
+Malik: "innovate… let us win the hackathon with bright and shining colours"; "the best way without having to rely on people". Labellers: Malik, Rahmat, Success.
+
+**What wins, mapped to the judging criteria (`docs/naic-requirements.md`):**
+1. **Working artefact and rigour:**
+   - Takada (phone, hub, cloud) running the fine-tuned Q4 N-ATLaS offline on the laptop;
+   - a pre-registered benchmark with frozen tests;
+   - committee labels with stratified PPI (ADR-0025).
+2. **N-ATLaS integration:** both N-ATLaS models are fine-tuned: the LLM (ADR-0024) and the ASR (ADR-0026, proposed); N-ATLaS ASR feeds the LLM end to end.
+3. **Real-world validation:**
+   - 600 real speech clips;
+   - 538 real Uyo records for the rules;
+   - a short real-user pilot with the nurses (usability and time per record, 9 Oct).
+4. **Impact:** maternal danger signs caught offline, in Yoruba and Pidgin, on cheap phones.
+5. **Scalability:** hub and cloud architecture, Kubernetes, language packs.
+6. **Team:** named nurses, a doctor, a pharmacist; clinical sign-off with a traceability matrix.
+
+**Timeline:**
+| Day | Work |
+|---|---|
+| 3 Oct (Sat) | Run A finishes → push `checks` (repetition penalty, ASR language) → build the committee labelling job (ADR-0025) → apply the nurses' sign-off (traceability matrix) → G1 decision → build the ASR fine-tune (if ADR-0026 is approved) |
+| 4 Oct | `checks` results → committee run (3 models × 600) → strata, seeded sample uploaded to the review app → Malik, Rahmat and Success label about 70 each over 4–7 Oct → ASR fine-tune run |
+| 5 Oct | Stage-1 freeze (Malik's "yes") → training set → runs B and C |
+| 6 Oct | Dev evaluation → stage 2 (DPO) if needed |
+| 7 Oct | Scale, merge, GGUF + imatrix, laptop latency → ASR evaluation |
+| 8 Oct | Labels settled → stage-2 freeze → final scoring (base vs fine-tuned Q4, all strata, Belebele G2, audio condition) |
+| 9 Oct | Real-user pilot with the nurses on Takada + hub → demo recording |
+| 10 Oct | Benchmark report, model and dataset cards, technical docs, video edit |
+| 11 Oct | Clean submission repo, submit |
+
+GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
+
+**Nurses' clinical sign-off (exported 3 Oct to `data/private/review/clinical-review.20261003.json`):**
+- Rahmat and Success: 131/131 each; both "ok" on 89 items; 42 need a decision.
+- **G1 (false alarms):** both reject the +5-point tolerance. Success: "unnecessary referrals should be avoided totally". Rahmat: "every alarm should be verified before referral". **Proposed: tighten G1 to +2 points** (Malik decides before the freeze). The product already makes the nurse confirm every flag.
+- **BP:** "14/9 doesn't mean 140/90". Shorthand or incomplete BP is never acted on and is flagged for recheck (both nurses, Q3/Q4).
+- **Uyo mapping:** both answered with specific mappings, so the ADR-0019 check can now run with `--confirmed-by`.
+- **Phrases, guide and rules:** 31 change requests, mostly local and lay phrasings (e.g. "running temperature", "serious stomach pain", "spotting", "pale +++", ">3 vomits a day") and follow-up tests (urinalysis every visit; PCV with bleeding). To be applied via a traceability matrix (each note → applied, or declined with a reason).
 
 ## Right now (handoff, 2 Oct ~20:00 WAT, session 6)
 **Done in session 6 (2 Oct):**
