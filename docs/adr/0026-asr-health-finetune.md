@@ -1,6 +1,6 @@
 # ADR-0026: Fine-tune N-ATLaS ASR on Yoruba and Pidgin speech (health-domain evaluation)
 
-- **Status:** Accepted by Malik, 3 Oct 2026 ("Yes, let us do this"). Baseline from Run A: test-pool WER 51.1% Pidgin, 44.7% Yoruba (`results/asr/base-wer.20261003.json`).
+- **Status:** Accepted by Malik, 3 Oct 2026; **done, ships** (result below) ("Yes, let us do this"). Baseline from Run A: test-pool WER 51.1% Pidgin, 44.7% Yoruba (`results/asr/base-wer.20261003.json`).
 - **Date:** 2026-10-03
 - **Changes:** adds a second fine-tuned N-ATLaS component. Architecture §6 fine-tuned the LLM only; ASR used the NCAIR1 models as released.
 
@@ -27,6 +27,26 @@
    - also the end-to-end benchmark with ASR input (eval plan, S4 audio condition).
 5. **Ship rule:** the fine-tuned ASR replaces the base model in the hub and API only if its test WER is better with the CI excluding zero. Otherwise the base model stays, and the result is reported.
 6. **Naming and licence:** published gated, as "N-ATLaS ASR Health (yo, pcm) · Powered by Awarri", under the N-ATLaS Terms.
+
+## Result (3 Oct 2026, Kaggle; `results/asr/ft-vs-base.20261003.json`)
+- **Training:**
+  - Yoruba: 10,052 clips (21.5 h, 352 speakers);
+  - Pidgin: 11,331 clips (23.9 h, 650 speakers);
+  - 2 epochs each, one T4 per language, about 50 min each.
+- **Test pool** (600 clips, 35 speakers, language forced for both models; 95% paired bootstrap over speakers):
+
+  | Language | Base WER | Fine-tuned WER | Difference [95% CI] | Base CER → fine-tuned |
+  |---|---|---|---|---|
+  | Pidgin | 51.1% | **24.8%** | −26.3 points [−32.4, −20.2] | 28.8% → 15.8% |
+  | Yoruba | 44.7% | **38.0%** | −6.7 points [−13.7, −2.7] | 26.1% → 23.0% |
+
+- **Ship rule met for both languages** (the CI excludes zero). The fine-tuned models replace the base models in the hub and API.
+- **Forgetting check** (held-out training speakers, 400 clips per language):
+  - Pidgin non-health speech: 47.9% → 16.3%;
+  - Yoruba non-health speech: 41.1% → 29.1%.
+
+  General speech improved too.
+- **Language forcing makes no difference to the base models:** on 30 training clips per language, auto-detected and forced decoding gave identical WER (Pidgin 58.5%, Yoruba 42.5%).
 
 ## Consequences
 - **Upside:**

@@ -45,6 +45,16 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 - **Phrases, guide and rules:** 31 change requests, mostly local and lay phrasings (e.g. "running temperature", "serious stomach pain", "spotting", "pale +++", ">3 vomits a day") and follow-up tests (urinalysis every visit; PCV with bleeding). To be applied via a traceability matrix (each note → applied, or declined with a reason).
 
 ## Right now (handoff, 3 Oct ~20:00 WAT, session 7)
+**Results, 3 Oct night (Kaggle v17, `checks_asrft`, started by Malik):**
+- **ADR-0026 ships.** The fine-tuned N-ATLaS ASR cuts test-pool WER:
+  - Pidgin: 51.1% → **24.8%** (−26.3 points [−32.4, −20.2]);
+  - Yoruba: 44.7% → **38.0%** (−6.7 points [−13.7, −2.7]).
+
+  Details in ADR-0026 and `results/asr/ft-vs-base.20261003.json`. Models downloaded to `data/private/models/asrft-20261003/` (not in git). Publishing to HF (gated, "Powered by Awarri") waits for Malik's approval.
+- **Repetition-penalty check:** base N-ATLaS with 1.12 does better on the pilot items (recall 0.80, 29/30 valid; was 0.60, 24/30). Per the pre-registered rule, **the primary base comparator and the fine-tuned model decode with 1.12** (eval plan §6).
+- **ASR language forcing:** no effect (identical WER auto vs forced).
+- Log noise: a non-fatal `KeyError: 'event_id'` traceback appears several times (a background thread); every step completed.
+
 **Malik's decisions, 3 Oct:** ADR-0026 (ASR fine-tune) **accepted**; G1 tightened to **+2 points** (eval plan §6), as both nurses asked; reviews he holds are open issues (#8 phrase bank, #9 teacher check, #10 start the Kaggle run); he will say when he wants to do them, and Claude guides.
 
 **Kaggle:**

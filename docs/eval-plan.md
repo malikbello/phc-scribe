@@ -88,6 +88,10 @@ Reported per stratum, per language and per field, each with 95% bootstrap CIs.
     - The primary base comparator uses 1.12 if, on the pilot items, its danger-sign recall is at least as high as without it and its schema-valid count is no lower. Otherwise it stays at 1.0.
     - Either way, the other setting is reported as a supplementary comparator, and the fine-tuned model is decoded with the same setting as the primary comparator.
     - This follows the principle above: the base model gets the more generous comparator.
+    - **Measured 3 Oct (Kaggle, 30 pilot items; `results/checks-asrft/`):**
+      - with 1.12: danger-sign recall **0.80** and **29/30** schema-valid;
+      - without it (1 Oct): recall 0.60 and 24/30 valid.
+      - **Rule met: the primary base comparator, and the fine-tuned model, decode with repetition penalty 1.12.** The 1.0 run is reported as supplementary.
 - **If any criterion fails, it is reported as failed.** No post-hoc metric switching.
 
 ## 7. Analysis hygiene

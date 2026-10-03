@@ -1,0 +1,37 @@
+{
+  "base": "asr-base-forced.jsonl",
+  "candidate": "asr-ft-forced.jsonl",
+  "metric": "pooled WER/CER, folded text (bench/wer.py); 95% paired bootstrap over speakers",
+  "languages": {
+    "pcm": {
+      "clips": 300,
+      "speakers": 19,
+      "base_wer": 0.5105,
+      "base_cer": 0.2882,
+      "candidate_wer": 0.2476,
+      "candidate_cer": 0.1583,
+      "wer_diff": {
+        "point": -0.2629,
+        "low": -0.3244,
+        "high": -0.2022
+      },
+      "relative_wer_reduction": 0.515,
+      "ship": true
+    },
+    "yo": {
+      "clips": 300,
+      "speakers": 16,
+      "base_wer": 0.4466,
+      "base_cer": 0.2611,
+      "candidate_wer": 0.3796,
+      "candidate_cer": 0.2295,
+      "wer_diff": {
+        "point": -0.067,
+        "low": -0.1374,
+        "high": -0.0266
+      },
+      "relative_wer_reduction": 0.15,
+      "ship": true
+    }
+  }
+}
