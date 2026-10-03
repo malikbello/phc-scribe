@@ -1,0 +1,173 @@
+"""Run A (ADR-0024): N-ATLaS ASR over WazobiaSpeech clips, on Kaggle.
+
+    python -m bench.asr_run --targets data/asr/targets.v1.jsonl --out preds/asr.jsonl
+
+Targets are public clip ids only ({audio_id, language, split}); no labels and no private
+text travel to Kaggle. For each split the job opens the parquet shards over HTTP, reads the
+`audio_id` column, and downloads the audio only for the row groups that hold a target, so it
+never pulls whole splits (each shard is ~500 MB). Audio is decoded (WAV, 48 kHz), resampled
+to 16 kHz and transcribed with the NCAIR1 model for its language (serve/phc_scribe/api/asr.py:
+Yoruba-ASR for yo, NigerianAccentedEnglish for pcm). The NCAIR1 models are gated: HF_TOKEN.
+
+Writes one JSON line per clip: audio_id, language, split, model, text, seconds. Prints counts
+and timing only, never transcript text.
+"""
+
+from __future__ import annotations
+
+import argparse
+import io
+import json
+import time
+from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
+from math import gcd
+from pathlib import Path
+
+from bench.wazobia import DATASETS, _shards, spread
+
+TARGET_RATE = 16_000
+# Training clips were sampled from 40 evenly spaced shards (bench.teacher fetch); test-pool
+# clips may come from any shard of their split.
+TRAIN_SHARDS = 40
+# A target's split names the shards to search. The test pool (ADR-0018) is dev + dev_test,
+# and the label queue does not record which of the two a clip came from.
+SPLITS = {"train": ["train"], "dev_pool": ["dev", "dev_test"]}
+
+
+def resample(samples, rate: int, target: int = TARGET_RATE):
+    import numpy as np
+    from scipy.signal import resample_poly  # pyright: ignore[reportMissingImports]
+
+    x = np.asarray(samples, dtype=np.float32)
+    if x.ndim > 1:
+        x = x.mean(axis=1)  # stereo -> mono
+    if rate == target:
+        return x
+    g = gcd(rate, target)
+    return resample_poly(x, target // g, rate // g).astype(np.float32)
+
+
+def shard_hits(fs, path: str, wanted: set[str]) -> list[tuple[str, bytes]]:
+    """(audio_id, encoded audio) for every wanted clip in one shard, reading only the row
+    groups that contain one."""
+    import pyarrow.parquet as pq
+
+    with fs.open(path, "rb", block_size=2**20) as f:
+        pf = pq.ParquetFile(f)
+        ids = pf.read(columns=["audio_id"]).column(0).to_pylist()
+        hit_rows = {i for i, a in enumerate(ids) if a in wanted}
+        if not hit_rows:
+            return []
+        out, start = [], 0
+        for rg in range(pf.num_row_groups):
+            n = pf.metadata.row_group(rg).num_rows
+            if any(start <= i < start + n for i in hit_rows):
+                table = pf.read_row_group(rg, columns=["audio_id", "audio_path"]).to_pylist()
+                out += [
+                    (r["audio_id"], r["audio_path"]["bytes"])
+                    for r in table
+                    if r["audio_id"] in wanted
+                ]
+            start += n
+        return out
+
+
+def shard_hits_retrying(
+    fs, path: str, wanted: set[str], attempts: int = 4
+) -> list[tuple[str, bytes]]:
+    """shard_hits with exponential backoff: a transient HTTP or read error on one shard must
+    not end the run. A shard that keeps failing is reported, and its clips count as missing."""
+    for attempt in range(attempts):
+        try:
+            return shard_hits(fs, path, wanted)
+        except Exception as exc:  # network and parquet errors vary
+            if attempt == attempts - 1:
+                name = path.rsplit("/", 1)[-1]
+                print(
+                    f"=== ASR shard failed after {attempts} tries: {name}: {type(exc).__name__}",
+                    flush=True,
+                )
+                return []
+            time.sleep(2**attempt * 3)
+    return []
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--targets", type=Path, required=True)
+    parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--workers", type=int, default=8)
+    parser.add_argument("--limit", type=int, default=0, help="for smoke tests only")
+    args = parser.parse_args()
+
+    import soundfile as sf  # pyright: ignore[reportMissingImports]
+    from huggingface_hub import HfFileSystem
+
+    from phc_scribe.api.asr import HfWhisperTranscriber
+
+    targets = [
+        json.loads(line) for line in args.targets.read_text(encoding="utf-8").splitlines() if line
+    ]
+    if args.limit:
+        targets = targets[: args.limit]
+    groups: dict[tuple[str, str], set[str]] = defaultdict(set)
+    for t in targets:
+        groups[(t["language"], t["split"])].add(t["audio_id"])
+
+    fs = HfFileSystem()
+    asr = HfWhisperTranscriber()
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    done: set[str] = set()
+    t0 = time.time()
+    audio_seconds = 0.0
+    with args.out.open("w", encoding="utf-8") as out, ThreadPoolExecutor(args.workers) as pool:
+        for (lang, split), wanted in sorted(groups.items()):
+            repo, revision = DATASETS[lang]  # pyright: ignore[reportArgumentType]
+            paths = [p for s in SPLITS[split] for p in _shards(fs, repo, revision, s)]
+            if split == "train":
+                paths = spread(paths, TRAIN_SHARDS)
+            model = asr.model_for(lang)
+            found = 0
+            for hits in pool.map(lambda p, w=wanted: shard_hits_retrying(fs, p, w), paths):
+                for audio_id, data in hits:
+                    if audio_id in done:
+                        continue
+                    samples, rate = sf.read(io.BytesIO(data))
+                    x = resample(samples, rate)
+                    audio_seconds += len(x) / TARGET_RATE
+                    text = asr.transcribe(x, lang)  # pyright: ignore[reportArgumentType]
+                    out.write(
+                        json.dumps(
+                            {
+                                "audio_id": audio_id,
+                                "language": lang,
+                                "split": split,
+                                "model": model,
+                                "text": text,
+                                "seconds": round(len(x) / TARGET_RATE, 2),
+                            },
+                            ensure_ascii=False,
+                        )
+                        + "\n"
+                    )
+                    out.flush()
+                    done.add(audio_id)
+                    found += 1
+            print(
+                f"=== ASR {lang}/{split}: {found} of {len(wanted)} clips from {len(paths)} shards"
+                f" ({time.time() - t0:.0f}s elapsed)",
+                flush=True,
+            )
+    missing = len(targets) - len(done)
+    print(
+        f"=== ASR done: {len(done)} clips, {audio_seconds / 60:.1f} min of audio,"
+        f" {missing} missing,"
+        f" {time.time() - t0:.0f}s",
+        flush=True,
+    )
+    return 0 if not missing else 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

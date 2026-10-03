@@ -4,15 +4,19 @@
         --teacher data/private/kaggle/teacher.kept.jsonl \
         [--drop-concepts c1,c2]            # from scripts/teacher_check.py score
         [--phrasebank data/train/phrasebank.rare.v0.yaml] \
-        --out data/train/sft.v0.jsonl      # also writes sft.v0.dev.jsonl
+        [--asr data/private/kaggle/asr.jsonl]   # Run A: the ASR view of teacher clips
+        --out data/train/sft.v1.jsonl      # also writes sft.v1.dev.jsonl
 
 Refuses to run before the test set is frozen (scripts/freeze_test_set.py) or if a frozen
 file changed. Then, in this order:
 1. teacher labels: the definitional audit (looks_very_ill cannot come from patient
    speech), then whole items with a concept the teacher check dropped;
-2. the phrase bank, only once approved, capped at 15% of the set;
-3. drops any item that shares a group with, duplicates or nearly duplicates a test item;
-4. splits off a dev set by speaker/group (15%). Every recipe decision is made on dev.
+2. the ASR view of each teacher clip (Run A), evidence moved onto the ASR words; a clip
+   whose quotes cannot all be found gets no ASR view (bench/two_view.py);
+3. the phrase bank, only once approved, capped at 15% of the set;
+4. drops any item that shares a group with, duplicates or nearly duplicates a test item;
+5. splits off a dev set by speaker/group (15%); both views of a clip share its group, so
+   they land on the same side. Every recipe decision is made on dev.
 Prints counts only.
 """
 
@@ -36,6 +40,7 @@ from bench.train_data import (  # noqa: E402
     load_phrasebank,
     split_by_group,
 )
+from bench.two_view import asr_views  # noqa: E402
 
 MANIFEST = ROOT / "data" / "bench" / "test-manifest.json"
 PHRASEBANK_SHARE = 0.15
@@ -55,6 +60,7 @@ def main() -> int:
     parser.add_argument("--teacher", type=Path, help="teacher.kept.jsonl (ADR-0021)")
     parser.add_argument("--drop-concepts", default="", help="comma-separated, from the check")
     parser.add_argument("--phrasebank", type=Path, help="approved rare-sign phrase bank (YAML)")
+    parser.add_argument("--asr", type=Path, help="Run A output: ASR text per training clip")
     parser.add_argument("--dev-frac", type=float, default=DEV_FRAC)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--manifest", type=Path, default=MANIFEST)
@@ -73,6 +79,12 @@ def main() -> int:
             before = len(teacher)
             teacher = drop_items_with(teacher, dropped)
             print(f"teacher check: dropped {before - len(teacher)} items with {dropped}")
+        if args.asr:
+            rows = [json.loads(x) for x in args.asr.read_text(encoding="utf-8").splitlines() if x]
+            asr = {r["audio_id"]: r["text"] for r in rows if r["split"] == "train"}
+            views, two = asr_views(teacher, asr)
+            print(f"ASR views: {two.model_dump()}")
+            teacher += views
         items += teacher
     if args.phrasebank:
         bank = load_phrasebank(args.phrasebank)

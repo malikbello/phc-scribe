@@ -35,12 +35,16 @@ RUNS: list[tuple[str, str, str, list[str]]] = [
 # "trainprep": teacher labels for real Yoruba/Pidgin training speech (ADR-0021), then base
 # N-ATLaS few-shot on the Adeola hard negatives (stratum H; a base run, allowed before the
 # label freeze, ADR-0022).
-PLAN = "trainprep"
+# "asr": Run A of ADR-0024. N-ATLaS ASR over the training clips and the test pool's audio
+# (public clip ids in data/asr/targets.v1.jsonl; no labels travel). Feeds the two-view
+# training data and the "audio through N-ATLaS ASR" test condition.
+PLAN = "asr"
 ITEM_SETS = {
     "baseline": ["tests/fixtures/smoke_items.jsonl", "data/bench/g.20261002.jsonl"],
     "pilot": ["data/bench/pilot.20261004.jsonl"],
     "prefreeze": ["data/bench/pilot.20261004.jsonl"],
     "trainprep": ["data/bench/h.adeola.jsonl"],
+    "asr": [],
 }[PLAN]
 TEACHER = ("llama31-fewshot", "unsloth/Llama-3.1-8B-Instruct")
 BELEBELE_MODELS = [("natlas", "NCAIR1/N-ATLaS"), ("llama31", "unsloth/Llama-3.1-8B-Instruct")]
@@ -48,6 +52,8 @@ if PLAN == "prefreeze":
     RUNS[:] = [("natlas-fewshot-unconstrained", "NCAIR1/N-ATLaS", "fewshot", ["--unconstrained"])]
 if PLAN == "trainprep":
     RUNS[:] = [("natlas-fewshot", "NCAIR1/N-ATLaS", "fewshot", [])]
+if PLAN == "asr":
+    RUNS[:] = []
 if PLAN == "pilot":
     # Dev-only check: are N-ATLaS's schema-invalid outputs cut off at the 768-token cap?
     RUNS.append(("natlas-fewshot-1536", "NCAIR1/N-ATLaS", "fewshot", ["--max-new-tokens", "1536"]))
@@ -146,13 +152,33 @@ def teacher(out: Path) -> None:
         emit_file(kept)
 
 
+def asr(out: Path) -> None:
+    """ADR-0024 Run A: transcribe the target clips with the NCAIR1 ASR models."""
+    dest = out / "asr.jsonl"
+    code = sh(
+        sys.executable,
+        "-m",
+        "bench.asr_run",
+        "--targets",
+        "data/asr/targets.v1.jsonl",
+        "--out",
+        str(dest),
+        "--workers",
+        "16",
+    )
+    if dest.exists():
+        emit_file(dest)  # even a partial result is worth keeping
+    if code != 0:
+        print(f"run failed or incomplete: asr (exit {code})", flush=True)
+
+
 def main() -> None:
     unpack()
     sh(sys.executable, "-m", "pip", "install", "-q", "xgrammar")
     token = hf_token()
     if token:
         os.environ["HF_TOKEN"] = token
-    elif PLAN in ("pilot", "prefreeze", "trainprep"):
+    elif PLAN in ("pilot", "prefreeze", "trainprep", "asr"):
         # The pilot exists to measure N-ATLaS; fail fast instead of spending GPU time without it.
         sys.exit("HF_TOKEN secret not attached: attach it (Add-ons -> Secrets) and re-run")
     else:
@@ -161,6 +187,8 @@ def main() -> None:
     out.mkdir(exist_ok=True)
     if PLAN == "trainprep":
         teacher(out)
+    if PLAN == "asr":
+        asr(out)
     if PLAN == "prefreeze":
         for name, model in BELEBELE_MODELS:
             dest = out / f"belebele.{name}.json"
