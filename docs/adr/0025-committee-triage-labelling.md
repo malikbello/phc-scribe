@@ -20,7 +20,7 @@
 ## Decision
 1. **Committee.** Three open models from different families, none of them Llama-3.1 or N-ATLaS:
    - Qwen3-14B-Instruct;
-   - Gemma-3-12B-it;
+   - Gemma-3-12B-it (replaced by Phi-4 on 3 Oct; see the amendment);
    - Mistral-Small-3.x-24B-Instruct.
 
    Each labels all 600 clips on Kaggle (free; the data never leaves our accounts), with the same prompt (prompt-v0.1 few-shot), constrained decoding and grounding check as every other system.
@@ -45,6 +45,14 @@
    - the human-only estimate (A + audit) and the uncorrected estimate are reported beside it.
 6. **Safety stop:** if the audit finds missed danger signs in stratum B, with the upper 95% bound of that miss rate above 5%, humans label all of stratum B before the stage-2 freeze.
 7. **Disclosure:** the benchmark card reports how many gold labels are human, how many are committee-labelled and audited, and the audit's results.
+
+## Amendment, 3 Oct 2026 (before any counted run)
+- **Phi-4 (14B, Microsoft, MIT) replaces Gemma-3-12B.** The smoke run (16 items per model, Kaggle T4 ×2) showed:
+  - the pre-quantised 4-bit checkpoints compute in bfloat16, which a T4 only emulates (30–50 s per item); the runner now computes in float16 on GPUs without native bfloat16;
+  - Gemma 3 is known to overflow in float16, so it cannot use that fix on a T4;
+  - Phi-4 gave schema-valid output on 16 of 16 items.
+- The committee is still three families (Qwen, Microsoft Phi, Mistral), none of them Llama-3.1 or N-ATLaS.
+- **Rules made exact before the full run** (`bench/committee.py`): stratum A also covers disagreement on blood pressure or gestational-age weeks, which are scored too; the committee gold is the 2-of-3 answer field by field; sample seed 20261009.
 
 ## Consequences
 - **Human labelling falls from 720 labels to about 220,** spread over three people who have already shown they deliver.

@@ -194,6 +194,12 @@ def hf_generator(
 
         model = PeftModel.from_pretrained(model, adapter)
     model.eval()
+    # Pre-quantised 4-bit checkpoints often compute in bfloat16, which a T4 (compute
+    # capability 7.5) only emulates, about 10x slower. Compute in float16 there instead.
+    if torch.cuda.is_available() and torch.cuda.get_device_capability()[0] < 8:
+        for module in model.modules():
+            if getattr(module, "compute_dtype", None) == torch.bfloat16:
+                module.compute_dtype = torch.float16
 
     config = AutoConfig.from_pretrained(model_id, revision=revision)
     # Multimodal configs (Gemma 3) keep the vocabulary on the text config.
@@ -319,12 +325,32 @@ def main() -> int:
         repetition_penalty=args.repetition_penalty,
     )
     if args.batch_size > 1:
-        preds = run_batched(
-            items, generate_batch, system, args.mode, args.batch_size, lenient=args.unconstrained
-        )
+        # Written as it goes, so a job stopped at its time limit keeps what it has done.
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text("", encoding="utf-8")
+        preds = []
+        step = args.batch_size * 8
+        for start in range(0, len(items), step):
+            chunk = run_batched(
+                items[start : start + step],
+                generate_batch,
+                system,
+                args.mode,
+                args.batch_size,
+                lenient=args.unconstrained,
+            )
+            with args.out.open("a", encoding="utf-8") as f:
+                for row in chunk:
+                    f.write(
+                        json.dumps(
+                            row.model_dump(mode="json", exclude_none=True), ensure_ascii=False
+                        )
+                        + "\n"
+                    )
+            preds += chunk
     else:
         preds = run(items, generate, system, args.mode, lenient=args.unconstrained)
-    write_jsonl(args.out, preds)
+        write_jsonl(args.out, preds)
     ok = sum(p.record is not None for p in preds)
     print(f"wrote {len(preds)} predictions ({ok} schema-valid) to {args.out}")
     return 0

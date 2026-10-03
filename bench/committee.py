@@ -52,17 +52,18 @@ QUORUM = 2  # of 3 members
 
 # Members (ADR-0025): three families, none of them Llama-3.1 (the training-label teacher)
 # or N-ATLaS (the system under test). Pre-quantised 4-bit copies so each fits a Kaggle T4
-# pair; revisions pinned 3 Oct 2026.
-MEMBERS: dict[str, tuple[str, str]] = {
-    "qwen3-14b": ("unsloth/Qwen3-14B-bnb-4bit", "b455922269e4678c84f854fe38a6993d73614a1e"),
-    "gemma3-12b": ("unsloth/gemma-3-12b-it-bnb-4bit", "826e729dbaeea4ecb143738eed2bcf3539ebf7bf"),
+# pair; revisions pinned 3 Oct 2026. Phi-4 replaced Gemma-3-12B after the 3 Oct smoke run:
+# a T4 has no native bfloat16, and Gemma 3 overflows in float16 (ADR-0025, amendment).
+# name -> (repo, revision, batch size); the 24B model needs smaller batches on a T4.
+MEMBERS: dict[str, tuple[str, str, int]] = {
+    "qwen3-14b": ("unsloth/Qwen3-14B-bnb-4bit", "b455922269e4678c84f854fe38a6993d73614a1e", 8),
+    "phi-4-14b": ("unsloth/phi-4-bnb-4bit", "098ea917f967c8811e6f579cc38872b2bf3d4bf4", 8),
     "mistral-small-24b": (
         "unsloth/Mistral-Small-24B-Instruct-2501-bnb-4bit",
         "cb4e166b818799cd769592eed8f7142ceab779ca",
+        4,
     ),
 }
-# Stand-in if a member cannot run on the T4 (same rules: not Llama-3.1, not N-ATLaS).
-RESERVE = ("phi-4-14b", ("unsloth/phi-4-bnb-4bit", "098ea917f967c8811e6f579cc38872b2bf3d4bf4"))
 
 
 @dataclass(frozen=True)

@@ -24,11 +24,13 @@ WORK = Path("/kaggle/working")
 SRC = Path(tempfile.mkdtemp())
 REPO = SRC / "phc-scribe"
 
-# "smoke": every member plus the reserve on a few items, to check loading, speed and
-# validity on the T4s. "full": the three members on all 600 items.
-PLAN = "smoke"
+# "smoke": every member on a few items, to check loading, speed and validity on the T4s.
+# "full": the three members on all 600 items.
+PLAN = "full"
 SMOKE_ITEMS = 16
-BATCH = 8
+# Kaggle stops a session at 12 h. Each member gets an even share of what is left, and a
+# member stopped at its share still hands over the items it finished (written as it goes).
+BUDGET_S = 11 * 3600
 
 
 def unpack() -> None:
@@ -80,6 +82,17 @@ def invalid_summary(pred: Path) -> None:
         print(f"  {n:4d}  {kind}")
 
 
+def sh_limited(cmd: list[str], seconds: float) -> int:
+    """`sh` with a time limit; on timeout the process is stopped and 124 returned."""
+    print("+", " ".join(cmd), f"(limit {seconds / 3600:.1f} h)", flush=True)
+    env = {**os.environ, "PYTHONPATH": f"{REPO / 'serve'}:{REPO}"}
+    try:
+        return subprocess.run(cmd, cwd=REPO, env=env, timeout=seconds, check=False).returncode  # noqa: S603
+    except subprocess.TimeoutExpired:
+        print(f"=== MEMBER stopped at its time limit ({seconds:.0f}s)", flush=True)
+        return 124
+
+
 def drop_cache(repo_id: str) -> None:
     """Free disk between members (four 4-bit models are ~41 GB together)."""
     cache = Path.home() / ".cache" / "huggingface" / "hub" / f"models--{repo_id.replace('/', '--')}"
@@ -97,7 +110,7 @@ def main() -> None:
         " transformers.__version__, 'gpus', torch.cuda.device_count())",
     )
     sys.path[:0] = [str(REPO / "serve"), str(REPO)]
-    from bench.committee import MEMBERS, RESERVE
+    from bench.committee import MEMBERS
 
     out = WORK / "committee"
     out.mkdir(exist_ok=True)
@@ -105,20 +118,18 @@ def main() -> None:
     if sh(sys.executable, "-m", "bench.committee", "fetch", "--targets",
           "data/asr/targets.v1.jsonl", "--out", str(items)) != 0:  # fmt: skip
         sys.exit("run failed: committee fetch")
-    members = dict(MEMBERS)
-    if PLAN == "smoke":
-        members[RESERVE[0]] = RESERVE[1]
-    for name, (model, revision) in members.items():
+    for n, (name, (model, revision, batch)) in enumerate(MEMBERS.items()):
+        share = (BUDGET_S - (time.time() - t0)) / (len(MEMBERS) - n)
         pred = out / f"committee.{name}.jsonl"
         cmd = [
             sys.executable, "-m", "bench.runners.llm", "--model", model, "--revision", revision,
             "--mode", "fewshot", "--items", str(items), "--out", str(pred),
-            "--batch-size", str(BATCH),
+            "--batch-size", str(batch),
         ]  # fmt: skip
         if PLAN == "smoke":
             cmd += ["--limit", str(SMOKE_ITEMS)]
         started = time.time()
-        code = sh(*cmd)
+        code = sh_limited(cmd, share)
         print(f"=== MEMBER {name}: exit {code}, {time.time() - started:.0f}s", flush=True)
         if pred.exists():
             invalid_summary(pred)
