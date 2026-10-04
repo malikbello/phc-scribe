@@ -64,6 +64,18 @@
   - the PPI estimate averages 0.757;
   - its 95% CI covers the truth in **98%** of samples.
 
+## Committee run and sample (4 Oct 2026, before any human label)
+- **Kaggle:** 3 members × 600 clips (Qwen3-14B, Phi-4, Mistral-Small-24B; 6 h). Schema-valid: 582, 572, 587.
+- **Rule clarified before labelling:** "ungrounded" means a **finding** whose quote is not in the transcript.
+  - Qwen3 and Mistral fill unused ANC fields with placeholders (gestational age 0 weeks, quotes copied from the prompt's examples). Grounding removes these.
+  - They are emptiness, not disagreement. Counting them had put all 600 clips in stratum A.
+- **Strata:** A 260 (danger 123, disagreement 235, invalid 29, ungrounded finding 12; reasons overlap), B 340.
+- **Committee gold:** 21 clips with a finding, **17 with a danger sign**. This confirms the audit's low-prevalence finding (C1).
+- **Human sample** (seed 20261009): 120 from A + 60 from B = 180 clips, 36 double-labelled.
+  - Uploaded to the review app as "Benchmark · real speech sample (S4-W, 180 clips)", in shuffled order, hints off.
+  - Malik labels; Rahmat double-labels and settles disagreements.
+
+## Consequences
 - **Human labelling falls from 720 labels to about 220,** spread over three people who have already shown they deliver.
 - **Statistical guarantee:** stratified PPI uses the random human sample to correct the committee's labels, so the estimates and confidence intervals are valid whatever the committee gets wrong. Fewer human labels mean wider intervals, which is the honest price.
   - The sample size per stratum can grow if the intervals are too wide to decide P1.

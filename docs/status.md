@@ -63,6 +63,10 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
   - `build_train_set.py --asr data/private/kaggle/asr-ft-train.jsonl` uses it.
 - **Modal training works** (`deploy/modal_train.py`, smoke test passed 4 Oct): A10G, about 2.7 examples/s, so runs B and C take about 10 minutes each. **Blocked only on Malik's "yes freeze"** (`build_train_set.py` refuses to run before the stage-1 freeze).
 
+- **4 Oct, pre-freeze audit** (`docs/audit/2026-10-04-pre-freeze-audit.md`): S4-W can't test P1 (≈2.5% danger prevalence). **S5 built:** 300 constructed yo/pcm statements, 78 danger items per language, gold by construction. Eval plan §6a: P1 on S5 (yo, pcm) and G (en). Malik ruled out recording role-play.
+- **4 Oct, committee done; human sample live:** 180 clips in the review app (Malik labels; Rahmat 36 doubles). Old empty 600 set deleted.
+- **Waiting on Malik:** "yes freeze" (then sft.v1 → Modal runs B, C); an HF write token (private model upload).
+
 **Malik's decisions, 3 Oct:** ADR-0026 (ASR fine-tune) **accepted**; G1 tightened to **+2 points** (eval plan §6), as both nurses asked; reviews he holds are open issues (#8 phrase bank, #9 teacher check, #10 start the Kaggle run); he will say when he wants to do them, and Claude guides.
 
 **Kaggle:**
