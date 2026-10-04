@@ -1,9 +1,9 @@
 # Project status and working agreement
 
-_Last updated: 3 Oct 2026, afternoon WAT (session 6). Keep this file current; it is the handoff between work sessions._
+_Last updated: 4 Oct 2026, ~16:00 WAT (session 8). Keep this file current; it is the handoff between work sessions (local or cloud)._
 
 ## Resume prompt (paste this into a new session)
-> Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`, branch `main`) and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution (the `.githooks/commit-msg` guard rejects "claude", co-author or session lines), no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results. Run `./scripts/ci_local.sh` before every push. Start from "Right now" and "Next steps, in order". Keep only truly human tasks human (labelling, clinical decisions, my approvals); automate the rest robustly. Ask me before anything outward-facing or irreversible (the freeze included). Update this file and the resume prompt at the end of every work block.
+> Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`; branch `fewshot-and-scale` until its PR is merged, then `main`; start at "Cloud handoff") and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution (the `.githooks/commit-msg` guard rejects "claude", co-author or session lines), no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results. Run `./scripts/ci_local.sh` before every push. Start from "Right now" and "Next steps, in order". Keep only truly human tasks human (labelling, clinical decisions, my approvals); automate the rest robustly. Ask me before anything outward-facing or irreversible (the freeze included). Update this file and the resume prompt at the end of every work block.
 
 ## Plan to win (agreed 3 Oct, session 6). Submission target 11 Oct; deadline 12 Oct 23:59 WAT
 Malik: "innovate… let us win the hackathon with bright and shining colours"; "the best way without having to rely on people". Labellers: Malik, Rahmat, Success.
@@ -43,6 +43,33 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 - **BP:** "14/9 doesn't mean 140/90". Shorthand or incomplete BP is never acted on and is flagged for recheck (both nurses, Q3/Q4).
 - **Uyo mapping:** both answered with specific mappings, so the ADR-0019 check can now run with `--confirmed-by`.
 - **Phrases, guide and rules:** 31 change requests, mostly local and lay phrasings (e.g. "running temperature", "serious stomach pain", "spotting", "pale +++", ">3 vomits a day") and follow-up tests (urinalysis every visit; PCV with bleeding). To be applied via a traceability matrix (each note → applied, or declined with a reason).
+
+## Cloud handoff (4 Oct, session 8): where the work is
+**Git:**
+- `main` is behind. The newest work is on **`fewshot-and-scale`**: run C-fs selection, the GGUF pipeline, final scoring, the frozen-test verdicts, and this file. **Its PR includes PR #18 (ADR-0027).**
+- **Malik merges both PRs** (merging is his approval step). Until then, a cloud session works from `fewshot-and-scale`, not `main`.
+
+**Not in git, by design:**
+- `data/private/` holds real transcripts, training sets, the committee outputs, label queues and the ASR models.
+  - A copy without the models is on the private Modal volume `phc-scribe-runs` at `/_backup/data-private-20261004/`.
+  - The ASR models are in the Kaggle `phc-scribe-baseline` v17 output.
+- Modal volume `phc-scribe-runs` holds the adapters (`/<run>/adapter`), the GGUFs (`/<run>/gguf/`) and every eval (`/_eval/<name>/`).
+- Secrets: env vars only (see Environment). Never in git.
+
+**Rebuild the frozen P1/P2/G1 items file:**
+`cat data/bench/g.20261002.jsonl data/bench/s5.20261004.jsonl data/bench/h.adeola.jsonl data/bench/r.20261004.jsonl > /tmp/frozen-tests.jsonl` (1,090 items, checked).
+
+**Which machine does what:**
+- **Local laptop only (a cloud session can't reach Modal):** Modal jobs (`deploy/modal_*.py`); the S4-W labelling export from the review app; laptop CPU latency.
+- **Cloud is fine:** code, docs, scoring from committed predictions (`scripts/final_scores.py`, `scripts/g1_sensitivity.py`), PPI once the labels are exported.
+
+**End of every work block (pipeline rule):**
+1. Commit.
+2. `./scripts/ci_local.sh`.
+3. Push the branch and open or refresh its PR.
+4. Update this file.
+
+Nothing needed to resume may live only on one machine, except `data/private/` (backed up as above) and secrets.
 
 ## Right now (4 Oct ~15:00 WAT): frozen-test verdicts, all pass
 Details in `docs/results-frozen-tests.md`; `results/final/verdicts.json`, `results/final/g1-sensitivity.json`.
