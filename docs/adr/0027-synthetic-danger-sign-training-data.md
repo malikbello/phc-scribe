@@ -45,3 +45,28 @@ The draft phrase bank was meant to fill this gap. But it was written by the same
 - The training set becomes about half synthetic. This is disclosed in the model card and the report, with the real-only counts beside it.
 - **Cost:** about 15 minutes on a Modal A10G.
 - **Risk:** N-ATLaS's own phrasing biases the training data toward how N-ATLaS writes. The real teacher data and its ASR views (more than 700 items) keep real speech in the mix.
+
+## Amendment, 4 Oct 2026: quality gate results and the translate-train change
+**Free generation failed the quality gate in Yoruba and Pidgin.**
+- **The run:** 762 prompts, two attempts each; 369 passed the rule checks and the round trip.
+- **Reading the kept sentences:**
+  - many Yoruba sentences were nonsense (a "convulsions" sentence about postal delivery);
+  - many "Pidgin" sentences mixed in Igbo, Yoruba or Gbe.
+- **The round trip did not catch these:** N-ATLaS judging its own output is not an independent check.
+
+**English generations were fluent, but some gold was wrong.** For example, "I haven't noticed the baby moving much" was generated for reduced fetal movement *absent*, but it means *present*.
+
+**What we did instead:**
+1. **English, curated:** every kept English sentence was read. 11 were rejected (a refusal, a second unlabelled symptom, ambiguous time) and 3 relabelled. Each decision is keyed by the exact text in `bench/synth_curate.py`, leaving **152 sentences**.
+2. **Yoruba, translate-train:** N-ATLaS translated the curated English (greedy) and back-translated to English. A translation is kept only if:
+   - the Yoruba passes the rules;
+   - the back-translation passes the English rules;
+   - the back-translation still names the symptom.
+
+   That left **45 sentences**. A sample read sound.
+3. **Pidgin: none.** The translations still mixed in Yoruba and Igbo words, even after filtering for Igbo/Yoruba letters. Pidgin is English-lexified, so the fine-tuned model learns rare signs from the English synthetic items plus the real Pidgin speech in the teacher data.
+
+**Result:**
+- 118 synthetic items from 197 sentences, with every patient-reportable danger sign represented (e.g. reduced fetal movement 11, convulsions 8, unconscious 4).
+- **Training set `sft.v1`:** 685 training and 127 dev examples. 31 were dropped for overlapping the frozen test set.
+- Reported in the model card: the synthetic share, and the absence of synthetic Pidgin.

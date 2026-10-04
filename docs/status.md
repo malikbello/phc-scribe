@@ -67,6 +67,13 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 - **4 Oct, committee done; human sample live:** 180 clips in the review app (Malik labels; Rahmat 36 doubles). Old empty 600 set deleted.
 - **Waiting on Malik:** "yes freeze" (then sft.v1 → Modal runs B, C); an HF write token (private model upload).
 
+- **4 Oct, stage-1 freeze done** (`data/bench/test-manifest.json`, sha256 `6b193157…`): G 300, H 454, S5 300, R 36, S4-W 600.
+- **4 Oct, ADR-0027 (synthetic danger-sign training data):**
+  - free generation failed in Yoruba and Pidgin;
+  - curated English (152 sentences) plus translate-train Yoruba (45 sentences) → 118 synthetic items;
+  - **sft.v1: 685 train / 127 dev** (`data/private/train/`).
+  - **Runs B (plain) and C (weighted ×3) are training on Modal.** Results go to `results/modal/<run>/`.
+
 **Malik's decisions, 3 Oct:** ADR-0026 (ASR fine-tune) **accepted**; G1 tightened to **+2 points** (eval plan §6), as both nurses asked; reviews he holds are open issues (#8 phrase bank, #9 teacher check, #10 start the Kaggle run); he will say when he wants to do them, and Claude guides.
 
 **Kaggle:**
