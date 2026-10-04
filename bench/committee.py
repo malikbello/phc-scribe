@@ -12,7 +12,7 @@ committee members then label them with the same prompt, constrained decoding and
 as every evaluated system (bench.runners.llm).
 
 `triage` applies the rules ADR-0025 fixed before the committee ran:
-- **Stratum A (human review):** a member's output is invalid or loses a field in grounding;
+- **Stratum A (human review):** a member's output is invalid or loses a finding in grounding;
   or a member reports a danger sign (present or possible); or the members disagree on the
   scored content: the set of (concept, assertion) findings, blood pressure or gestational
   age.
@@ -118,7 +118,10 @@ def vote(pred: Prediction | None, transcript: str, danger_ids: frozenset[str]) -
     ga = rec.anc.gestational_age
     return Vote(
         valid=True,
-        grounded=not g.dropped,
+        # Only a dropped *finding* (a quote not in the transcript) marks the member unreliable.
+        # Placeholder ANC fields (weeks 0, quotes copied from the prompt's examples) are also
+        # dropped by grounding, but they are emptiness, not disagreement (ADR-0025 note, 4 Oct).
+        grounded=not any(d.path.startswith("findings") for d in g.dropped),
         record=rec,
         pairs=frozenset(
             (str(f.concept), str(f.assertion))
