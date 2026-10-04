@@ -1,13 +1,13 @@
 # Evaluation plan (pre-registration)
 
-**Status:** DRAFT v0, 29 Sept 2026.
+**Status:** **Stage 1 (items) frozen 4 Oct 2026, 00:53 UTC** (§6a criteria; Malik: "if the freeze is the next blocker do it"). Stage 2 (labels) follows the S4-W labelling. Drafted 29 Sept 2026.
 - The success thresholds (section 6) are filled in after the 30-item pilot and **frozen before the first training run**.
 - The commit that freezes them is recorded here. Later changes need a new, dated section explaining why; the frozen version is never edited.
 
 | Field | Value |
 |---|---|
-| Frozen at commit | _pending_ |
-| Test-set content hash | _pending_ |
+| Frozen at commit | stage 1: the commit that adds `data/bench/test-manifest.json` (`git log -- data/bench/test-manifest.json`) |
+| Test-set content hash | sha256 of `data/bench/test-manifest.json`: `6b19315761a43f2e5ce9646d1c49730f75125a2d04c4870afc7a03f077430d50` (5 files, 1,690 items: G 300, H 454, S5 300, R 36, S4-W 600) |
 | Frozen by | Malik Bello |
 
 ## 1. Question

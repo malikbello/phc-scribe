@@ -1,0 +1,47 @@
+{
+  "stage": 1,
+  "frozen_at": "2026-10-04T00:53:54+00:00",
+  "labels_frozen_at": null,
+  "files": [
+    {
+      "path": "data/bench/g.20261002.jsonl",
+      "items": 300,
+      "items_sha256": "3bf3b6bb4109b7b4b37cd95a686c5d0b53745a6a8ef29b460ae6c00c411bafc5",
+      "sha256": null,
+      "frozen_as": null,
+      "excluded": []
+    },
+    {
+      "path": "data/bench/h.adeola.jsonl",
+      "items": 454,
+      "items_sha256": "82f39dcf3be8da63b7d12dd8c1eba1257479887346be13f9fb6e8804a63d2f2a",
+      "sha256": null,
+      "frozen_as": null,
+      "excluded": []
+    },
+    {
+      "path": "data/bench/s5.20261004.jsonl",
+      "items": 300,
+      "items_sha256": "a069d33d7a6fb46ab4f9ff5ba2ca88a91fe0ddc07f8794c7012d6f182855f01a",
+      "sha256": null,
+      "frozen_as": null,
+      "excluded": []
+    },
+    {
+      "path": "data/bench/r.20261004.jsonl",
+      "items": 36,
+      "items_sha256": "22884c2100dff916a07f4b234001d309a79fd52dcac29943598580117c1b6170",
+      "sha256": null,
+      "frozen_as": null,
+      "excluded": []
+    },
+    {
+      "path": "data/private/label_queue.s4w.jsonl",
+      "items": 600,
+      "items_sha256": "3a1099ac3146890f864ac37f4b5e781326e9e6b48625254eb5f848df3fd9eba8",
+      "sha256": null,
+      "frozen_as": null,
+      "excluded": []
+    }
+  ]
+}
