@@ -6,11 +6,16 @@ secret to every run, so training and evaluation can start from the command line.
 has faster GPUs (A10G, 24 GB, bfloat16-capable). Malik's free monthly credits pay for it.
 
     # smoke test (constructed fixtures only; safe before the freeze)
-    modal run deploy/modal_train.py --smoke
+    modal run deploy/modal_train.py::main --smoke
     # a real run, after the stage-1 freeze and build_train_set.py
-    modal run deploy/modal_train.py --config configs/qlora.v1-weighted.yaml \
+    modal run deploy/modal_train.py::main --config configs/qlora.v1-weighted.yaml \
         --train-file data/train/sft.v1.jsonl --dev data/train/sft.v1.dev.items.jsonl
 
+    # score saved adapters (and optionally base) on dev or pilot items, at LoRA scale s
+    modal run deploy/modal_train.py::eval_runs --items data/bench/pilot.20261004.jsonl \
+        --runs natlas-qlora-v1-weighted --scale 0.75 --tag pilot-s0.75 [--base]
+
+Two entrypoints live here, so `modal run` needs `::main` or `::eval_runs`.
 Runs are saved on the `phc-scribe-runs` volume as /runs/<run_name>/{adapter, metrics.json,
 dev reports}. Training data travels as function arguments into Malik's own Modal account
 and is never baked into an image.
