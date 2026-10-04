@@ -25,7 +25,8 @@ def test_rule_check_rejects_wrong_cue_language_or_severity():
     assert rule_check(_row("pcm", "severe_headache", "present"), "My head dey pain me") == (
         "no_severity_cue"
     )
-    assert rule_check(_row("en", "fever", "present"), "I don't have fever") == "present_has_absent_cue"
+    denied = rule_check(_row("en", "fever", "present"), "I don't have fever")
+    assert denied == "present_has_absent_cue"
 
 
 def test_parse_class_and_spec():
@@ -40,7 +41,11 @@ def test_compose_uses_each_sentence_once_and_keeps_gold_exact():
     rows = [
         {**_row("pcm", "fever", "present"), "text": "My body dey hot.", "kept": True},
         {**_row("pcm", "headache", "present"), "text": "My head dey pain me small.", "kept": True},
-        {**_row("pcm", "severe_headache", "present"), "text": "My head dey bang me die.", "kept": True},
+        {
+            **_row("pcm", "severe_headache", "present"),
+            "text": "My head dey bang me die.",
+            "kept": True,
+        },
         {**_row("pcm", None, None), "text": "Make pregnant woman rest well.", "kept": True},
     ]
     items = compose(rows, seed=3)
