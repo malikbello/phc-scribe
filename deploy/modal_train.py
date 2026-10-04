@@ -46,6 +46,7 @@ image = (
     .add_local_dir("rules", f"{APP_DIR}/rules")
     .add_local_dir("schema", f"{APP_DIR}/schema")
     .add_local_dir("configs", f"{APP_DIR}/configs")
+    .add_local_dir("tests/fixtures", f"{APP_DIR}/tests/fixtures")  # few-shot examples
 )
 
 app = modal.App("phc-scribe-train")
@@ -99,6 +100,7 @@ def evaluate(
     run_name: str = "",
     repetition_penalty: float = 1.12,
     limit: int = 0,
+    adapter_scale: float = 1.0,
 ) -> dict:
     """Score base (run_name empty) or fine-tuned (/runs/<run_name>/adapter) on dev items."""
     runs.reload()
@@ -126,7 +128,7 @@ def evaluate(
         str(repetition_penalty),
     ]
     if run_name:
-        cmd += ["--adapter", f"/runs/{run_name}/adapter"]
+        cmd += ["--adapter", f"/runs/{run_name}/adapter", "--adapter-scale", str(adapter_scale)]
     if limit:
         cmd += ["--limit", str(limit)]
     _sh(*cmd)
@@ -385,7 +387,7 @@ def main(
             f"{cfg['run_name']}-dev",
             cfg["model"],
             cfg["revision"],
-            "finetuned",
+            cfg.get("eval_mode", "finetuned"),
             run_name=cfg["run_name"],
         )
     }
@@ -402,3 +404,49 @@ def main(
         o = res["report"]["overall"]
         keys = ("danger_recall", "micro_f1", "false_alarm_rate", "schema_valid_rate")
         print(key, {k: o[k].get("point") for k in keys})
+
+
+@app.local_entrypoint()
+def eval_runs(
+    items: str,
+    runs: str = "",
+    base: bool = False,
+    config: str = "configs/qlora.v1-weighted.yaml",
+    out: str = "results/modal",
+    tag: str = "pilot",
+    mode: str = "finetuned",
+    scale: float = 1.0,
+) -> None:
+    """Score saved adapters (comma-separated run names) and optionally the base model on any
+    non-test items (dev or pilot), in parallel. `mode` is the adapters' prompt mode; `scale`
+    is the LoRA scale s (ADR-0024)."""
+    import yaml
+
+    cfg = yaml.safe_load(Path(config).read_text(encoding="utf-8"))
+    text = Path(items).read_text(encoding="utf-8")
+    jobs = {
+        r: evaluate.spawn(
+            text,
+            f"{r}-{tag}",
+            cfg["model"],
+            cfg["revision"],
+            mode,
+            run_name=r,
+            adapter_scale=scale,
+        )
+        for r in runs.split(",")
+        if r
+    }
+    if base:
+        jobs["base"] = evaluate.spawn(
+            text, f"natlas-fewshot-rp1.12-{tag}", cfg["model"], cfg["revision"], "fewshot"
+        )
+    for name, job in jobs.items():
+        res = job.get()
+        dest = Path(out) / name
+        dest.mkdir(parents=True, exist_ok=True)
+        (dest / f"{tag}.report.json").write_text(json.dumps(res["report"], indent=2) + "\n")
+        (dest / f"{tag}.pred.jsonl").write_text(res["pred"], encoding="utf-8")
+        o = res["report"]["overall"]
+        keys = ("danger_recall", "micro_f1", "false_alarm_rate", "schema_valid_rate")
+        print(name, {k: o[k].get("point") for k in keys})
