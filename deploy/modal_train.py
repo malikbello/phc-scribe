@@ -150,10 +150,15 @@ def evaluate(
         "--out",
         str(report),
     )
+    # Every evaluation is kept on the volume, so a dropped client connection loses nothing.
+    keep = Path("/runs") / "_eval" / name
+    keep.mkdir(parents=True, exist_ok=True)
+    (keep / "report.json").write_text(report.read_text())
+    (keep / "pred.jsonl").write_text(pred.read_text(encoding="utf-8"), encoding="utf-8")
     if run_name:
         dest = Path("/runs") / run_name / f"dev.{name}.report.json"
         dest.write_text(report.read_text())
-        runs.commit()
+    runs.commit()
     hf_cache.commit()
     return {"report": json.loads(report.read_text()), "pred": pred.read_text(encoding="utf-8")}
 
