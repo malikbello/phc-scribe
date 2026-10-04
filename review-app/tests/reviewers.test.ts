@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { findReviewer, inviteReviewer, listReviewers, reviewerForCode, revokeReviewer } from "@/lib/reviewers";
+import { CODE_ALPHABET, findReviewer, inviteReviewer, listReviewers, normaliseCode, reviewerForCode, revokeReviewer } from "@/lib/reviewers";
 import { MemoryStore } from "@/lib/store";
 
 const g = globalThis as unknown as { __phcStore?: unknown };
@@ -22,6 +22,25 @@ describe("invited reviewers", () => {
     expect(await revokeReviewer(reviewer.id)).toBe(true);
     expect(await reviewerForCode(code)).toBeUndefined();
     expect(await findReviewer(reviewer.id)).toBeUndefined();
+  });
+
+  it("accepts a code pasted with punctuation or invisible characters around it", async () => {
+    const { reviewer, code } = await inviteReviewer({ name: "Abdullah", role: "annotator" }, "admin");
+    for (const pasted of [`${code},`, `${code}.`, `"${code}"`, `​${code}​`, `${code}
+`, `(${code})`]) {
+      expect((await reviewerForCode(pasted))?.id).toBe(reviewer.id);
+    }
+    expect(await reviewerForCode(`${code}x`)).toBeUndefined();
+    expect(await reviewerForCode(",")).toBeUndefined();
+  });
+
+  it("issues codes without look-alike characters", async () => {
+    expect(CODE_ALPHABET).not.toMatch(/[01oOlIi]/);
+    for (let k = 0; k < 20; k++) {
+      const { code } = await inviteReviewer({ name: `R${k}`, role: "annotator" }, "admin");
+      expect(code).toMatch(/^[a-z]{3}-[23456789a-hjkmnp-zA-HJ-NP-Z]{14}$/);
+      expect(normaliseCode(code)).toBe(code);
+    }
   });
 
   it("refuses to revoke bootstrap (environment) reviewers", async () => {
