@@ -134,6 +134,23 @@ ADR-0026 replaced the base N-ATLaS ASR with fine-tuned models, so the two-view t
 - **WER on these clips:** Pidgin 23.6% and Yoruba 33.0%, against 53.1% and 36.1% for the base ASR.
 - **Yield:** 349 ASR views from 376 audited teacher items (333 with the base ASR).
 
+## Model selection (4 Oct 2026, dev and pilot only; no frozen test item scored)
+**Dev** = 127 items from `sft.v1.dev` (real speech with teacher gold, plus synthetic). **Pilot** = the 30 English notes. Reports are in `results/selection/`.
+
+| System | Dev recall | Dev F1 | Dev false alarms | Pilot recall | Pilot F1 | Pilot false alarms |
+|---|---|---|---|---|---|---|
+| Base N-ATLaS few-shot, rp 1.12 (HF) | 0.38 | 0.31 | 16.1% | 0.80 | 0.52 | 38.5% |
+| Base N-ATLaS Q4 (llama.cpp) | — | — | — | 0.80 | 0.51 | 30.8% |
+| Run B (plain, short prompt) | 0.24 | 0.32 | 6.5% | 0.60 | 0.44 | 7.7% |
+| Run C (weighted ×3, short prompt) | 0.38 | 0.36 | 7.5% | 0.55 | 0.44 | 7.7% |
+| Run C at s = 0.75 / 0.5 | — | — | — | 0.45 / 0.30 | 0.42 / 0.26 | 0% / 15.4% |
+| **Run C-fs (weighted ×3, the base's few-shot prompt)** | **0.49** | **0.45** | 9.7% | **0.90** | **0.73** | 38.5% |
+
+- **Why C and B were rejected:** with the short prompt, the fine-tuned model missed English clinical shorthand ("c/o", "?", "x 2/7"), and scaling made it worse.
+- **Why C-fs was chosen:** training with the base model's own few-shot prompt (eval plan §1, "identical prompting") fixed this. C-fs beats the base on recall and F1 on both dev and pilot, with no more pilot false alarms. **Selected: run C-fs, LoRA scale 1.0.**
+- **Next:** imatrix Q4_K_M, then the frozen tests once (the 2×2: base and C-fs, each in HF fp16 and in llama.cpp Q4).
+- **Base runtime parity:** base Q4 in llama.cpp matches base HF fp16 on the pilot (recall 0.80 both; 29/30 valid both).
+
 ## Consequences
 - **Each measured failure has a named countermeasure and a dev-set ablation,** so the report can show what helped and by how much: the rigour judges look for.
 - **More N-ATLaS integration:** N-ATLaS ASR is part of the trained system, not just the demo.
