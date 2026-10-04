@@ -23,12 +23,12 @@ All rungs use the same schema-constrained decoding and the same grounding/valida
 6. Fine-tuned N-ATLaS, Q4_K_M GGUF (**primary system: what ships**)
 
 ## 3. Test data (PHC-Scribe-Bench v0)
-Revised by ADR-0016 (accepted 30 Sept) and ADR-0018 (proposed 30 Sept). The original plan (real AMR notes, S1/S3) failed the data audit (`docs/data-audit.md`).
+Revised by ADR-0016 (accepted 30 Sept) and ADR-0018 (accepted 1 Oct; in use from 4 Oct because MAMAI access is still pending). The original plan (real AMR notes, S1/S3) failed the data audit (`docs/data-audit.md`).
 
 | Stratum | Target size | Source | Counts toward the 500? |
 |---|---|---|---|
 | **S4** real patient speech | ≥ 500 | NigBench-MAMAI test split, Yoruba + Pidgin (ADR-0016), labelled in the review app. Two inputs: human transcript; audio through N-ATLaS ASR | **Yes** |
-| S4-W (fallback, only if MAMAI is refused by 5 Oct) | ≥ 500 | WazobiaSpeech `dev_test` health clips, Yoruba + Pidgin, enriched + random groups (ADR-0018) | Yes, instead of S4 |
+| S4-W (fallback, only if MAMAI is refused by 5 Oct; **in use from 4 Oct**, ADR-0018 accepted) | ≥ 500 | WazobiaSpeech `dev` + `dev_test` health clips (corrected 4 Oct, audit M5), Yoruba + Pidgin, enriched + random groups (ADR-0018) | Yes, instead of S4 |
 | G generated ANC notes | 300 | `data/bench/g.20261002.jsonl`; tests vitals, gestational age and the rules engine | No, reported separately, labelled "generated" |
 | MamaBench ANC slice | 78 | HelpMum MamaBench, clinician-authored vignettes (CC-BY-4.0) | No, reported separately |
 | AMR | 62 | African Medical Records, synthesized OCR/HTR documents | No, reported separately |
@@ -95,6 +95,6 @@ Reported per stratum, per language and per field, each with 95% bootstrap CIs.
 - **If any criterion fails, it is reported as failed.** No post-hoc metric switching.
 
 ## 7. Analysis hygiene
-- Seeds fixed; configs and library versions pinned; every run logged (MLflow) with results JSON committed
+- Seeds fixed; configs and library versions pinned; every run's results JSON committed with its config and code version (git). MLflow is not used (corrected 4 Oct, audit M1)
 - Test data is never used for prompt design, hyperparameters or early stopping. The dev split is used for those.
 - The error analysis includes a written taxonomy of failures on a random sample of 50 errors per system
