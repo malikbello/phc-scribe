@@ -30,6 +30,7 @@ image = (
         "git clone --depth 1 https://github.com/ggml-org/llama.cpp /llama.cpp",
         "cd /llama.cpp && git rev-parse HEAD > /llama.cpp/COMMIT",
         "cd /llama.cpp && cmake -B build -DGGML_CUDA=ON -DGGML_CUDA_NO_VMM=ON -DLLAMA_CURL=OFF "
+        "-DLLAMA_USE_PREBUILT_UI=OFF -DLLAMA_BUILD_UI=OFF "
         f"-DCMAKE_CUDA_ARCHITECTURES='{CUDA_ARCH}' "
         "-DCMAKE_EXE_LINKER_FLAGS=-Wl,--allow-shlib-undefined "
         "&& cmake --build build --config Release -j 8 "
@@ -90,16 +91,17 @@ def _sha256(path: Path) -> str:
     secrets=SECRETS,
     volumes=VOLUMES,
     timeout=4 * 3600,
-    ephemeral_disk=200 * 1024,
 )
 def build(run: str, calib_text: str, scale: float = 1.0) -> dict:
     import shutil
-    import tempfile
 
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
-    work = Path(tempfile.mkdtemp(dir="/tmp"))
+    # Scratch (merged weights ~16 GB, f16 GGUF ~16 GB) on the runs volume, removed at the end.
+    work = Path("/runs") / run / "gguf-work"
+    shutil.rmtree(work, ignore_errors=True)
+    work.mkdir(parents=True)
     merged = work / "merged"
     model_id, revision = BASE
     tok = AutoTokenizer.from_pretrained(model_id, revision=revision)
@@ -161,6 +163,7 @@ def build(run: str, calib_text: str, scale: float = 1.0) -> dict:
         "sha256": _sha256(q4),
     }
     (out_dir / f"{tag}.manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
+    shutil.rmtree(work, ignore_errors=True)
     runs.commit()
     hf_cache.commit()
     return manifest
