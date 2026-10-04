@@ -111,8 +111,8 @@ This section replaces those parts of §1, §3, §4 and §6. Nothing has been tra
 |---|---|---|---|---|---|
 | **S5** constructed patient statements (new; `bench/constructed.py`) | 300 | 150 yo, 150 pcm | 78 + 78 | By construction (lexicon clause = evidence) | **P1** (yo, pcm), P2 |
 | **G** generated ANC notes | 300 | en | 226 | By construction | **P1** (en), P2, vitals and GA |
-| **S4-W** real health speech | 600 | 300 yo, 300 pcm | ≈15 (real-world prevalence) | ADR-0025: committee, random human sample, stratified PPI | **P2 on real speech**, **G1** (false alarms), recall as secondary, the ASR-input condition |
-| **H** hard negatives (real antenatal teaching) | 454 | en, yo, pcm | 0 | No finding (source) | **G1** |
+| **S4-W** real health speech | 600 | 300 yo, 300 pcm | ≈15 (real-world prevalence) | ADR-0025: committee, random human sample, stratified PPI | **Secondary:** real-speech false alarms, micro-F1, recall; the ASR-input condition |
+| **H** hard negatives (real antenatal teaching) | 454 | en, yo, pcm | 0 | No finding (source) | **G1** (pass/fail) |
 
 The ≥30% enrichment rule applies to the P1 sets (S5 52%, G 75%). S4-W keeps real-world prevalence on purpose: it is the false-alarm and real-speech test.
 
@@ -124,9 +124,10 @@ The ≥30% enrichment rule applies to the P1 sets (S5 52%, G 75%). S4-W keeps re
 
 **Primary and guardrail criteria (replace §6 P1, P2, G1; G2 unchanged):**
 - **P1:** danger-sign recall, fine-tuned Q4 − base few-shot. The lower bound of the 95% paired-bootstrap CI must be > 0 **in each of Yoruba (S5), Pidgin (S5) and English (G)**. A language that fails is reported as failed.
-- **P2:** micro-F1, same test, on S5 (yo, pcm), G (en) and **S4-W (real speech, transcript input)**.
-- **G1:** the upper bound of the 95% paired-bootstrap CI of the false-alarm-rate difference (fine-tuned − base) must be ≤ **+2 points**, on S4-W and on H, each.
-- **Secondary:** recall on S4-W (reported with its CI and its small number of positives); every metric with ASR input (S4-W audio through N-ATLaS ASR, base and fine-tuned ASR).
+- **P2:** micro-F1, same test, on S5 (yo, pcm) and G (en).
+- **G1:** the upper bound of the 95% paired-bootstrap CI of the false-alarm-rate difference (fine-tuned − base) must be ≤ **+2 points** on **H** (454 real-speech sentences, gold = no finding by source; no labelling needed).
+- **Secondary (reported with PPI CIs, no pass/fail):** S4-W real speech, with transcript input and with ASR input (base and fine-tuned ASR). Covers false-alarm rate, micro-F1 and recall (few positives).
+- **Label budget (4 Oct, before any label):** S4-W carries no pass/fail criterion, so its human sample is 60 from stratum A + 60 from B (the B audit stays at 60, the smallest number that certifies a miss rate below 5% with no misses), 30% double-labelled (36 clips: Rahmat 18, Success 18, each paired with Malik's label).
 
 **Runtimes (C3):**
 - **Base few-shot (primary comparator):** HF transformers, fp16, xgrammar constrained decoding.

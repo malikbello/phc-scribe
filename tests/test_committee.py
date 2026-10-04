@@ -1,4 +1,4 @@
-from bench.committee import SAMPLE, majority_record, stratum_of, triage_items, vote
+from bench.committee import DOUBLE_SHARE, SAMPLE, majority_record, stratum_of, triage_items, vote
 from bench.items import BenchItem, Prediction
 from phc_scribe.encounter import Encounter
 from phc_scribe.vocab import load_vocabulary
@@ -80,7 +80,7 @@ def test_triage_samples_within_strata_and_is_seeded():
     gold, triage, report = triage_items(items, preds, seed=7)
     assert (report.stratum_a, report.stratum_b) == (150, 150)
     assert (report.sampled_a, report.sampled_b) == (SAMPLE["A"], SAMPLE["B"])
-    assert report.double_labelled == round((SAMPLE["A"] + SAMPLE["B"]) * 0.2)
+    assert report.double_labelled == round((SAMPLE["A"] + SAMPLE["B"]) * DOUBLE_SHARE)
     assert report.gold_with_danger == 0  # fever was one member's view only
     assert all(g.gold.findings for g in gold)
     _, again, _ = triage_items(items, preds, seed=7)

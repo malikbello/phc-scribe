@@ -75,6 +75,17 @@
   - Uploaded to the review app as "Benchmark · real speech sample (S4-W, 180 clips)", in shuffled order, hints off.
   - Malik labels; Rahmat double-labels and settles disagreements.
 
+## Label budget cut (4 Oct 2026, before any human label)
+- Eval plan §6a moved the pass/fail criteria off S4-W:
+  - P1 and P2 now run on S5 and G;
+  - G1 runs on H, whose gold is "no finding" by source.
+- S4-W is now a secondary, reported-only test, so its sample shrinks:
+  - **60 from A + 60 from B = 120 clips**;
+  - **30% double-labelled (36)**: Rahmat 18 and Success 18, each paired with Malik's label (the app serves double items first);
+  - the B audit stays at 60, the smallest number that certifies a stratum-B miss rate below 5% with zero misses.
+- **Human labels: 720 → 156** (Malik 120, Rahmat 18, Success 18).
+- The 180-clip set (0 labels) and the unused MamaBench calibration set were removed from the review app.
+
 ## Consequences
 - **Human labelling falls from 720 labels to about 220,** spread over three people who have already shown they deliver.
 - **Statistical guarantee:** stratified PPI uses the random human sample to correct the committee's labels, so the estimates and confidence intervals are valid whatever the committee gets wrong. Fewer human labels mean wider intervals, which is the honest price.

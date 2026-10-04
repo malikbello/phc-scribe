@@ -21,8 +21,8 @@ as every evaluated system (bench.runners.llm).
 - **Committee gold:** field by field, the answer at least two of the three members give
   (findings by (concept, assertion); vitals, ANC counts, tests, medications and
   disposition by value). Evidence comes from the first member, in fixed order, that gave it.
-- **Human sample:** a seeded random 120 from A and 60 from B (all of a stratum if smaller),
-  with 20% of the sample double-labelled. Drawn before anyone labels; never shown the
+- **Human sample:** a seeded random 60 from A and 60 from B (all of a stratum if smaller),
+  with 30% of the sample double-labelled (36 clips). Drawn before anyone labels; never shown the
   committee's answers.
 
 Writes the committee gold, the triage table and the sample's label queue. Prints counts only.
@@ -46,8 +46,8 @@ from phc_scribe.grounding import ground
 from phc_scribe.vocab import load_vocabulary
 
 SEED = 20261009  # differs from every other seed in the repo
-SAMPLE = {"A": 120, "B": 60}
-DOUBLE_SHARE = 0.2
+SAMPLE = {"A": 60, "B": 60}  # 4 Oct: S4-W carries no pass/fail criterion (eval plan §6a)
+DOUBLE_SHARE = 0.3  # 36 double-labelled clips for kappa
 QUORUM = 2  # of 3 members
 
 # Members (ADR-0025): three families, none of them Llama-3.1 (the training-label teacher)
