@@ -106,6 +106,7 @@ def evaluate(
     repetition_penalty: float = 1.12,
     limit: int = 0,
     adapter_scale: float = 1.0,
+    batch_size: int = 1,
 ) -> dict:
     """Score base (run_name empty) or fine-tuned (/runs/<run_name>/adapter) on dev items."""
     runs.reload()
@@ -136,6 +137,8 @@ def evaluate(
         cmd += ["--adapter", f"/runs/{run_name}/adapter", "--adapter-scale", str(adapter_scale)]
     if limit:
         cmd += ["--limit", str(limit)]
+    if batch_size > 1:
+        cmd += ["--batch-size", str(batch_size)]
     _sh(*cmd)
     report = work / "report.json"
     _sh(
@@ -426,6 +429,7 @@ def eval_runs(
     tag: str = "pilot",
     mode: str = "finetuned",
     scale: float = 1.0,
+    batch: int = 1,
 ) -> None:
     """Score saved adapters (comma-separated run names) and optionally the base model on any
     non-test items (dev or pilot), in parallel. `mode` is the adapters' prompt mode; `scale`
@@ -443,13 +447,19 @@ def eval_runs(
             mode,
             run_name=r,
             adapter_scale=scale,
+            batch_size=batch,
         )
         for r in runs.split(",")
         if r
     }
     if base:
         jobs["base"] = evaluate.spawn(
-            text, f"natlas-fewshot-rp1.12-{tag}", cfg["model"], cfg["revision"], "fewshot"
+            text,
+            f"natlas-fewshot-rp1.12-{tag}",
+            cfg["model"],
+            cfg["revision"],
+            "fewshot",
+            batch_size=batch,
         )
     for name, job in jobs.items():
         res = job.get()
