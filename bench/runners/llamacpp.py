@@ -6,8 +6,9 @@
 
 Same prompt (`bench.prompts.build_messages`), same JSON schema as the decoding constraint
 (`decoding_schema`), greedy decoding, and the repetition penalty applied over the whole
-context (`repeat_last_n = -1`), matching Hugging Face's semantics (eval plan §6a). Output rows
-are the same `Prediction` records as `bench.runners.llm`, so `bench.harness score` reads them.
+context (`repeat_last_n` = the server context, 8192), matching Hugging Face's semantics
+(eval plan §6a). Output rows are the same `Prediction` records as `bench.runners.llm`, so
+`bench.harness score` reads them.
 """
 
 from __future__ import annotations
@@ -20,6 +21,10 @@ from bench.items import BenchItem, read_jsonl, write_jsonl
 from bench.runners.llm import Generate, run
 from phc_scribe.encounter import decoding_schema
 
+# The server context (llama-server -c). The chat endpoint rejects -1, so the window is the
+# whole context explicitly: the penalty covers every token, as Hugging Face's does.
+REPEAT_WINDOW = 8192
+
 
 def request_body(
     messages: list[dict[str, str]], repetition_penalty: float, max_tokens: int
@@ -30,7 +35,7 @@ def request_body(
         "temperature": 0,
         "max_tokens": max_tokens,
         "repeat_penalty": repetition_penalty,
-        "repeat_last_n": -1,
+        "repeat_last_n": REPEAT_WINDOW,
         "response_format": {"type": "json_object", "schema": decoding_schema()},
     }
 
@@ -46,7 +51,8 @@ def server_generator(
         r = client.post(
             "/v1/chat/completions", json=request_body(messages, repetition_penalty, max_tokens)
         )
-        r.raise_for_status()
+        if r.status_code >= 400:  # keep the server's reason; it names the unsupported field
+            raise RuntimeError(f"llama-server {r.status_code}: {r.text[:500]}")
         data = r.json()
         return data["choices"][0]["message"]["content"].strip(), int(data["usage"]["prompt_tokens"])
 

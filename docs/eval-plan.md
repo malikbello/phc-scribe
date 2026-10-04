@@ -131,7 +131,7 @@ The ≥30% enrichment rule applies to the P1 sets (S5 52%, G 75%). S4-W keeps re
 
 **Runtimes (C3):**
 - **Base few-shot (primary comparator):** HF transformers, fp16, xgrammar constrained decoding.
-- **Fine-tuned Q4 (primary system):** llama.cpp with the same prompt, the same JSON schema as a grammar, greedy decoding, repetition penalty 1.12 over the whole context (`repeat_last_n = -1`, matching HF).
+- **Fine-tuned Q4 (primary system):** llama.cpp with the same prompt, the same JSON schema as a grammar, greedy decoding, repetition penalty 1.12 over the whole context (`repeat_last_n` = the 8,192-token server context, matching HF; the chat endpoint rejects −1).
 - **The 2×2 is reported:** base and fine-tuned, each in HF fp16 and in llama.cpp Q4. The fine-tuning effect and the quantisation/runtime effect are then visible separately.
 
 **Other strata (audit H5, M2):**
