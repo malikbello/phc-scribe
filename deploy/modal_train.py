@@ -151,6 +151,80 @@ def evaluate(
     return {"report": json.loads(report.read_text()), "pred": pred.read_text(encoding="utf-8")}
 
 
+@app.function(image=image, gpu=GPU, secrets=SECRETS, volumes=VOLUMES, timeout=2 * 3600)
+def synth(prompts_jsonl: str, model: str, revision: str, attempts: int = 2) -> str:
+    """ADR-0027: base N-ATLaS writes the sentences, rule checks filter them, and N-ATLaS
+    classifies each kept sentence again from scratch (round trip). Returns one JSON line per
+    prompt: text, rule failure, round-trip class and whether it is kept."""
+    import torch
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+
+    from bench.synth import (
+        classification_messages,
+        clean,
+        generation_messages,
+        parse_class,
+        rule_check,
+    )
+
+    torch.manual_seed(20261013)
+    tok = AutoTokenizer.from_pretrained(model, revision=revision)
+    tok.padding_side = "left"
+    if tok.pad_token is None:
+        tok.pad_token = tok.eos_token
+    lm = AutoModelForCausalLM.from_pretrained(
+        model, revision=revision, dtype=torch.bfloat16, device_map="cuda"
+    )
+    lm.eval()
+
+    def run(batch_msgs, sample: bool, max_new: int) -> list[str]:
+        enc = tok.apply_chat_template(
+            batch_msgs,
+            add_generation_prompt=True,
+            return_tensors="pt",
+            return_dict=True,
+            padding=True,
+        ).to(lm.device)
+        with torch.no_grad():
+            out = lm.generate(
+                **enc,
+                max_new_tokens=max_new,
+                do_sample=sample,
+                temperature=0.8 if sample else None,
+                top_p=0.95 if sample else None,
+                pad_token_id=tok.pad_token_id,
+            )
+        return tok.batch_decode(out[:, enc["input_ids"].shape[1] :], skip_special_tokens=True)
+
+    rows = [json.loads(x) for x in prompts_jsonl.splitlines() if x.strip()]
+    pending = list(range(len(rows)))
+    for attempt in range(attempts):
+        for start in range(0, len(pending), 32):
+            idx = pending[start : start + 32]
+            texts = run([generation_messages(rows[i]) for i in idx], sample=True, max_new=70)
+            for i, t in zip(idx, texts, strict=True):
+                rows[i]["text"] = clean(t)
+                rows[i]["rule_fail"] = rule_check(rows[i], rows[i]["text"])
+                rows[i]["attempt"] = attempt
+        checkable = [i for i in pending if rows[i]["rule_fail"] is None]
+        for start in range(0, len(checkable), 32):
+            idx = checkable[start : start + 32]
+            outs = run(
+                [classification_messages(rows[i], rows[i]["text"]) for i in idx],
+                sample=False,
+                max_new=6,
+            )
+            for i, o in zip(idx, outs, strict=True):
+                rows[i]["class"] = parse_class(o)
+        for i in pending:
+            want = rows[i]["assertion"] or "none"
+            rows[i]["kept"] = rows[i]["rule_fail"] is None and rows[i].get("class") == want
+        pending = [i for i in pending if not rows[i]["kept"]]
+        print(f"attempt {attempt}: {len(rows) - len(pending)} of {len(rows)} kept", flush=True)
+    hf_cache.commit()
+    return "".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows)
+
+
 def _smoke_data() -> tuple[str, str]:
     """SFT rows and items from the constructed smoke fixtures (never test data)."""
     import sys
@@ -173,11 +247,22 @@ def main(
     smoke: bool = False,
     base: bool = True,
     out: str = "results/modal",
+    synth_prompts: str = "",
+    synth_out: str = "",
 ) -> None:
     import yaml
 
     config_yaml = Path(config).read_text(encoding="utf-8")
     cfg = yaml.safe_load(config_yaml)
+    if synth_prompts:
+        result = synth.remote(
+            Path(synth_prompts).read_text(encoding="utf-8"), cfg["model"], cfg["revision"]
+        )
+        Path(synth_out).parent.mkdir(parents=True, exist_ok=True)
+        Path(synth_out).write_text(result, encoding="utf-8")
+        rows = [json.loads(x) for x in result.splitlines() if x.strip()]
+        print("synth: kept", sum(r["kept"] for r in rows), "of", len(rows), "->", synth_out)
+        return
     if smoke:
         train_rows, dev_items = _smoke_data()
         metrics = train.remote(config_yaml, train_rows, max_steps=3, suffix="-smoke")
