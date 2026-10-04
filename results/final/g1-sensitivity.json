@@ -1,0 +1,53 @@
+{
+  "note": "G1 sensitivity (post hoc, reported beside the pre-registered verdict).\n\nSchema-invalid outputs score as \"no flag\" in the pre-registered metric, which favours the\nsystem with more invalid outputs on H. Two checks, both on the frozen H set:\n- worst case: every invalid output counts as a false alarm, for every system;\n- repaired: invalid outputs re-parsed after dropping the parts that broke validation\n  (tests without a result, `other` medications without a name, duplicate findings).\nItem-level paired bootstrap (the pre-registered grouping has only 3 clusters on H).\n",
+  "systems": {
+    "base_hf": {
+      "invalid": 12,
+      "still_invalid_after_repair": 5,
+      "as_registered": 0.1586,
+      "worst_case": 0.185,
+      "repaired": 0.1586
+    },
+    "ft_q4": {
+      "invalid": 33,
+      "still_invalid_after_repair": 3,
+      "as_registered": 0.0925,
+      "worst_case": 0.1652,
+      "repaired": 0.0947
+    },
+    "ft_hf": {
+      "invalid": 1,
+      "still_invalid_after_repair": 0,
+      "as_registered": 0.1123,
+      "worst_case": 0.1145,
+      "repaired": 0.1123
+    },
+    "base_q4": {
+      "invalid": 37,
+      "still_invalid_after_repair": 2,
+      "as_registered": 0.2687,
+      "worst_case": 0.3502,
+      "repaired": 0.2709
+    }
+  },
+  "ft_q4_minus_base_hf": {
+    "as_registered": {
+      "point": -0.0661,
+      "low": -0.0991,
+      "high": -0.0352,
+      "passes_g1": true
+    },
+    "worst_case": {
+      "point": -0.0198,
+      "low": -0.0595,
+      "high": 0.0198,
+      "passes_g1": true
+    },
+    "repaired": {
+      "point": -0.0639,
+      "low": -0.0969,
+      "high": -0.033,
+      "passes_g1": true
+    }
+  }
+}

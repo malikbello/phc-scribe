@@ -44,6 +44,17 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 - **Uyo mapping:** both answered with specific mappings, so the ADR-0019 check can now run with `--confirmed-by`.
 - **Phrases, guide and rules:** 31 change requests, mostly local and lay phrasings (e.g. "running temperature", "serious stomach pain", "spotting", "pale +++", ">3 vomits a day") and follow-up tests (urinalysis every visit; PCV with bleeding). To be applied via a traceability matrix (each note → applied, or declined with a reason).
 
+## Right now (4 Oct ~15:00 WAT): frozen-test verdicts, all pass
+Details in `docs/results-frozen-tests.md`; `results/final/verdicts.json`, `results/final/g1-sensitivity.json`.
+- **P1 (danger-sign recall, fine-tuned Q4 − base HF):** Yoruba 52.6% → 67.9%; Pidgin 68.0% → 76.9%; English 80.2% → 91.0%. Every lower bound is above 0.
+- **P2 (micro-F1):** passes in all three languages.
+- **G1 (false alarms on H):** 15.9% → 9.3%, −6.6 [−10.8, −2.7]. It still passes in the worst case (every invalid output counted as a false alarm: upper bound +1.98).
+- **G2 (Belebele):** −0.7 [−2.1, +0.8].
+- **Next:**
+  - salvage step for schema-invalid outputs (tests without a result: 29 errors), validated on dev and pilot only;
+  - S4-W labelling, then the stage-2 freeze and PPI;
+  - laptop CPU latency; demo.
+
 ## Right now (handoff, 3 Oct ~20:00 WAT, session 7)
 **Results, 3 Oct night (Kaggle v17, `checks_asrft`, started by Malik):**
 - **ADR-0026 ships.** The fine-tuned N-ATLaS ASR cuts test-pool WER:
