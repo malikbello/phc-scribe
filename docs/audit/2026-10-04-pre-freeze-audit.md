@@ -88,3 +88,21 @@ The ASR gain is acoustic, not memorised text. The never-seen-sentence numbers ar
 | Antenatal orientation speech (Ajagbe 2024) | Real antenatal teaching, en/yo/pcm | Already used (stratum H, false alarms) |
 
 **No open dataset of real antenatal consultations in Yoruba or Pidgin exists** apart from gated MAMAI. Role-play consultations are how the field solves this: AMIE's patient actors, ACI-Bench, PriMock57, and Intron's own AfriSpeech-Dialog.
+
+## Fix status (4 Oct, same day)
+
+| # | Status |
+|---|---|
+| C1 | **Fixed.** S5 built (`bench/constructed.py`, `data/bench/s5.20261004.jsonl`): 300 constructed Yoruba and Pidgin patient statements, 78 danger-sign items per language, all 12 patient-reportable danger signs, gold by construction. Eval plan §6a makes S5 (yo, pcm) and G (en) the P1 sets. Malik ruled out recording role-play visits (no time). |
+| C2 | **Fixed.** §6a: Yoruba, Pidgin and English, with the test set for each. |
+| C3 | **Specified** in §6a (runtimes, `repeat_last_n = -1`, the 2×2 table). The llama.cpp runner is built once the adapter exists (the GGUF needs it). |
+| H1 | **Fixed.** §6a replaces §4 with ADR-0025. |
+| H2 | **Fixed.** `scripts/build_asr_items.py` (+ test): S4-W gold with ASR text as input. |
+| H3 | **Fixed for the LLM** by the builder's duplicate filter (counts to be checked at build). **ASR re-scored** on never-seen sentences (table above). |
+| H4 | **Open:** the decoding guard, then re-scoring base and fine-tuned ASR with it, run on Modal once the models are on HF (needs the write token). |
+| H5 | **Decided** in §6a: MamaBench and AMR dropped; R built as a small constructed set (pending). |
+| M1, M5, H6 | **Fixed.** |
+| M2 | **Decided** in §6a: the folded-match count is reported per system. |
+| M3, M4 | After scoring. |
+| M6 | Waiting for Malik's write token. |
+| M7 | Disclosed in §6a and in the model card. |

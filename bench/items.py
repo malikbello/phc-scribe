@@ -11,7 +11,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from phc_scribe.encounter import Encounter
 
-Stratum = Literal["S1", "S2", "S3", "S4", "S4W", "G", "R", "H", "T", "P", "pilot", "smoke"]
+Stratum = Literal["S1", "S2", "S3", "S4", "S4W", "S5", "G", "R", "H", "T", "P", "pilot", "smoke"]
 Origin = Literal["real", "translated", "constructed", "generated"]
 Language = Literal["en", "yo", "pcm", "ha", "ig"]
 T = TypeVar("T", bound=BaseModel)

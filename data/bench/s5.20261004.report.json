@@ -1,0 +1,56 @@
+{
+  "lexicon": "s5.lexicon.v0",
+  "seed": 20261011,
+  "pcm": {
+    "items": 150,
+    "items_with_danger_sign": 78,
+    "danger_positive_findings": 78,
+    "nothing_to_record": 27,
+    "danger_concepts": {
+      "blurred_vision": 3,
+      "breathing_difficulty": 6,
+      "convulsions": 7,
+      "fever": 4,
+      "leaking_amniotic_fluid": 7,
+      "reduced_fetal_movement": 7,
+      "severe_abdominal_pain": 8,
+      "severe_headache": 9,
+      "severe_vomiting": 6,
+      "swelling_face_hands": 7,
+      "unconscious": 7,
+      "vaginal_bleeding": 7
+    },
+    "assertions": {
+      "absent": 52,
+      "historical": 27,
+      "possible": 22,
+      "present": 105
+    }
+  },
+  "yo": {
+    "items": 150,
+    "items_with_danger_sign": 78,
+    "danger_positive_findings": 78,
+    "nothing_to_record": 27,
+    "danger_concepts": {
+      "blurred_vision": 6,
+      "breathing_difficulty": 5,
+      "convulsions": 4,
+      "fever": 6,
+      "leaking_amniotic_fluid": 4,
+      "reduced_fetal_movement": 7,
+      "severe_abdominal_pain": 8,
+      "severe_headache": 7,
+      "severe_vomiting": 7,
+      "swelling_face_hands": 8,
+      "unconscious": 7,
+      "vaginal_bleeding": 9
+    },
+    "assertions": {
+      "absent": 68,
+      "historical": 21,
+      "possible": 15,
+      "present": 111
+    }
+  }
+}

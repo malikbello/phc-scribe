@@ -94,6 +94,55 @@ Reported per stratum, per language and per field, each with 95% bootstrap CIs.
       - **Rule met: the primary base comparator, and the fine-tuned model, decode with repetition penalty 1.12.** The 1.0 run is reported as supplementary.
 - **If any criterion fails, it is reported as failed.** No post-hoc metric switching.
 
+## 6a. Amendment, 4 Oct 2026 (before the stage-1 freeze; pre-freeze audit C1–C3, H1)
+Why: `docs/audit/2026-10-04-pre-freeze-audit.md`.
+- The real-speech set S4-W has about 2.5% danger-sign prevalence (P1 untestable).
+- §1 and P1 named English and Yoruba, but the counted real speech is Yoruba and Pidgin.
+- The comparison runtime was unspecified.
+- §4 contradicted ADR-0025.
+
+This section replaces those parts of §1, §3, §4 and §6. Nothing has been trained or scored on any test item.
+
+**Question (§1):** does fine-tuning N-ATLaS improve structured antenatal extraction, above all danger-sign detection, in **Yoruba, Nigerian Pidgin and English**, versus base N-ATLaS, and does the improvement survive quantisation to the Q4 artefact we ship?
+
+**What each test set measures:**
+
+| Set | Items | Language | Danger-sign items | Gold | Measures |
+|---|---|---|---|---|---|
+| **S5** constructed patient statements (new; `bench/constructed.py`) | 300 | 150 yo, 150 pcm | 78 + 78 | By construction (lexicon clause = evidence) | **P1** (yo, pcm), P2 |
+| **G** generated ANC notes | 300 | en | 226 | By construction | **P1** (en), P2, vitals and GA |
+| **S4-W** real health speech | 600 | 300 yo, 300 pcm | ≈15 (real-world prevalence) | ADR-0025: committee, random human sample, stratified PPI | **P2 on real speech**, **G1** (false alarms), recall as secondary, the ASR-input condition |
+| **H** hard negatives (real antenatal teaching) | 454 | en, yo, pcm | 0 | No finding (source) | **G1** |
+
+The ≥30% enrichment rule applies to the P1 sets (S5 52%, G 75%). S4-W keeps real-world prevalence on purpose: it is the false-alarm and real-speech test.
+
+**S5 construction:**
+- Written by the assistant from a fixed lexicon, independently of every compared or trained model (N-ATLaS, Llama-3.1) and of the labelling committee.
+- First-person clauses by a pregnant woman, following the annotation guidelines (present / denied / hedged / past; severity cues).
+- 18% general talk with nothing to record; seed 20261011.
+- **The draft rare-sign phrase bank is not used for training** while S5 is a test set (same author and style).
+
+**Primary and guardrail criteria (replace §6 P1, P2, G1; G2 unchanged):**
+- **P1:** danger-sign recall, fine-tuned Q4 − base few-shot. The lower bound of the 95% paired-bootstrap CI must be > 0 **in each of Yoruba (S5), Pidgin (S5) and English (G)**. A language that fails is reported as failed.
+- **P2:** micro-F1, same test, on S5 (yo, pcm), G (en) and **S4-W (real speech, transcript input)**.
+- **G1:** the upper bound of the 95% paired-bootstrap CI of the false-alarm-rate difference (fine-tuned − base) must be ≤ **+2 points**, on S4-W and on H, each.
+- **Secondary:** recall on S4-W (reported with its CI and its small number of positives); every metric with ASR input (S4-W audio through N-ATLaS ASR, base and fine-tuned ASR).
+
+**Runtimes (C3):**
+- **Base few-shot (primary comparator):** HF transformers, fp16, xgrammar constrained decoding.
+- **Fine-tuned Q4 (primary system):** llama.cpp with the same prompt, the same JSON schema as a grammar, greedy decoding, repetition penalty 1.12 over the whole context (`repeat_last_n = -1`, matching HF).
+- **The 2×2 is reported:** base and fine-tuned, each in HF fp16 and in llama.cpp Q4. The fine-tuning effect and the quantisation/runtime effect are then visible separately.
+
+**Other strata (audit H5, M2):**
+- **MamaBench and AMR are dropped:** there is not enough time to map their answers to the record schema safely.
+- **R (red team)** is a small constructed set (negation scope, hedging, third parties, past vs current, embedded instructions, mixed-language numbers), reported separately.
+- **Tone marks (§5 "with and without folding"):** the metrics compare concepts and assertions, not text, so tone marks affect only evidence grounding. Grounding accepts tone-folded quotes, and the number of folded matches is reported per system.
+
+**Gold labels (replaces §4):**
+- **S4-W:** ADR-0025. The committee labels every clip; humans label a seeded random sample within strata, blind to the committee. Cohen's κ comes from the double-labelled 20%; the estimates and CIs from stratified PPI (`bench/ppi.py`, pre-registered with its tests). Malik is the main labeller; Rahmat double-labels and settles clinical disagreements.
+- **S5 and G:** by construction.
+- **H:** no finding, by source.
+
 ## 7. Analysis hygiene
 - Seeds fixed; configs and library versions pinned; every run's results JSON committed with its config and code version (git). MLflow is not used (corrected 4 Oct, audit M1)
 - Test data is never used for prompt design, hyperparameters or early stopping. The dev split is used for those.

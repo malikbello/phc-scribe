@@ -1,0 +1,187 @@
+# Stratum S5 lexicon: constructed patient statements in Yoruba and Nigerian Pidgin (pre-freeze audit C1, 4 Oct 2026).
+#
+# Each phrase is a first-person clause by a pregnant woman at an antenatal visit, written for one (concept, assertion)
+# under docs/annotation-guidelines.md:
+#   present    = she has it now;
+#   absent     = explicitly denied ("no ...", "kò sí ...");
+#   possible   = hedged ("I no sure", "bóyá", "mo rò pé");
+#   historical = a previous pregnancy or an episode that has ended.
+# Severity pairs follow guideline §2: the severe concept only with "gidigidi", "gan-an", "die", "serious", "anyhow";
+# the mild concept with "díẹ̀" / "small". Openers and general talk carry no finding ("nothing to record", guideline §10).
+#
+# Written by the assistant (Claude), independently of every model that is trained or compared (N-ATLaS, Llama-3.1)
+# and of the labelling committee (Qwen3, Phi-4, Mistral). The gold of every S5 item is built from this file, so it is
+# exact by construction. The draft rare-sign phrase bank (data/train/phrasebank.rare.v0.yaml) is written in a similar
+# style, so it is NOT used for training while S5 is a test set.
+version: s5.lexicon.v0
+languages:
+  yo:
+    openers:
+      - "Ẹ kú àárọ̀ nọ́ọ̀sì."
+      - "Mo wá fún àyẹ̀wò oyún mi lónìí."
+      - "Ẹ kú iṣẹ́ o, mo ti dé."
+      - "Ẹ jọ̀ọ́, ẹ gbọ́ ohun tó ń ṣe mí."
+    general:
+      - "Tí obìnrin aboyún bá ní ibà, kí ó tètè lọ sí ilé ìwòsàn."
+      - "Oúnjẹ aládùn bí ẹ̀wà àti ẹ̀fọ́ ṣe pàtàkì fún aboyún."
+      - "Àwọn ìyá wa sọ pé aboyún gbọ́dọ̀ máa sinmi dáadáa."
+      - "Ó dára kí obìnrin máa wá fún ìtọ́jú oyún lóòrèkóòrè."
+      - "Tí ẹsẹ̀ aboyún bá wú, kí ó máa gbé ẹsẹ̀ sókè."
+    concepts:
+      vaginal_bleeding:
+        present: ["ẹ̀jẹ̀ ń jáde lójú ara mi láti àárọ̀", "mo ń rí ẹ̀jẹ̀ nínú pátá mi"]
+        absent: ["kò sí ẹ̀jẹ̀ kankan tó ń jáde lójú ara mi"]
+        possible: ["mi ò mọ̀ dájú, bóyá ẹ̀jẹ̀ díẹ̀ ló ń jáde"]
+        historical: ["nígbà oyún àkọ́kọ́ mi, ẹ̀jẹ̀ jáde lójú ara mi"]
+      convulsions:
+        present: ["gìrì mú mi lánàá", "ara mi gbọ̀n rìrì, mo sì ṣubú lánàá"]
+        absent: ["gìrì kò mú mi rí nínú oyún yìí"]
+        possible: ["mo rò pé gìrì fẹ́ mú mi lálẹ́ àná"]
+        historical: ["gìrì mú mi nígbà oyún tó kọjá"]
+      severe_headache:
+        present: ["orí ń fọ́ mi gidigidi, kò lọ", "orí fífọ́ náà le gan-an"]
+        absent: ["orí kò fọ́ mi rárá"]
+        possible: ["mi ò mọ̀ bóyá orí fífọ́ gidigidi ni"]
+        historical: ["orí fọ́ mi gidigidi nígbà oyún àkọ́kọ́ mi"]
+      headache:
+        present: ["orí ń fọ́ mi díẹ̀díẹ̀"]
+        absent: ["orí kò fọ́ mi"]
+        possible: ["ó dà bí ẹni pé orí ń fọ́ mi díẹ̀"]
+      blurred_vision:
+        present: ["ojú mi ń ṣú, mi ò ríran dáadáa", "ohun gbogbo ń ṣe bàìbàì lójú mi"]
+        absent: ["ojú mi ń ríran dáadáa"]
+        possible: ["bí ẹni pé ojú mi ń ṣú díẹ̀"]
+      swelling_face_hands:
+        present: ["ojú àti ọwọ́ mi ti wú", "ọwọ́ mi wú débi pé òrùka kò wọ̀ mọ́"]
+        absent: ["ojú àti ọwọ́ mi kò wú"]
+        possible: ["mo rò pé ojú mi ti wú díẹ̀"]
+      severe_abdominal_pain:
+        present: ["inú ń ro mi gidigidi, mi ò lè dìde", "ikùn mi ń dùn mí gan-an"]
+        absent: ["inú kò ro mi rárá"]
+        possible: ["mi ò mọ̀ bóyá inú rírun gidigidi ni"]
+      abdominal_pain:
+        present: ["inú ń ro mi díẹ̀díẹ̀"]
+        absent: ["inú kò ro mi"]
+      fever:
+        present: ["ara mi ń gbóná", "ibà ń ṣe mí láti ọjọ́ mẹ́ta"]
+        absent: ["kò sí ibà"]
+        possible: ["bóyá ibà ló ń ṣe mí lálẹ́"]
+        historical: ["ibà ṣe mí lóṣù tó kọjá, ṣùgbọ́n ó ti lọ"]
+      reduced_fetal_movement:
+        present: ["ọmọ inú mi kò mira mọ́ bí ti tẹ́lẹ̀", "ọmọ náà kò tíì mira láti àná"]
+        absent: ["ọmọ inú mi ń mira dáadáa"]
+        possible: ["mi ò mọ̀ bóyá ọmọ náà ń mira bí ó ṣe yẹ"]
+      leaking_amniotic_fluid:
+        present: ["omi ń jò lójú ara mi láti òru"]
+        absent: ["omi kankan kò jò lójú ara mi"]
+        possible: ["mo rò pé omi díẹ̀ ń jò lójú ara mi"]
+      breathing_difficulty:
+        present: ["èémí ń dí mi, mi ò lè mí dáadáa"]
+        absent: ["mo ń mí dáadáa"]
+        possible: ["bí ẹni pé èémí ń dí mi díẹ̀"]
+      unconscious:
+        present: ["mo dákú lánàá, mi ò mọ ohun tó ṣẹlẹ̀"]
+        absent: ["mi ò dákú rí"]
+        historical: ["mo dákú nígbà oyún àkọ́kọ́ mi"]
+      severe_vomiting:
+        present: ["mo ń bì gidigidi, oúnjẹ kankan kò dúró"]
+        absent: ["mi ò bì rárá"]
+      nausea_vomiting:
+        present: ["inú mi ń ru díẹ̀, mo bì lẹ́ẹ̀kan"]
+      low_back_pain:
+        present: ["ẹ̀yìn ń ro mi"]
+      leg_cramps:
+        present: ["iṣan ẹsẹ̀ mi ń le lálẹ́"]
+      heartburn:
+        present: ["àyà mi ń jó tí mo bá jẹun tán"]
+      fatigue:
+        present: ["ó ń rẹ̀ mí ju ti tẹ́lẹ̀ lọ"]
+      leg_oedema:
+        present: ["ẹsẹ̀ mi méjèèjì ti wú"]
+      dizziness:
+        present: ["òòyì ń kọ́ mi"]
+  pcm:
+    openers:
+      - "Good morning nurse."
+      - "I come for my check-up today."
+      - "Nurse, abeg hear wetin dey do me."
+      - "Na my visit be this, I don reach."
+    general:
+      - "If pregnant woman get fever, make she go hospital quick quick."
+      - "Make pregnant woman dey chop beans and vegetable well."
+      - "Our mama dem talk say pregnant woman suppose rest well."
+      - "E good make woman dey come clinic every time for her belle."
+      - "If pregnant woman leg swell, make she raise the leg up."
+    concepts:
+      vaginal_bleeding:
+        present: ["blood dey comot for my private part since morning", "I dey see blood for my pant"]
+        absent: ["no blood dey comot at all"]
+        possible: ["I no too sure, e be like say small blood dey come"]
+        historical: ["for my first belle, I bleed well well"]
+      convulsions:
+        present: ["fit catch me yesterday", "my body shake anyhow and I fall down yesterday"]
+        absent: ["I never get any fit for this belle"]
+        possible: ["I think say fit wan catch me last night"]
+        historical: ["fit catch me for my last belle"]
+      severe_headache:
+        present: ["my head dey bang me die, e no gree go", "serious headache dey worry me since two days"]
+        absent: ["my head no dey pain me at all"]
+        possible: ["I no sure whether na serious headache"]
+        historical: ["for my first belle, serious headache worry me"]
+      headache:
+        present: ["my head dey pain me small"]
+        absent: ["my head no dey pain me"]
+        possible: ["e be like say my head dey pain me small"]
+      blurred_vision:
+        present: ["my eye dey blur, I no dey see well", "everything dey look like shadow for my eye"]
+        absent: ["my eye clear, I dey see well"]
+        possible: ["I think say my eye dey blur small"]
+      swelling_face_hands:
+        present: ["my face and my hand don swell", "my hand swell so tey ring no fit enter again"]
+        absent: ["my face and hand no swell"]
+        possible: ["e be like say my face don swell small"]
+      severe_abdominal_pain:
+        present: ["my belle dey pain me die, I no fit stand up", "serious belle pain dey worry me"]
+        absent: ["my belle no dey pain me at all"]
+        possible: ["I no know whether na serious belle pain"]
+      abdominal_pain:
+        present: ["my belle dey pain me small small"]
+        absent: ["my belle no dey pain me"]
+      fever:
+        present: ["my body dey hot", "fever don dey worry me for three days"]
+        absent: ["I no get fever"]
+        possible: ["maybe na fever, my body dey hot for night"]
+        historical: ["fever catch me last month but e don go"]
+      reduced_fetal_movement:
+        present: ["the pikin for my belle no dey move like before", "the baby never move since yesterday"]
+        absent: ["the baby dey move well well"]
+        possible: ["I no sure whether the baby dey move as e suppose"]
+      leaking_amniotic_fluid:
+        present: ["water dey leak comot for my private part since night"]
+        absent: ["no water dey leak"]
+        possible: ["I think say small water dey leak"]
+      breathing_difficulty:
+        present: ["I no dey fit breathe well, breath dey cut me"]
+        absent: ["I dey breathe well"]
+        possible: ["e be like say breath dey cut me small"]
+      unconscious:
+        present: ["I faint yesterday, I no know wetin happen"]
+        absent: ["I never faint before"]
+        historical: ["I faint for my first belle"]
+      severe_vomiting:
+        present: ["I dey vomit anyhow, nothing dey stay for my belle"]
+        absent: ["I no dey vomit at all"]
+      nausea_vomiting:
+        present: ["I dey feel like to vomit small, I vomit once"]
+      low_back_pain:
+        present: ["my waist dey pain me"]
+      leg_cramps:
+        present: ["my leg dey cramp me for night"]
+      heartburn:
+        present: ["my chest dey burn me after I chop"]
+      fatigue:
+        present: ["I dey tire pass before"]
+      leg_oedema:
+        present: ["my two legs don swell"]
+      dizziness:
+        present: ["my head dey turn me"]
