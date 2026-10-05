@@ -1,6 +1,6 @@
 # Project status and working agreement
 
-_Last updated: 5 Oct 2026, ~22:00 WAT (session 8, end). Keep this file current; it is the handoff between work sessions (local or cloud)._
+_Last updated: 5 Oct 2026, ~23:00 WAT (session 8, end). Keep this file current; it is the handoff between work sessions (local or cloud)._
 
 ## Resume prompt (paste this into a new session)
 > Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`; branch `fewshot-and-scale` until its PR is merged, then `main`; start at "Cloud handoff") and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution (the `.githooks/commit-msg` guard rejects "claude", co-author or session lines), no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results. Run `./scripts/ci_local.sh` before every push. Start from "Right now" and "Next steps, in order". Keep only truly human tasks human (labelling, clinical decisions, my approvals); automate the rest robustly. Ask me before anything outward-facing or irreversible (the freeze included). Update this file and the resume prompt at the end of every work block.
@@ -20,20 +20,24 @@ Malik: "innovate… let us win the hackathon with bright and shining colours"; "
    - a short real-user pilot with the nurses (usability and time per record, 9 Oct).
 4. **Impact:** maternal danger signs caught offline, in Yoruba and Pidgin, on cheap phones.
 5. **Scalability:** hub and cloud architecture, Kubernetes, language packs.
-6. **Team:** named nurses, a doctor, a pharmacist; clinical sign-off with a traceability matrix.
+6. **Team:** two nurses (Rahmat, Success), a medical student and a graduate pharmacist; clinical sign-off with a traceability matrix.
 
-**Timeline:**
-| Day | Work |
-|---|---|
-| 3 Oct (Sat) | Run A finishes → push `checks` (repetition penalty, ASR language) → build the committee labelling job (ADR-0025) → apply the nurses' sign-off (traceability matrix) → G1 decision → build the ASR fine-tune (if ADR-0026 is approved) |
-| 4 Oct | `checks` results → committee run (3 models × 600) → strata, seeded sample uploaded to the review app → Malik, Rahmat and Success label about 70 each over 4–7 Oct → ASR fine-tune run |
-| 5 Oct | Stage-1 freeze (Malik's "yes") → training set → runs B and C |
-| 6 Oct | Dev evaluation → stage 2 (DPO) if needed |
-| 7 Oct | Scale, merge, GGUF + imatrix, laptop latency → ASR evaluation |
-| 8 Oct | Labels settled → stage-2 freeze → final scoring (base vs fine-tuned Q4, all strata, Belebele G2, audio condition) |
-| 9 Oct | Real-user pilot with the nurses on Takada + hub → demo recording |
-| 10 Oct | Benchmark report, model and dataset cards, technical docs, video edit |
-| 11 Oct | Clean submission repo, submit |
+**Build plan (revised 5 Oct, night). Target 11 Oct; deadline 12 Oct 23:59 WAT.**
+
+| Day | Work | Owner |
+|---|---|---|
+| 3–5 Oct ✅ | Committee labels and strata; stage-1 freeze; training data (ADR-0028); runs B, C and C-fs; GGUF Q4; **frozen verdicts: P1, P2, G1 and G2 all pass**; ASR fine-tune ships; Takada native apps and hub fixes (ADR-0027); review-app login fix; all PRs merged | agent |
+| **6 Oct** | **Salvage step** for schema-invalid outputs (new ADR; validated on dev and pilot only); **S4-W labelling starts** | agent; **Malik, Rahmat, Success** |
+| 7 Oct | Laptop CPU latency (Q4 + ASR, p50/p95 per visit); ASR decoding guard (audit H4); private HF upload of the models (needs the HF write token) | agent; Malik (token) |
+| **8 Oct** | **All S4-W labels in** → stage-2 freeze (ADR-0022) → PPI scoring of S4-W, transcript and ASR input (ADR-0025) | Malik, Rahmat, Success → agent |
+| 9 Oct | **Real-user pilot** with the nurses on Takada phones and the hub (usability, time per record), the first real-device check of the native apps; demo recording | Malik, nurses; agent |
+| 10 Oct | Benchmark report (frozen results + S4-W), model and dataset cards, error taxonomy (50 errors per system, eval plan §7), technical docs, video edit | agent; Malik (video) |
+| 11 Oct | Clean submission repo; submit | Malik |
+
+**People (reminders):**
+- **Malik:** label **120 S4-W clips** (60 stratum A + 60 stratum B) in the review app, **by 8 Oct**.
+- **Rahmat and Success:** **18 double-label clips each, by 8 Oct.** Malik to message them on 6 Oct.
+- **Abdullah:** logged in and started work on 5 Oct, after the login fix. Record his role and progress from the admin page; the agent cannot read the review store, because Vercel keeps those credentials write-only.
 
 GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 
@@ -52,10 +56,7 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 - **Every pre-registered frozen-test criterion passes:** P1, P2, G1 and G2 (`docs/results-frozen-tests.md`).
 - The ASR fine-tune ships (ADR-0026). Pidgin WER is 51.1% → 24.8%.
 
-**PRs (6 Oct):**
-- **#20** (review-app login fix) is merged.
-- **#19** (`fewshot-and-scale`) brings in latest `main`. The synthetic-data ADR is renumbered **ADR-0028**, because `main` already has ADR-0027 (Takada native apps). #19 includes #18's commits, so #18 is closed as included.
-- After #19 merges, work from `main`.
+**PRs:** #18, #19 and #20 are all in `main` (#19 merged 5 Oct 21:19 UTC; #18's commits arrived through it). **Work from `main`.** Malik has authorised the agent to merge PRs once CI passes. Malik is the sole contributor: no AI attribution anywhere.
 
 **Parallel work on 5 Oct (another session):** Takada native apps, hub fixes, and `PHC_ASR_MODELS` for the offline fine-tuned ASR. See "Right now (handoff, 5 Oct ~08:30 WAT…)" below. The 9 Oct pilot phones are the first real-device check.
 
