@@ -182,3 +182,32 @@ def test_transcribe_rejects_non_wav(tmp_path):
     r = c.post("/v1/transcribe?language=en", content=b"not audio")
     assert r.status_code == 415
     assert r.json()["error"]["code"] == "unsupported_audio"
+
+
+def test_asr_model_overrides_reach_the_transcriber(tmp_path, monkeypatch):
+    """The hub runs the fine-tuned ASR (ADR-0026) by pointing PHC_ASR_MODELS at local folders."""
+    from phc_scribe.api import app as app_module
+
+    monkeypatch.setattr(app_module.HfWhisperTranscriber, "transcribe", lambda self, s, lang: "x")
+    s = Settings(
+        env="dev",
+        db_path=str(tmp_path / "db"),
+        asr="hf",
+        asr_models=" yo=/models/asr-ft/yo , pcm=/models/asr-ft/pcm",
+    )
+    c = TestClient(create_app(s))
+    models = {
+        lang: c.post(f"/v1/transcribe?language={lang}", content=_wav()).json()["model"]
+        for lang in ("yo", "pcm", "en")
+    }
+    assert models == {
+        "yo": "/models/asr-ft/yo",
+        "pcm": "/models/asr-ft/pcm",
+        "en": "NCAIR1/NigerianAccentedEnglish",  # not overridden: the base model
+    }
+
+
+@pytest.mark.parametrize("bad", ["yo", "xx=/m", "yo=", "=/m"])
+def test_bad_asr_model_overrides_fail_at_start_up(tmp_path, bad):
+    with pytest.raises(RuntimeError, match="PHC_ASR_MODELS"):
+        create_app(Settings(env="dev", db_path=str(tmp_path / "db"), asr="hf", asr_models=bad))

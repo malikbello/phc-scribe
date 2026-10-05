@@ -106,3 +106,4 @@ PHC_API_KEY_HASHES=<hash> PHC_EXTRACTOR=llamacpp \
 | `PHC_DB` | `phc_scribe.sqlite3` | SQLite file for records |
 | `PHC_RATE_LIMIT_PER_MINUTE` | `60` | Requests per key per minute |
 | `PHC_ASR` | `off` | `hf` switches on `/v1/transcribe` (needs `torch` and `transformers`, and an HF token with N-ATLaS access) |
+| `PHC_ASR_MODELS` | (none) | Per-language model overrides, e.g. `yo=/models/asr-ft/yo,pcm=/models/asr-ft/pcm`: the clinic hub runs the fine-tuned ASR (ADR-0026) from local folders, with no network. A bad entry stops start-up. |

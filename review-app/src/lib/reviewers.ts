@@ -69,6 +69,16 @@ export function publicReviewer(r: Reviewer): PublicReviewer {
   return { id: r.id, name: r.name, role: r.role };
 }
 
+/**
+ * Codes reach reviewers through chat apps, which can add punctuation or invisible characters
+ * around them when copied ("omi-…," or a trailing full stop). A code is only letters, digits and
+ * one inner hyphen, so anything else at either end is dropped. Codes issued before this change
+ * normalise to themselves, so their stored hashes still match.
+ */
+export function normaliseCode(code: string): string {
+  return code.normalize("NFKC").replace(/^[^A-Za-z0-9]+|[^A-Za-z0-9]+$/g, "");
+}
+
 async function codeHash(code: string): Promise<string> {
   const key = await crypto.subtle.importKey(
     "raw",
@@ -77,7 +87,7 @@ async function codeHash(code: string): Promise<string> {
     false,
     ["sign"],
   );
-  const sig = new Uint8Array(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(code.trim())));
+  const sig = new Uint8Array(await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(normaliseCode(code))));
   return Array.from(sig, (b) => b.toString(16).padStart(2, "0")).join("");
 }
 
@@ -95,7 +105,7 @@ export async function findReviewer(id: string): Promise<Reviewer | undefined> {
 }
 
 export async function reviewerForCode(code: string): Promise<Reviewer | undefined> {
-  const probe = code.trim();
+  const probe = normaliseCode(code);
   if (!probe) return undefined;
   const hash = await codeHash(probe);
   // Env codes are hashed the same way, so every comparison is between fixed-length digests.
@@ -106,10 +116,22 @@ export async function reviewerForCode(code: string): Promise<Reviewer | undefine
 
 const WORDS = ["ewe", "odo", "oko", "ile", "oju", "ina", "omi", "igi", "ayo", "ire", "oba", "ona", "ofe", "iwa"];
 
+// No look-alikes (0/O/o, 1/l/I/i), so a code read off a phone screen can be typed correctly.
+export const CODE_ALPHABET = "23456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+const CODE_LENGTH = 14; // 55 symbols ^ 14 is about 81 bits
+
+/** Uniform random index below n (rejection sampling, so no modulo bias). */
+function randomIndex(n: number): number {
+  const limit = 256 - (256 % n);
+  for (;;) {
+    const [x] = crypto.getRandomValues(new Uint8Array(1));
+    if (x < limit) return x % n;
+  }
+}
+
 function newCode(): string {
-  const b = crypto.getRandomValues(new Uint8Array(13));
-  const tail = btoa(String.fromCharCode(...b.subarray(1))).replace(/[+/=]/g, "").slice(0, 14);
-  return `${WORDS[b[0] % WORDS.length]}-${tail}`;
+  const tail = Array.from({ length: CODE_LENGTH }, () => CODE_ALPHABET[randomIndex(CODE_ALPHABET.length)]).join("");
+  return `${WORDS[randomIndex(WORDS.length)]}-${tail}`;
 }
 
 function newId(name: string): string {

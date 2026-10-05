@@ -21,7 +21,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from phc_scribe import __version__
-from phc_scribe.api.asr import AudioError, HfWhisperTranscriber, Transcriber, read_wav
+from phc_scribe.api.asr import ASR_MODELS, AudioError, HfWhisperTranscriber, Transcriber, read_wav
 from phc_scribe.api.extractors import (
     Extractor,
     ExtractorError,
@@ -206,7 +206,7 @@ def create_app(
             else KeywordExtractor()
         )
     if transcriber is None and settings.asr == "hf":
-        transcriber = HfWhisperTranscriber()
+        transcriber = HfWhisperTranscriber({**ASR_MODELS, **settings.asr_model_overrides()})
     store = RecordStore(settings.db_path)
 
     app = FastAPI(
