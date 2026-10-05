@@ -1,6 +1,6 @@
 # Project status and working agreement
 
-_Last updated: 4 Oct 2026, ~16:00 WAT (session 8). Keep this file current; it is the handoff between work sessions (local or cloud)._
+_Last updated: 5 Oct 2026, ~22:00 WAT (session 8, end). Keep this file current; it is the handoff between work sessions (local or cloud)._
 
 ## Resume prompt (paste this into a new session)
 > Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`; branch `fewshot-and-scale` until its PR is merged, then `main`; start at "Cloud handoff") and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution (the `.githooks/commit-msg` guard rejects "claude", co-author or session lines), no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results. Run `./scripts/ci_local.sh` before every push. Start from "Right now" and "Next steps, in order". Keep only truly human tasks human (labelling, clinical decisions, my approvals); automate the rest robustly. Ask me before anything outward-facing or irreversible (the freeze included). Update this file and the resume prompt at the end of every work block.
@@ -43,6 +43,42 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 - **BP:** "14/9 doesn't mean 140/90". Shorthand or incomplete BP is never acted on and is flagged for recheck (both nurses, Q3/Q4).
 - **Uyo mapping:** both answered with specific mappings, so the ADR-0019 check can now run with `--confirmed-by`.
 - **Phrases, guide and rules:** 31 change requests, mostly local and lay phrasings (e.g. "running temperature", "serious stomach pain", "spotting", "pale +++", ">3 vomits a day") and follow-up tests (urinalysis every visit; PCV with bleeding). To be applied via a traceability matrix (each note → applied, or declined with a reason).
+
+## START HERE (5 Oct 2026, end of session 8): state and the exact next steps
+**Deadline:** NAIC submission 12 Oct 23:59 WAT; target 11 Oct.
+
+**Done:**
+- The fine-tuned model is selected (run C-fs) and shipped as an imatrix Q4_K_M GGUF for llama.cpp.
+- **Every pre-registered frozen-test criterion passes:** P1, P2, G1 and G2 (`docs/results-frozen-tests.md`).
+- The ASR fine-tune ships (ADR-0026). Pidgin WER is 51.1% → 24.8%.
+
+**Open PRs. Malik merges them; the agent cannot.**
+- **#18** ADR-0027 (synthetic danger-sign data)
+- **#19** `fewshot-and-scale`: model selection, the GGUF pipeline, the frozen verdicts and this file. It includes #18.
+- **#20** `login-code-forgiving`: review-app login accepts pasted punctuation; new codes have no look-alike characters.
+  - A reviewer (Abdullah) couldn't log in because a comma was pasted with the code.
+
+Until they're merged, work from `fewshot-and-scale`.
+
+**Next steps, in order:**
+1. **Salvage step for schema-invalid outputs** (post-freeze product fix; ADR needed). In the serving pipeline, drop `anc.tests` entries with no result or value, drop `other` medications without `name_text`, and de-duplicate findings, instead of rejecting the record.
+   - Reference logic: `repair()` in `scripts/g1_sensitivity.py`.
+   - Validate on dev and pilot only. **Never re-score the frozen sets to choose it.** Report the frozen-set effect as post hoc only, as in the results doc.
+2. **S4-W human labels (Malik's task)** in the review app: Malik 120 (60 from stratum A + 60 from stratum B); doubles Rahmat 18 and Success 18.
+   - Then the **stage-2 freeze**: `scripts/freeze_test_set.py`, as in ADR-0022.
+   - Then **PPI scoring** with `bench/ppi.py` (ADR-0025): transcript input, and ASR input with the base and fine-tuned ASR.
+3. **ASR decoding guard (audit H4)**, then re-score the ASR-input condition.
+4. **Laptop CPU latency:** Q4 GGUF on the i7-8665U with llama.cpp, plus ASR. Report p50/p95 per visit.
+5. **HF private upload:** needs Malik's HF write token (`HF_WRITE_TOKEN`). Run `scripts/publish_asr.py`, which refuses non-private repos. The LLM GGUF follows the same rule.
+6. **Takada/app integration** of the offline API; then the **demo video**; then the **error taxonomy** (50 errors per system, eval plan §7); then the **submission package**.
+
+**Malik-only items:**
+- merge the PRs;
+- label the S4-W clips;
+- the HF write token;
+- delete the misplaced Modal volume folder `C:` with `modal volume rm -r phc-scribe-runs "C:"` (a duplicate of `/_backup`).
+
+**A cloud session cannot reach Modal.** Modal jobs run from Malik's laptop. Everything else (code, docs, scoring from committed predictions) works in the cloud.
 
 ## Cloud handoff (4 Oct, session 8): where the work is
 **Git:**
