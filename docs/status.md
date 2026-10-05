@@ -44,6 +44,24 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 - **Uyo mapping:** both answered with specific mappings, so the ADR-0019 check can now run with `--confirmed-by`.
 - **Phrases, guide and rules:** 31 change requests, mostly local and lay phrasings (e.g. "running temperature", "serious stomach pain", "spotting", "pale +++", ">3 vomits a day") and follow-up tests (urinalysis every visit; PCV with bleeding). To be applied via a traceability matrix (each note → applied, or declined with a reason).
 
+## Right now (handoff, 5 Oct ~08:30 WAT: Takada, native apps and hub)
+- **Native apps (ADR-0027, Proposed):** Capacitor 8.5.2 wraps the same web build.
+  - takada-app `apps/mobile/android` and `apps/mobile/ios`.
+  - The debug APK builds locally and passes its checks: microphone the only sensitive permission, no backup, HTTPS only, no source maps.
+  - CI `native.yml`: an APK artifact, plus an iOS simulator build on `macos-26`.
+  - **Not yet run on a real device:** the 9 Oct pilot phones are the first real-device check.
+- **Distribution (Malik decides):**
+  - Android APK, sideloaded: $0, today.
+  - iPhone: the web app (Add to Home Screen): $0.
+  - App Store: $99/year.
+  - Google Play: $25 once, and new personal accounts need 12 testers for 14 days, so it is after 12 Oct.
+- **Hub fixes for the pilot:**
+  - Recordings over about 5½ minutes failed to draft (phc-scribe's 10 MB limit). The hub now splits them into 4-minute segments and validates PCM WAV at upload; the upload cap rises to 60 MB.
+  - phc-scribe `PHC_ASR_MODELS` lets the hub run the **fine-tuned** ASR from local folders, with `HF_HUB_OFFLINE=1`. Before this, the API could only load the base models.
+- **Web app:** source maps are no longer shipped (they exposed the readable source); `noindex` and `robots.txt` added. The stray Vercel project `dist` was deleted (Malik approved).
+- **Still open:** locking takada-app.vercel.app to Vercel login. Changing it via the API was blocked for Claude; Malik sets it in Vercel → takada-app → Settings → Deployment Protection → **All Deployments** + Vercel Authentication. That is free on Hobby; one shareable link is allowed per account.
+- The 2 Oct (Kaggle collect) and 5 Oct (MAMAI/freeze prep) check-ins fired late. Both were already handled by sessions 6 and 7, so they were not redone.
+
 ## Right now (handoff, 3 Oct ~20:00 WAT, session 7)
 **Results, 3 Oct night (Kaggle v17, `checks_asrft`, started by Malik):**
 - **ADR-0026 ships.** The fine-tuned N-ATLaS ASR cuts test-pool WER:
@@ -371,7 +389,8 @@ Judges see the repo, the benchmark report, the API docs and the demo. They don't
 | Start the Kaggle `trainprep` run from the notebook editor (HF_TOKEN attached) | **Running** (started by Malik; checked 2 Oct ~00:30 WAT) |
 | Check the Yorùbá tone marks in Takada (Ẹ káàárọ̀ / Ẹ káàsán / Ẹ káalẹ́ / Ẹ káàbọ̀) and get the Hausa, Igbo and Pidgin greetings checked | Pending (Malik) |
 | Try Takada on a real iPhone and Android phone: https://takada-app.vercel.app (iPhone: Safari → Share → Add to Home Screen; Android: Chrome → Install app) | Pending (Malik) |
-| Delete the stray Vercel project `dist` (dist-one-woad-17.vercel.app), created by a mis-targeted deploy on 2 Oct; it serves the same public app build, no data | Pending (Malik to approve deletion) |
+| Lock takada-app.vercel.app: Vercel → takada-app → Settings → Deployment Protection → All Deployments + Vercel Authentication (free) | Pending (Malik; the API change was blocked for Claude) |
+| Takada distribution: Android APK for the pilot (CI artifact); Apple Developer ($99/yr) and Google Play ($25) only after 12 Oct (ADR-0027) | Pending (Malik decides) |
 | Choose the $0 host for the Takada cloud server and the uptime monitor | Pending (Malik decides) |
 | Label the 50-clip teacher check when it arrives (~25 min) | Pending (Malik; file sent by the 2 Oct check-in) |
 | Say "yes" to the stage-1 freeze on 5 Oct | Pending (Malik) |
