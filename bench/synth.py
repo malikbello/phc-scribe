@@ -1,4 +1,4 @@
-"""In-language synthetic training statements written by base N-ATLaS (ADR-0027).
+"""In-language synthetic training statements written by base N-ATLaS (ADR-0028).
 
     python -m bench.synth spec --out data/private/synth/prompts.jsonl
     # on Modal: deploy/modal_train.py::synth (generate, rule-check, round-trip check)

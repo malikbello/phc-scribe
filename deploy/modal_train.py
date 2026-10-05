@@ -168,7 +168,7 @@ def evaluate(
 
 @app.function(image=image, gpu=GPU, secrets=SECRETS, volumes=VOLUMES, timeout=2 * 3600)
 def synth(prompts_jsonl: str, model: str, revision: str, attempts: int = 2) -> str:
-    """ADR-0027: base N-ATLaS writes the sentences, rule checks filter them, and N-ATLaS
+    """ADR-0028: base N-ATLaS writes the sentences, rule checks filter them, and N-ATLaS
     classifies each kept sentence again from scratch (round trip). Returns one JSON line per
     prompt: text, rule failure, round-trip class and whether it is kept."""
     import torch
@@ -242,7 +242,7 @@ def synth(prompts_jsonl: str, model: str, revision: str, attempts: int = 2) -> s
 
 @app.function(image=image, gpu=GPU, secrets=SECRETS, volumes=VOLUMES, timeout=2 * 3600)
 def translate(rows_jsonl: str, model: str, revision: str) -> str:
-    """ADR-0027 amendment: translate curated English sentences into Yoruba and Pidgin with
+    """ADR-0028 amendment: translate curated English sentences into Yoruba and Pidgin with
     N-ATLaS (greedy), back-translate to English, and keep a translation only if it passes the
     target-language rules, and the back-translation passes the English rules and still names
     the symptom."""

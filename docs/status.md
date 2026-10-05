@@ -53,7 +53,7 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 - The ASR fine-tune ships (ADR-0026). Pidgin WER is 51.1% → 24.8%.
 
 **Open PRs. Malik merges them; the agent cannot.**
-- **#18** ADR-0027 (synthetic danger-sign data)
+- **#18** ADR-0028 (synthetic danger-sign data)
 - **#19** `fewshot-and-scale`: model selection, the GGUF pipeline, the frozen verdicts and this file. It includes #18.
 - **#20** `login-code-forgiving`: review-app login accepts pasted punctuation; new codes have no look-alike characters.
   - A reviewer (Abdullah) couldn't log in because a comma was pasted with the code.
@@ -82,7 +82,7 @@ Until they're merged, work from `fewshot-and-scale`.
 
 ## Cloud handoff (4 Oct, session 8): where the work is
 **Git:**
-- `main` is behind. The newest work is on **`fewshot-and-scale`**: run C-fs selection, the GGUF pipeline, final scoring, the frozen-test verdicts, and this file. **Its PR includes PR #18 (ADR-0027).**
+- `main` is behind. The newest work is on **`fewshot-and-scale`**: run C-fs selection, the GGUF pipeline, final scoring, the frozen-test verdicts, and this file. **Its PR includes PR #18 (ADR-0028).**
 - **Malik merges both PRs** (merging is his approval step). Until then, a cloud session works from `fewshot-and-scale`, not `main`.
 
 **Not in git, by design:**
@@ -142,7 +142,7 @@ Details in `docs/results-frozen-tests.md`; `results/final/verdicts.json`, `resul
 - **Waiting on Malik:** "yes freeze" (then sft.v1 → Modal runs B, C); an HF write token (private model upload).
 
 - **4 Oct, stage-1 freeze done** (`data/bench/test-manifest.json`, sha256 `6b193157…`): G 300, H 454, S5 300, R 36, S4-W 600.
-- **4 Oct, ADR-0027 (synthetic danger-sign training data):**
+- **4 Oct, ADR-0028 (synthetic danger-sign training data):**
   - free generation failed in Yoruba and Pidgin;
   - curated English (152 sentences) plus translate-train Yoruba (45 sentences) → 118 synthetic items;
   - **sft.v1: 685 train / 127 dev** (`data/private/train/`).

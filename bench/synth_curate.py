@@ -1,5 +1,5 @@
 # ruff: noqa: E501  (REJECT/RELABEL keys are exact generated sentences and must stay unbroken)
-"""ADR-0027 amendment (4 Oct): curate the English synthetic sentences, then translate-train.
+"""ADR-0028 amendment (4 Oct): curate the English synthetic sentences, then translate-train.
 
     python -m bench.synth_curate --checked data/private/synth/checked.jsonl \
         --out data/private/synth/en.curated.jsonl

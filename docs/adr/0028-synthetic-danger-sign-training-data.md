@@ -1,4 +1,4 @@
-# ADR-0027: In-language synthetic training statements written by base N-ATLaS
+# ADR-0028: In-language synthetic training statements written by base N-ATLaS
 
 - **Status:** Accepted by Malik, 4 Oct 2026 ("do the fix and the models").
 - **Date:** 2026-10-04
