@@ -19,6 +19,7 @@ class Settings:
     extractor: str = "keyword"  # keyword | llamacpp
     llamacpp_url: str = "http://127.0.0.1:8080"
     llamacpp_model: str = "phc-scribe"
+    prompt_mode: str = "fewshot"  # the prompt the shipped model was evaluated with
     db_path: str = "phc_scribe.sqlite3"
     rate_limit_per_minute: int = 60
     max_text_chars: int = 8000
@@ -37,6 +38,7 @@ class Settings:
             extractor=e.get("PHC_EXTRACTOR", "keyword"),
             llamacpp_url=e.get("PHC_LLAMACPP_URL", "http://127.0.0.1:8080"),
             llamacpp_model=e.get("PHC_LLAMACPP_MODEL", "phc-scribe"),
+            prompt_mode=e.get("PHC_PROMPT_MODE", "fewshot"),
             db_path=e.get("PHC_DB", "phc_scribe.sqlite3"),
             rate_limit_per_minute=int(e.get("PHC_RATE_LIMIT_PER_MINUTE", "60")),
             asr=e.get("PHC_ASR", "off"),

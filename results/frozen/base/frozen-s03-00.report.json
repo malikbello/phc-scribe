@@ -1,0 +1,203 @@
+{
+  "system": [
+    "natlas-fewshot-rp1.12-frozen-s03-00"
+  ],
+  "n_items": 161,
+  "overall": {
+    "danger_recall": {
+      "point": null,
+      "low": null,
+      "high": null,
+      "n_items": 161,
+      "n_groups": 2
+    },
+    "micro_f1": {
+      "point": 0.0,
+      "low": 0.0,
+      "high": 0.0,
+      "n_items": 161,
+      "n_groups": 2
+    },
+    "false_alarm_rate": {
+      "point": 0.118,
+      "low": 0.0781,
+      "high": 0.2727,
+      "n_items": 161,
+      "n_groups": 2
+    },
+    "item_danger_detection": {
+      "point": null,
+      "low": null,
+      "high": null,
+      "n_items": 161,
+      "n_groups": 2
+    },
+    "bp_exact": {
+      "point": null,
+      "low": null,
+      "high": null,
+      "n_items": 161,
+      "n_groups": 2
+    },
+    "ga_exact": {
+      "point": null,
+      "low": null,
+      "high": null,
+      "n_items": 161,
+      "n_groups": 2
+    },
+    "schema_valid_rate": {
+      "point": 0.9627,
+      "low": 0.9609,
+      "high": 0.9697,
+      "n_items": 161,
+      "n_groups": 2
+    },
+    "ungrounded_rate": {
+      "point": 0.2124,
+      "low": 0.2051,
+      "high": 0.2286,
+      "n_items": 161,
+      "n_groups": 2
+    },
+    "rule_flag_recall": {
+      "point": null,
+      "low": null,
+      "high": null,
+      "n_items": 161,
+      "n_groups": 2
+    }
+  },
+  "by_language": {
+    "en": {
+      "danger_recall": {
+        "point": null,
+        "low": null,
+        "high": null,
+        "n_items": 128,
+        "n_groups": 1
+      },
+      "micro_f1": {
+        "point": 0.0,
+        "low": 0.0,
+        "high": 0.0,
+        "n_items": 128,
+        "n_groups": 1
+      },
+      "false_alarm_rate": {
+        "point": 0.0781,
+        "low": 0.0781,
+        "high": 0.0781,
+        "n_items": 128,
+        "n_groups": 1
+      },
+      "item_danger_detection": {
+        "point": null,
+        "low": null,
+        "high": null,
+        "n_items": 128,
+        "n_groups": 1
+      },
+      "bp_exact": {
+        "point": null,
+        "low": null,
+        "high": null,
+        "n_items": 128,
+        "n_groups": 1
+      },
+      "ga_exact": {
+        "point": null,
+        "low": null,
+        "high": null,
+        "n_items": 128,
+        "n_groups": 1
+      },
+      "schema_valid_rate": {
+        "point": 0.9609,
+        "low": 0.9609,
+        "high": 0.9609,
+        "n_items": 128,
+        "n_groups": 1
+      },
+      "ungrounded_rate": {
+        "point": 0.2051,
+        "low": 0.2051,
+        "high": 0.2051,
+        "n_items": 128,
+        "n_groups": 1
+      },
+      "rule_flag_recall": {
+        "point": null,
+        "low": null,
+        "high": null,
+        "n_items": 128,
+        "n_groups": 1
+      }
+    },
+    "yo": {
+      "danger_recall": {
+        "point": null,
+        "low": null,
+        "high": null,
+        "n_items": 33,
+        "n_groups": 1
+      },
+      "micro_f1": {
+        "point": 0.0,
+        "low": 0.0,
+        "high": 0.0,
+        "n_items": 33,
+        "n_groups": 1
+      },
+      "false_alarm_rate": {
+        "point": 0.2727,
+        "low": 0.2727,
+        "high": 0.2727,
+        "n_items": 33,
+        "n_groups": 1
+      },
+      "item_danger_detection": {
+        "point": null,
+        "low": null,
+        "high": null,
+        "n_items": 33,
+        "n_groups": 1
+      },
+      "bp_exact": {
+        "point": null,
+        "low": null,
+        "high": null,
+        "n_items": 33,
+        "n_groups": 1
+      },
+      "ga_exact": {
+        "point": null,
+        "low": null,
+        "high": null,
+        "n_items": 33,
+        "n_groups": 1
+      },
+      "schema_valid_rate": {
+        "point": 0.9697,
+        "low": 0.9697,
+        "high": 0.9697,
+        "n_items": 33,
+        "n_groups": 1
+      },
+      "ungrounded_rate": {
+        "point": 0.2286,
+        "low": 0.2286,
+        "high": 0.2286,
+        "n_items": 33,
+        "n_groups": 1
+      },
+      "rule_flag_recall": {
+        "point": null,
+        "low": null,
+        "high": null,
+        "n_items": 33,
+        "n_groups": 1
+      }
+    }
+  }
+}

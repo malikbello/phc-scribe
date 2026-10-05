@@ -1,0 +1,77 @@
+{
+  "run_name": "natlas-qlora-v1-weighted-fs",
+  "examples": 683,
+  "skipped_too_long": 2,
+  "critical_weight": 3.0,
+  "weight_misaligned": 0,
+  "train_loss": 0.8251836216726969,
+  "steps": 86,
+  "minutes": 66.8,
+  "log": [
+    {
+      "loss": 1.9391281127929687,
+      "grad_norm": 6.092360973358154,
+      "learning_rate": 9.871613701966067e-05,
+      "epoch": 0.2342606149341142,
+      "step": 10
+    },
+    {
+      "loss": 1.0045058250427246,
+      "grad_norm": 10.284037590026855,
+      "learning_rate": 9.110780058474052e-05,
+      "epoch": 0.4685212298682284,
+      "step": 20
+    },
+    {
+      "loss": 0.9592904090881348,
+      "grad_norm": 4.029441833496094,
+      "learning_rate": 7.768008541347423e-05,
+      "epoch": 0.7027818448023426,
+      "step": 30
+    },
+    {
+      "loss": 0.9099872589111329,
+      "grad_norm": NaN,
+      "learning_rate": 6.0333870634247645e-05,
+      "epoch": 0.9370424597364568,
+      "step": 40
+    },
+    {
+      "loss": 0.654544448852539,
+      "grad_norm": 3.359564781188965,
+      "learning_rate": 4.1524753287195165e-05,
+      "epoch": 1.16398243045388,
+      "step": 50
+    },
+    {
+      "loss": 0.5250794887542725,
+      "grad_norm": 3.3451333045959473,
+      "learning_rate": 2.391542453997578e-05,
+      "epoch": 1.3982430453879942,
+      "step": 60
+    },
+    {
+      "loss": 0.45098319053649905,
+      "grad_norm": 3.1379716396331787,
+      "learning_rate": 9.998728860433276e-06,
+      "epoch": 1.6325036603221084,
+      "step": 70
+    },
+    {
+      "loss": 0.39249625205993655,
+      "grad_norm": 4.63002347946167,
+      "learning_rate": 1.7447673429033362e-06,
+      "epoch": 1.8667642752562226,
+      "step": 80
+    },
+    {
+      "train_runtime": 4004.7048,
+      "train_samples_per_second": 0.341,
+      "train_steps_per_second": 0.021,
+      "total_flos": 1.1857535911693517e+17,
+      "train_loss": 0.8251836216726969,
+      "epoch": 2.0,
+      "step": 86
+    }
+  ]
+}

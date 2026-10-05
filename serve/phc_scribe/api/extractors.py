@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from typing import Protocol
 
-from phc_scribe.encounter import Encounter, decoding_schema
+from phc_scribe.encounter import Encounter
 
 
 class ExtractorError(Exception):
@@ -33,21 +33,30 @@ class LlamaCppExtractor:
     """The fine-tuned N-ATLaS GGUF behind a llama.cpp server, with the record schema as
     a decoding constraint (the same constraint the benchmark uses)."""
 
-    def __init__(self, url: str, model: str, timeout: float = 120.0):
+    def __init__(
+        self,
+        url: str,
+        model: str,
+        timeout: float = 120.0,
+        mode: str = "fewshot",
+        repetition_penalty: float = 1.12,
+    ):
         import httpx
 
         self.name = f"llamacpp:{model}"
         self._client = httpx.Client(base_url=url, timeout=timeout)
         self._model = model
+        self._mode = mode  # the prompt the shipped model was trained and evaluated with
+        self._repetition_penalty = repetition_penalty
 
     def extract(self, text: str) -> Encounter:
         from bench.prompts import build_messages
+        from bench.runners.llamacpp import request_body
 
+        # The exact request the benchmark's llama.cpp rung sends (evaluate what we ship).
         body = {
             "model": self._model,
-            "messages": build_messages(text, "finetuned"),
-            "temperature": 0,
-            "response_format": {"type": "json_object", "schema": decoding_schema()},
+            **request_body(build_messages(text, self._mode), self._repetition_penalty, 768),  # pyright: ignore[reportArgumentType]
         }
         try:
             r = self._client.post("/v1/chat/completions", json=body)

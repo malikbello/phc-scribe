@@ -159,6 +159,7 @@ def hf_generator(
     max_new_tokens: int = 768,
     revision: str | None = None,
     adapter: str | None = None,
+    adapter_scale: float = 1.0,
     constrained: bool = True,
     repetition_penalty: float = 1.0,
 ) -> tuple[Generate, BatchGenerate]:
@@ -193,6 +194,12 @@ def hf_generator(
         from peft import PeftModel  # pyright: ignore[reportMissingImports]
 
         model = PeftModel.from_pretrained(model, adapter)
+        if adapter_scale != 1.0:
+            # WiSE-FT-style interpolation (ADR-0024): W + s * dW, by scaling each LoRA layer.
+            for module in model.modules():
+                scaling = getattr(module, "scaling", None)
+                if isinstance(scaling, dict):
+                    module.scaling = {k: v * adapter_scale for k, v in scaling.items()}
     model.eval()
     # Pre-quantised 4-bit checkpoints often compute in bfloat16, which a T4 (compute
     # capability 7.5) only emulates, about 10x slower. Compute in float16 there instead.
@@ -280,6 +287,9 @@ def main() -> int:
     parser.add_argument("--model", required=True)
     parser.add_argument("--revision")
     parser.add_argument("--adapter", help="LoRA adapter directory to apply (fine-tuned rungs)")
+    parser.add_argument(
+        "--adapter-scale", type=float, default=1.0, help="s in W + s*dW (ADR-0024 scaled merge)"
+    )
     parser.add_argument("--system", help="system name in reports (default: derived from model)")
     parser.add_argument("--mode", choices=["zeroshot", "fewshot", "finetuned"], default="fewshot")
     parser.add_argument("--items", type=Path, required=True)
@@ -321,6 +331,7 @@ def main() -> int:
         max_new_tokens=args.max_new_tokens,
         revision=args.revision,
         adapter=args.adapter,
+        adapter_scale=args.adapter_scale,
         constrained=not args.unconstrained,
         repetition_penalty=args.repetition_penalty,
     )

@@ -1,9 +1,9 @@
 # Project status and working agreement
 
-_Last updated: 3 Oct 2026, afternoon WAT (session 6). Keep this file current; it is the handoff between work sessions._
+_Last updated: 5 Oct 2026, ~22:00 WAT (session 8, end). Keep this file current; it is the handoff between work sessions (local or cloud)._
 
 ## Resume prompt (paste this into a new session)
-> Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`, branch `main`) and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution (the `.githooks/commit-msg` guard rejects "claude", co-author or session lines), no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results. Run `./scripts/ci_local.sh` before every push. Start from "Right now" and "Next steps, in order". Keep only truly human tasks human (labelling, clinical decisions, my approvals); automate the rest robustly. Ask me before anything outward-facing or irreversible (the freeze included). Update this file and the resume prompt at the end of every work block.
+> Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`; branch `fewshot-and-scale` until its PR is merged, then `main`; start at "Cloud handoff") and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution (the `.githooks/commit-msg` guard rejects "claude", co-author or session lines), no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results. Run `./scripts/ci_local.sh` before every push. Start from "Right now" and "Next steps, in order". Keep only truly human tasks human (labelling, clinical decisions, my approvals); automate the rest robustly. Ask me before anything outward-facing or irreversible (the freeze included). Update this file and the resume prompt at the end of every work block.
 
 ## Plan to win (agreed 3 Oct, session 6). Submission target 11 Oct; deadline 12 Oct 23:59 WAT
 Malik: "innovate… let us win the hackathon with bright and shining colours"; "the best way without having to rely on people". Labellers: Malik, Rahmat, Success.
@@ -43,6 +43,79 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 - **BP:** "14/9 doesn't mean 140/90". Shorthand or incomplete BP is never acted on and is flagged for recheck (both nurses, Q3/Q4).
 - **Uyo mapping:** both answered with specific mappings, so the ADR-0019 check can now run with `--confirmed-by`.
 - **Phrases, guide and rules:** 31 change requests, mostly local and lay phrasings (e.g. "running temperature", "serious stomach pain", "spotting", "pale +++", ">3 vomits a day") and follow-up tests (urinalysis every visit; PCV with bleeding). To be applied via a traceability matrix (each note → applied, or declined with a reason).
+
+## START HERE (5 Oct 2026, end of session 8): state and the exact next steps
+**Deadline:** NAIC submission 12 Oct 23:59 WAT; target 11 Oct.
+
+**Done:**
+- The fine-tuned model is selected (run C-fs) and shipped as an imatrix Q4_K_M GGUF for llama.cpp.
+- **Every pre-registered frozen-test criterion passes:** P1, P2, G1 and G2 (`docs/results-frozen-tests.md`).
+- The ASR fine-tune ships (ADR-0026). Pidgin WER is 51.1% → 24.8%.
+
+**PRs (6 Oct):**
+- **#20** (review-app login fix) is merged.
+- **#19** (`fewshot-and-scale`) brings in latest `main`. The synthetic-data ADR is renumbered **ADR-0028**, because `main` already has ADR-0027 (Takada native apps). #19 includes #18's commits, so #18 is closed as included.
+- After #19 merges, work from `main`.
+
+**Parallel work on 5 Oct (another session):** Takada native apps, hub fixes, and `PHC_ASR_MODELS` for the offline fine-tuned ASR. See "Right now (handoff, 5 Oct ~08:30 WAT…)" below. The 9 Oct pilot phones are the first real-device check.
+
+**Next steps, in order:**
+1. **Salvage step for schema-invalid outputs** (post-freeze product fix; ADR needed). In the serving pipeline, drop `anc.tests` entries with no result or value, drop `other` medications without `name_text`, and de-duplicate findings, instead of rejecting the record.
+   - Reference logic: `repair()` in `scripts/g1_sensitivity.py`.
+   - Validate on dev and pilot only. **Never re-score the frozen sets to choose it.** Report the frozen-set effect as post hoc only, as in the results doc.
+2. **S4-W human labels (Malik's task)** in the review app: Malik 120 (60 from stratum A + 60 from stratum B); doubles Rahmat 18 and Success 18.
+   - Then the **stage-2 freeze**: `scripts/freeze_test_set.py`, as in ADR-0022.
+   - Then **PPI scoring** with `bench/ppi.py` (ADR-0025): transcript input, and ASR input with the base and fine-tuned ASR.
+3. **ASR decoding guard (audit H4)**, then re-score the ASR-input condition.
+4. **Laptop CPU latency:** Q4 GGUF on the i7-8665U with llama.cpp, plus ASR. Report p50/p95 per visit.
+5. **HF private upload:** needs Malik's HF write token (`HF_WRITE_TOKEN`). Run `scripts/publish_asr.py`, which refuses non-private repos. The LLM GGUF follows the same rule.
+6. **Takada/app integration** of the offline API; then the **demo video**; then the **error taxonomy** (50 errors per system, eval plan §7); then the **submission package**.
+
+**Malik-only items:**
+- merge the PRs;
+- label the S4-W clips;
+- the HF write token;
+- delete the misplaced Modal volume folder `C:` with `modal volume rm -r phc-scribe-runs "C:"` (a duplicate of `/_backup`).
+
+**A cloud session cannot reach Modal.** Modal jobs run from Malik's laptop. Everything else (code, docs, scoring from committed predictions) works in the cloud.
+
+## Cloud handoff (4 Oct, session 8): where the work is
+**Git:**
+- `main` is behind. The newest work is on **`fewshot-and-scale`**: run C-fs selection, the GGUF pipeline, final scoring, the frozen-test verdicts, and this file. **Its PR includes PR #18 (ADR-0028).**
+- **Malik merges both PRs** (merging is his approval step). Until then, a cloud session works from `fewshot-and-scale`, not `main`.
+
+**Not in git, by design:**
+- `data/private/` holds real transcripts, training sets, the committee outputs, label queues and the ASR models.
+  - A copy without the models is on the private Modal volume `phc-scribe-runs` at `/_backup/data-private-20261004/`.
+  - The ASR models are in the Kaggle `phc-scribe-baseline` v17 output.
+- Modal volume `phc-scribe-runs` holds the adapters (`/<run>/adapter`), the GGUFs (`/<run>/gguf/`) and every eval (`/_eval/<name>/`).
+- Secrets: env vars only (see Environment). Never in git.
+
+**Rebuild the frozen P1/P2/G1 items file:**
+`cat data/bench/g.20261002.jsonl data/bench/s5.20261004.jsonl data/bench/h.adeola.jsonl data/bench/r.20261004.jsonl > /tmp/frozen-tests.jsonl` (1,090 items, checked).
+
+**Which machine does what:**
+- **Local laptop only (a cloud session can't reach Modal):** Modal jobs (`deploy/modal_*.py`); the S4-W labelling export from the review app; laptop CPU latency.
+- **Cloud is fine:** code, docs, scoring from committed predictions (`scripts/final_scores.py`, `scripts/g1_sensitivity.py`), PPI once the labels are exported.
+
+**End of every work block (pipeline rule):**
+1. Commit.
+2. `./scripts/ci_local.sh`.
+3. Push the branch and open or refresh its PR.
+4. Update this file.
+
+Nothing needed to resume may live only on one machine, except `data/private/` (backed up as above) and secrets.
+
+## Right now (4 Oct ~15:00 WAT): frozen-test verdicts, all pass
+Details in `docs/results-frozen-tests.md`; `results/final/verdicts.json`, `results/final/g1-sensitivity.json`.
+- **P1 (danger-sign recall, fine-tuned Q4 − base HF):** Yoruba 52.6% → 67.9%; Pidgin 68.0% → 76.9%; English 80.2% → 91.0%. Every lower bound is above 0.
+- **P2 (micro-F1):** passes in all three languages.
+- **G1 (false alarms on H):** 15.9% → 9.3%, −6.6 [−10.8, −2.7]. It still passes in the worst case (every invalid output counted as a false alarm: upper bound +1.98).
+- **G2 (Belebele):** −0.7 [−2.1, +0.8].
+- **Next:**
+  - salvage step for schema-invalid outputs (tests without a result: 29 errors), validated on dev and pilot only;
+  - S4-W labelling, then the stage-2 freeze and PPI;
+  - laptop CPU latency; demo.
 
 ## Right now (handoff, 5 Oct ~08:30 WAT: Takada, native apps and hub)
 - **Native apps (ADR-0027, Proposed):** Capacitor 8.5.2 wraps the same web build.
@@ -84,6 +157,13 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 - **4 Oct, pre-freeze audit** (`docs/audit/2026-10-04-pre-freeze-audit.md`): S4-W can't test P1 (≈2.5% danger prevalence). **S5 built:** 300 constructed yo/pcm statements, 78 danger items per language, gold by construction. Eval plan §6a: P1 on S5 (yo, pcm) and G (en). Malik ruled out recording role-play.
 - **4 Oct, committee done; human sample live:** 180 clips in the review app (Malik labels; Rahmat 36 doubles). Old empty 600 set deleted.
 - **Waiting on Malik:** "yes freeze" (then sft.v1 → Modal runs B, C); an HF write token (private model upload).
+
+- **4 Oct, stage-1 freeze done** (`data/bench/test-manifest.json`, sha256 `6b193157…`): G 300, H 454, S5 300, R 36, S4-W 600.
+- **4 Oct, ADR-0028 (synthetic danger-sign training data):**
+  - free generation failed in Yoruba and Pidgin;
+  - curated English (152 sentences) plus translate-train Yoruba (45 sentences) → 118 synthetic items;
+  - **sft.v1: 685 train / 127 dev** (`data/private/train/`).
+  - **Runs B (plain) and C (weighted ×3) are training on Modal.** Results go to `results/modal/<run>/`.
 
 **Malik's decisions, 3 Oct:** ADR-0026 (ASR fine-tune) **accepted**; G1 tightened to **+2 points** (eval plan §6), as both nurses asked; reviews he holds are open issues (#8 phrase bank, #9 teacher check, #10 start the Kaggle run); he will say when he wants to do them, and Claude guides.
 

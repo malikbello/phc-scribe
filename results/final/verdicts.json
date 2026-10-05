@@ -1,0 +1,387 @@
+{
+  "sets": {
+    "S5 yo": {
+      "base_hf": {
+        "n": 150,
+        "danger_recall": 0.5256,
+        "micro_f1": 0.2607,
+        "false_alarm_rate": 0.4722,
+        "schema_valid_rate": 1.0
+      },
+      "ft_q4": {
+        "n": 150,
+        "danger_recall": 0.6795,
+        "micro_f1": 0.3649,
+        "false_alarm_rate": 0.125,
+        "schema_valid_rate": 0.9933
+      },
+      "ft_hf": {
+        "n": 150,
+        "danger_recall": 0.6795,
+        "micro_f1": 0.4028,
+        "false_alarm_rate": 0.0972,
+        "schema_valid_rate": 1.0
+      },
+      "base_q4": {
+        "n": 150,
+        "danger_recall": 0.5256,
+        "micro_f1": 0.265,
+        "false_alarm_rate": 0.5833,
+        "schema_valid_rate": 1.0
+      },
+      "ft_q4_vs_base_hf": {
+        "baseline_system": [
+          "natlas-fewshot-rp1.12-frozen-s02"
+        ],
+        "diff": {
+          "danger_recall": {
+            "point": 0.1538,
+            "low": 0.0476,
+            "high": 0.2639,
+            "n_items": 150,
+            "n_groups": 150
+          },
+          "micro_f1": {
+            "point": 0.1042,
+            "low": 0.037,
+            "high": 0.1766,
+            "n_items": 150,
+            "n_groups": 150
+          },
+          "false_alarm_rate": {
+            "point": -0.3472,
+            "low": -0.4776,
+            "high": -0.2169,
+            "n_items": 150,
+            "n_groups": 150
+          }
+        },
+        "mcnemar_item_danger_detection": {
+          "only_baseline": 4,
+          "only_candidate": 16,
+          "p_value": 0.01181793212890625
+        }
+      }
+    },
+    "S5 pcm": {
+      "base_hf": {
+        "n": 150,
+        "danger_recall": 0.6795,
+        "micro_f1": 0.4764,
+        "false_alarm_rate": 0.4583,
+        "schema_valid_rate": 0.9933
+      },
+      "ft_q4": {
+        "n": 150,
+        "danger_recall": 0.7692,
+        "micro_f1": 0.5754,
+        "false_alarm_rate": 0.2917,
+        "schema_valid_rate": 1.0
+      },
+      "ft_hf": {
+        "n": 150,
+        "danger_recall": 0.7949,
+        "micro_f1": 0.6024,
+        "false_alarm_rate": 0.3333,
+        "schema_valid_rate": 1.0
+      },
+      "base_q4": {
+        "n": 150,
+        "danger_recall": 0.6795,
+        "micro_f1": 0.4558,
+        "false_alarm_rate": 0.4722,
+        "schema_valid_rate": 0.9933
+      },
+      "ft_q4_vs_base_hf": {
+        "baseline_system": [
+          "natlas-fewshot-rp1.12-frozen-s02"
+        ],
+        "diff": {
+          "danger_recall": {
+            "point": 0.0897,
+            "low": 0.0127,
+            "high": 0.1724,
+            "n_items": 150,
+            "n_groups": 150
+          },
+          "micro_f1": {
+            "point": 0.099,
+            "low": 0.0474,
+            "high": 0.1504,
+            "n_items": 150,
+            "n_groups": 150
+          },
+          "false_alarm_rate": {
+            "point": -0.1667,
+            "low": -0.2754,
+            "high": -0.0563,
+            "n_items": 150,
+            "n_groups": 150
+          }
+        },
+        "mcnemar_item_danger_detection": {
+          "only_baseline": 2,
+          "only_candidate": 9,
+          "p_value": 0.0654296875
+        }
+      }
+    },
+    "G en": {
+      "base_hf": {
+        "n": 300,
+        "danger_recall": 0.8023,
+        "micro_f1": 0.4711,
+        "false_alarm_rate": 0.2533,
+        "schema_valid_rate": 0.9867
+      },
+      "ft_q4": {
+        "n": 300,
+        "danger_recall": 0.9096,
+        "micro_f1": 0.6854,
+        "false_alarm_rate": 0.2667,
+        "schema_valid_rate": 0.9967
+      },
+      "ft_hf": {
+        "n": 300,
+        "danger_recall": 0.887,
+        "micro_f1": 0.7184,
+        "false_alarm_rate": 0.24,
+        "schema_valid_rate": 1.0
+      },
+      "base_q4": {
+        "n": 300,
+        "danger_recall": 0.8136,
+        "micro_f1": 0.4843,
+        "false_alarm_rate": 0.18,
+        "schema_valid_rate": 0.9667
+      },
+      "ft_q4_vs_base_hf": {
+        "baseline_system": [
+          "natlas-fewshot-rp1.12-frozen-s00",
+          "natlas-fewshot-rp1.12-frozen-s01",
+          "natlas-fewshot-rp1.12-frozen-s02"
+        ],
+        "diff": {
+          "danger_recall": {
+            "point": 0.1073,
+            "low": 0.0402,
+            "high": 0.1765,
+            "n_items": 300,
+            "n_groups": 300
+          },
+          "micro_f1": {
+            "point": 0.2143,
+            "low": 0.1701,
+            "high": 0.2573,
+            "n_items": 300,
+            "n_groups": 300
+          },
+          "false_alarm_rate": {
+            "point": 0.0133,
+            "low": -0.0769,
+            "high": 0.1014,
+            "n_items": 300,
+            "n_groups": 300
+          }
+        },
+        "mcnemar_item_danger_detection": {
+          "only_baseline": 9,
+          "only_candidate": 26,
+          "p_value": 0.0059881205670535564
+        }
+      }
+    },
+    "H": {
+      "base_hf": {
+        "n": 454,
+        "danger_recall": null,
+        "micro_f1": 0.0,
+        "false_alarm_rate": 0.1586,
+        "schema_valid_rate": 0.9736
+      },
+      "ft_q4": {
+        "n": 454,
+        "danger_recall": null,
+        "micro_f1": 0.0,
+        "false_alarm_rate": 0.0925,
+        "schema_valid_rate": 0.9273
+      },
+      "ft_hf": {
+        "n": 454,
+        "danger_recall": null,
+        "micro_f1": 0.0,
+        "false_alarm_rate": 0.1123,
+        "schema_valid_rate": 0.9978
+      },
+      "base_q4": {
+        "n": 454,
+        "danger_recall": null,
+        "micro_f1": 0.0,
+        "false_alarm_rate": 0.2687,
+        "schema_valid_rate": 0.9185
+      },
+      "ft_q4_vs_base_hf": {
+        "baseline_system": [
+          "natlas-fewshot-rp1.12-frozen-s02",
+          "natlas-fewshot-rp1.12-frozen-s03-00",
+          "natlas-fewshot-rp1.12-frozen-s03-01",
+          "natlas-fewshot-rp1.12-frozen-s03-02"
+        ],
+        "diff": {
+          "danger_recall": {
+            "point": null,
+            "low": null,
+            "high": null,
+            "n_items": 454,
+            "n_groups": 3
+          },
+          "micro_f1": {
+            "point": 0.0,
+            "low": 0.0,
+            "high": 0.0,
+            "n_items": 454,
+            "n_groups": 3
+          },
+          "false_alarm_rate": {
+            "point": -0.0661,
+            "low": -0.1081,
+            "high": -0.027,
+            "n_items": 454,
+            "n_groups": 3
+          }
+        },
+        "mcnemar_item_danger_detection": {
+          "only_baseline": 0,
+          "only_candidate": 0,
+          "p_value": 1.0
+        }
+      }
+    },
+    "R": {
+      "base_hf": {
+        "n": 36,
+        "danger_recall": 0.8125,
+        "micro_f1": 0.5747,
+        "false_alarm_rate": 0.5714,
+        "schema_valid_rate": 1.0
+      },
+      "ft_q4": {
+        "n": 36,
+        "danger_recall": 0.75,
+        "micro_f1": 0.5682,
+        "false_alarm_rate": 0.4762,
+        "schema_valid_rate": 1.0
+      },
+      "ft_hf": {
+        "n": 36,
+        "danger_recall": 0.8125,
+        "micro_f1": 0.5747,
+        "false_alarm_rate": 0.5238,
+        "schema_valid_rate": 1.0
+      },
+      "base_q4": {
+        "n": 36,
+        "danger_recall": 0.75,
+        "micro_f1": 0.5517,
+        "false_alarm_rate": 0.619,
+        "schema_valid_rate": 0.9722
+      },
+      "ft_q4_vs_base_hf": {
+        "baseline_system": [
+          "natlas-fewshot-rp1.12-frozen-s03-02"
+        ],
+        "diff": {
+          "danger_recall": {
+            "point": -0.0625,
+            "low": -0.2632,
+            "high": 0.1538,
+            "n_items": 36,
+            "n_groups": 36
+          },
+          "micro_f1": {
+            "point": -0.0065,
+            "low": -0.1146,
+            "high": 0.1111,
+            "n_items": 36,
+            "n_groups": 36
+          },
+          "false_alarm_rate": {
+            "point": -0.0952,
+            "low": -0.2381,
+            "high": 0.0,
+            "n_items": 36,
+            "n_groups": 36
+          }
+        },
+        "mcnemar_item_danger_detection": {
+          "only_baseline": 2,
+          "only_candidate": 1,
+          "p_value": 1.0
+        }
+      }
+    }
+  },
+  "verdicts": {
+    "P1": {
+      "S5 yo": {
+        "point": 0.1538,
+        "low": 0.0476,
+        "high": 0.2639,
+        "n_items": 150,
+        "n_groups": 150,
+        "passes": true
+      },
+      "S5 pcm": {
+        "point": 0.0897,
+        "low": 0.0127,
+        "high": 0.1724,
+        "n_items": 150,
+        "n_groups": 150,
+        "passes": true
+      },
+      "G en": {
+        "point": 0.1073,
+        "low": 0.0402,
+        "high": 0.1765,
+        "n_items": 300,
+        "n_groups": 300,
+        "passes": true
+      }
+    },
+    "P2": {
+      "S5 yo": {
+        "point": 0.1042,
+        "low": 0.037,
+        "high": 0.1766,
+        "n_items": 150,
+        "n_groups": 150,
+        "passes": true
+      },
+      "S5 pcm": {
+        "point": 0.099,
+        "low": 0.0474,
+        "high": 0.1504,
+        "n_items": 150,
+        "n_groups": 150,
+        "passes": true
+      },
+      "G en": {
+        "point": 0.2143,
+        "low": 0.1701,
+        "high": 0.2573,
+        "n_items": 300,
+        "n_groups": 300,
+        "passes": true
+      }
+    },
+    "G1": {
+      "point": -0.0661,
+      "low": -0.1081,
+      "high": -0.027,
+      "n_items": 454,
+      "n_groups": 3,
+      "margin": 0.02,
+      "passes": true
+    }
+  }
+}

@@ -28,6 +28,7 @@ Format: context → decision → consequences. A decision changes only through a
 | [0022](0022-two-stage-freeze.md) | Freeze the test set in two stages: items first, labels before scoring | Accepted |
 | [0023](0023-takada-health-worker-app.md) | Takada health-worker app: own repo; phone + clinic hub + cloud; protocol-driven visit guide; container- and Kubernetes-ready | Accepted |
 | [0024](0024-finetuning-recipe.md) | Fine-tuning recipe: data first (concept audit, rare-sign phrase bank, ASR two-view), safety-weighted SFT, bounded output, on-policy DPO if needed, scaled merge, imatrix Q4 | Accepted |
-| [0025](0025-committee-triage-labelling.md) | Committee pre-labelling (3 non-Llama open models), humans label a stratified random sample (about 220 labels), stratified PPI for the estimates | Accepted |
+| [0025](0025-committee-triage-labelling.md) | Committee pre-labelling (3 non-Llama open models), humans label a stratified random sample (156 labels after the 4 Oct cut), stratified PPI for the estimates | Accepted |
 | [0026](0026-asr-health-finetune.md) | Fine-tune N-ATLaS ASR (Yoruba-ASR; NigerianAccentedEnglish for Pidgin) on WazobiaSpeech train speech; ship only if test WER improves | Accepted; **ships** (test WER −26.3 pts Pidgin, −6.7 pts Yoruba) |
 | [0027](0027-takada-native-apps.md) | Takada on Android and iPhone as native apps (Capacitor) alongside the web app; no source maps shipped; store routes await approval | Proposed |
+| [0028](0028-synthetic-danger-sign-training-data.md) | In-language synthetic training statements by base N-ATLaS (rule checks + round-trip check) so every danger sign has training examples; the phrase bank is set aside while S5 is a test | Accepted |

@@ -32,3 +32,8 @@ Thumbs.db
 .idea/
 .vscode/
 takada-app.bundle
+
+# Training sets hold real transcripts: build them under data/private/train/ (never committed).
+data/train/sft*.jsonl
+# Dev-split predictions quote real WazobiaSpeech transcripts (training data): never committed.
+results/**/dev*.pred.jsonl

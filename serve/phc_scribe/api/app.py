@@ -199,7 +199,9 @@ def create_app(
     settings.validate()
     if extractor is None:
         extractor = (
-            LlamaCppExtractor(settings.llamacpp_url, settings.llamacpp_model)
+            LlamaCppExtractor(
+                settings.llamacpp_url, settings.llamacpp_model, mode=settings.prompt_mode
+            )
             if settings.extractor == "llamacpp"
             else KeywordExtractor()
         )
