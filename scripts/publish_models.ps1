@@ -11,7 +11,9 @@
 # and in the Modal secret "phc-scribe-hf-write", and never prints it. Every repo is created
 # private; both upload scripts refuse to upload to a repo that is public.
 
-$ErrorActionPreference = "Stop"
+# "Continue", not "Stop": in Windows PowerShell 5.1, "Stop" turns any stderr output of a native
+# command (even a redirected one) into a terminating error. Each step checks $LASTEXITCODE instead.
+$ErrorActionPreference = "Continue"
 Set-Location (Split-Path -Parent $PSScriptRoot)
 
 $asr = "data\private\models\asrft-20261003\asr-ft"
@@ -21,11 +23,32 @@ foreach ($lang in "yo", "pcm") {
     }
 }
 
-$python = if (Test-Path ".venv\Scripts\python.exe") { ".venv\Scripts\python.exe" } else { "python" }
+$python = if (Test-Path ".venv\Scripts\python.exe") { (Resolve-Path ".venv\Scripts\python.exe").Path } else { "python" }
 & $python -c "import huggingface_hub" 2>$null
 if ($LASTEXITCODE -ne 0) { & $python -m pip install -q "huggingface_hub[hf_xet]" }
-if (-not (Get-Command modal -ErrorAction SilentlyContinue)) {
-    throw "The modal command is not on PATH. Activate the environment you use for Modal jobs, then run this again."
+# Modal: the modal command if it is on PATH, else Modal as a module of a Python that has it,
+# else install it into $python. Its sign-in (~/.modal.toml) is per user, not per environment.
+$modalExe = $null
+$modalPre = @()
+if (Get-Command modal -ErrorAction SilentlyContinue) { $modalExe = "modal" }
+else {
+    foreach ($candidate in @($python, "python", "py")) {
+        if (-not ((Test-Path $candidate) -or (Get-Command $candidate -ErrorAction SilentlyContinue))) { continue }
+        & $candidate -c "import modal" 2>$null
+        if ($LASTEXITCODE -eq 0) { $modalExe = $candidate; $modalPre = @("-m", "modal"); break }
+    }
+    if (-not $modalExe) {
+        Write-Host "Modal is not installed; installing it into $python..."
+        & $python -m pip install -q modal
+        if ($LASTEXITCODE -ne 0) { throw "Could not install modal." }
+        $modalExe = $python; $modalPre = @("-m", "modal")
+    }
+}
+function Invoke-Modal { & $modalExe @modalPre @args }
+if (-not ((Test-Path "$HOME\.modal.toml") -or $env:MODAL_TOKEN_ID)) {
+    Write-Host "Modal is not signed in on this laptop; a browser window opens to sign in..."
+    Invoke-Modal token new
+    if ($LASTEXITCODE -ne 0) { throw "Modal sign-in failed." }
 }
 
 $secure = Read-Host "Paste the Hugging Face WRITE token (hidden)" -AsSecureString
@@ -43,9 +66,9 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "ASR upload failed (see the error above)." }
 
     Write-Host "`n[3/3] Uploading the Q4 GGUF from Modal straight to Hugging Face (about 5 GB; runs on Modal)..."
-    modal secret create phc-scribe-hf-write "HF_TOKEN=$token" --force | Out-Null
+    Invoke-Modal secret create phc-scribe-hf-write "HF_TOKEN=$token" --force | Out-Null
     if ($LASTEXITCODE -ne 0) { throw "Could not save the Modal secret phc-scribe-hf-write." }
-    modal run deploy\modal_publish.py --run natlas-qlora-v1-weighted-fs
+    Invoke-Modal run deploy\modal_publish.py --run natlas-qlora-v1-weighted-fs
     if ($LASTEXITCODE -ne 0) { throw "GGUF upload failed (see the error above)." }
 
     Write-Host "`nDone. All three repos are PRIVATE: https://huggingface.co/malikbello"
