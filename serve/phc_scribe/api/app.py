@@ -80,7 +80,10 @@ class Versions(BaseModel):
 
 class DroppedOut(BaseModel):
     path: str
-    reason: str
+    reason: str = Field(
+        description="ungrounded, out_of_range, value_not_in_evidence, inconsistent, or"
+        " schema_repair (removed so the model's output fits the schema; ADR-0029)."
+    )
     detail: str = ""
 
 
@@ -307,16 +310,17 @@ def create_app(
             draft = extractor.extract(body.text)
         except ExtractorError as e:
             raise ApiError(502, "model_unavailable", f"The model backend failed ({e})") from e
-        g = ground(draft, body.text)
+        g = ground(draft.record, body.text)
+        dropped = [
+            DroppedOut(path=r.path, reason="schema_repair", detail=r.detail) for r in draft.repairs
+        ] + [DroppedOut(path=d.path, reason=d.reason, detail=d.detail) for d in g.dropped]
         return ExtractOut(
             record=g.record,
             flags=flags_of(g.record),
             grounding=Grounding(
-                needs_review=g.needs_review,
+                needs_review=bool(dropped),
                 fields_total=g.fields_total,
-                dropped=[
-                    DroppedOut(path=d.path, reason=d.reason, detail=d.detail) for d in g.dropped
-                ],
+                dropped=dropped,
             ),
             versions=versions(),
             latency_ms=round((time.perf_counter() - t0) * 1000, 1),

@@ -1,0 +1,55 @@
+{
+  "results/modal/base-q4/pilot.pred.jsonl": {
+    "items": 30,
+    "invalid": 1,
+    "salvaged": 1,
+    "repairs": {
+      "anc.tests": 1
+    },
+    "valid_outputs_changed": 0
+  },
+  "results/modal/base/pilot-b8.pred.jsonl": {
+    "items": 30,
+    "invalid": 1,
+    "salvaged": 1,
+    "repairs": {
+      "findings": 1
+    },
+    "valid_outputs_changed": 0
+  },
+  "results/modal/natlas-qlora-v1-plain/pilot.pred.jsonl": {
+    "items": 30,
+    "invalid": 0,
+    "salvaged": 0,
+    "repairs": {},
+    "valid_outputs_changed": 0
+  },
+  "results/modal/natlas-qlora-v1-weighted-fs/pilot.pred.jsonl": {
+    "items": 30,
+    "invalid": 0,
+    "salvaged": 0,
+    "repairs": {},
+    "valid_outputs_changed": 0
+  },
+  "results/modal/natlas-qlora-v1-weighted/pilot-s0.5.pred.jsonl": {
+    "items": 30,
+    "invalid": 11,
+    "salvaged": 0,
+    "repairs": {},
+    "valid_outputs_changed": 0
+  },
+  "results/modal/natlas-qlora-v1-weighted/pilot-s0.75.pred.jsonl": {
+    "items": 30,
+    "invalid": 1,
+    "salvaged": 0,
+    "repairs": {},
+    "valid_outputs_changed": 0
+  },
+  "results/modal/natlas-qlora-v1-weighted/pilot.pred.jsonl": {
+    "items": 30,
+    "invalid": 0,
+    "salvaged": 0,
+    "repairs": {},
+    "valid_outputs_changed": 0
+  }
+}

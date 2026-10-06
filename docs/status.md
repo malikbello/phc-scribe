@@ -1,6 +1,6 @@
 # Project status and working agreement
 
-_Last updated: 5 Oct 2026, ~23:00 WAT (session 8, end). Keep this file current; it is the handoff between work sessions (local or cloud)._
+_Last updated: 6 Oct 2026, ~22:30 WAT (session 9). Keep this file current; it is the handoff between work sessions (local or cloud)._
 
 ## Resume prompt (paste this into a new session)
 > Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`; branch `fewshot-and-scale` until its PR is merged, then `main`; start at "Cloud handoff") and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution (the `.githooks/commit-msg` guard rejects "claude", co-author or session lines), no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results. Run `./scripts/ci_local.sh` before every push. Start from "Right now" and "Next steps, in order". Keep only truly human tasks human (labelling, clinical decisions, my approvals); automate the rest robustly. Ask me before anything outward-facing or irreversible (the freeze included). Update this file and the resume prompt at the end of every work block.
@@ -61,7 +61,7 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 **Parallel work on 5 Oct (another session):** Takada native apps, hub fixes, and `PHC_ASR_MODELS` for the offline fine-tuned ASR. See "Right now (handoff, 5 Oct ~08:30 WAT…)" below. The 9 Oct pilot phones are the first real-device check.
 
 **Next steps, in order:**
-1. **Salvage step for schema-invalid outputs** (post-freeze product fix; ADR needed). In the serving pipeline, drop `anc.tests` entries with no result or value, drop `other` medications without `name_text`, and de-duplicate findings, instead of rejecting the record.
+1. ✅ **6 Oct: salvage step built** (ADR-0029, **Proposed: Malik decides**). Code: `serve/phc_scribe/salvage.py`, wired into `/v1/extract`; every removal is reported as `schema_repair` with `needs_review`. Pilot check: `results/salvage/pilot.20261006.json` (salvages the base models' 2 invalid outputs; valid outputs changed: 0). Still to do: run `scripts/salvage_check.py` on the dev predictions from the Modal volume (laptop). The original plan for this step: In the serving pipeline, drop `anc.tests` entries with no result or value, drop `other` medications without `name_text`, and de-duplicate findings, instead of rejecting the record.
    - Reference logic: `repair()` in `scripts/g1_sensitivity.py`.
    - Validate on dev and pilot only. **Never re-score the frozen sets to choose it.** Report the frozen-set effect as post hoc only, as in the results doc.
 2. **S4-W human labels (Malik's task)** in the review app: Malik 120 (60 from stratum A + 60 from stratum B); doubles Rahmat 18 and Success 18.
