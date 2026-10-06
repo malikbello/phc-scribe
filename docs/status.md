@@ -69,13 +69,17 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
    - Then **PPI scoring** with `bench/ppi.py` (ADR-0025): transcript input, and ASR input with the base and fine-tuned ASR.
 3. **ASR decoding guard (audit H4)**, then re-score the ASR-input condition.
 4. **Laptop CPU latency:** Q4 GGUF on the i7-8665U with llama.cpp, plus ASR. Report p50/p95 per visit.
-5. **HF private upload:** needs Malik's HF write token (`HF_WRITE_TOKEN`). Run `scripts/publish_asr.py`, which refuses non-private repos. The LLM GGUF follows the same rule.
+5. ✅ **6 Oct: HF private upload done** (all three repos **private**; Malik switches them to gated on submission day):
+   - `malikbello/N-ATLaS-ASR-Health-Yoruba-Powered-by-Awarri`, commit `c95ed1f0cc6496ed414d0623e347ddcb2d7aa983` (from the laptop, `scripts/publish_asr.py`);
+   - `malikbello/N-ATLaS-ASR-Health-Pidgin-Powered-by-Awarri`, commit `907b2de3ec2c165923d2f7b079f4968b0ee608ed`;
+   - `malikbello/N-ATLaS-Health-ANC-Scribe-GGUF-Powered-by-Awarri`, commit `597a05cc81ce6dd868f85643356477b4dc5c04f1` (4.92 GB Q4_K_M, sent from the Modal volume by `deploy/modal_publish.py` after its SHA-256 matched the manifest).
+   - The write token is a fine-grained token in the Modal secret `phc-scribe-hf-write`. An earlier read-only token was pasted into a chat on 6 Oct: **Malik to revoke it.**
 6. **Takada/app integration** of the offline API; then the **demo video**; then the **error taxonomy** (50 errors per system, eval plan §7); then the **submission package**.
 
 **Malik-only items:**
 - merge the PRs;
 - label the S4-W clips;
-- the HF write token;
+- ~~the HF write token~~ (done 6 Oct; revoke the read token pasted in chat);
 - delete the misplaced Modal volume folder `C:` with `modal volume rm -r phc-scribe-runs "C:"` (a duplicate of `/_backup`).
 
 **A cloud session cannot reach Modal.** Modal jobs run from Malik's laptop. Everything else (code, docs, scoring from committed predictions) works in the cloud.
