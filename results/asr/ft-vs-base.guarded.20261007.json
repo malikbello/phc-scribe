@@ -1,0 +1,36 @@
+{
+  "note": "Re-score with the ASR decoding guard (audit H4; serve/phc_scribe/asr_guard.py) applied to both the base and the fine-tuned transcripts, as shipped. Run on Malik's laptop on 6 Oct 2026: scripts/asr_guard_rescore.py, then scripts/asr_compare.py (paired bootstrap over speakers). Copied from its printed output. Reported beside the registered ADR-0026 result (results/asr/ft-vs-base.20261003.json), which stands.",
+  "metric": "pooled WER/CER, folded text (bench/wer.py); 95% paired bootstrap over speakers",
+  "languages": {
+    "pcm": {
+      "clips": 300,
+      "speakers": 19,
+      "base_wer": 0.5105,
+      "base_cer": 0.2882,
+      "candidate_wer": 0.2271,
+      "candidate_cer": 0.1443,
+      "wer_diff": {
+        "point": -0.2834,
+        "low": -0.3283,
+        "high": -0.2341
+      },
+      "relative_wer_reduction": 0.5551,
+      "ship": true
+    },
+    "yo": {
+      "clips": 300,
+      "speakers": 16,
+      "base_wer": 0.4114,
+      "base_cer": 0.2275,
+      "candidate_wer": 0.3156,
+      "candidate_cer": 0.1729,
+      "wer_diff": {
+        "point": -0.0957,
+        "low": -0.127,
+        "high": -0.0509
+      },
+      "relative_wer_reduction": 0.2329,
+      "ship": true
+    }
+  }
+}

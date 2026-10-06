@@ -67,13 +67,14 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 2. **S4-W human labels (Malik's task)** in the review app: Malik 120 (60 from stratum A + 60 from stratum B); doubles Rahmat 18 and Success 18.
    - Then the **stage-2 freeze**: `scripts/freeze_test_set.py`, as in ADR-0022.
    - Then **PPI scoring** with `bench/ppi.py` (ADR-0025): transcript input, and ASR input with the base and fine-tuned ASR.
-3. ✅ **6 Oct: ASR decoding guard built (audit H4)**: `serve/phc_scribe/asr_guard.py`, applied in `/v1/transcribe`. **Laptop re-score (no GPU, about 1 minute):**
-   ```
-   python scripts/asr_guard_rescore.py data/private/kaggle/asr-base-forced.jsonl data/private/kaggle/asr-base-forced.guarded.jsonl
-   python scripts/asr_guard_rescore.py data/private/kaggle/asr-ft-forced.jsonl data/private/kaggle/asr-ft-forced.guarded.jsonl
-   python scripts/asr_compare.py --base data/private/kaggle/asr-base-forced.guarded.jsonl --candidate data/private/kaggle/asr-ft-forced.guarded.jsonl --out results/asr/ft-vs-base.guarded.20261007.json
-   ```
-   Report the guarded numbers beside the original (ADR-0026 results stand as registered).
+3. ✅ **6 Oct: ASR decoding guard built and re-scored (audit H4, closed).** `serve/phc_scribe/asr_guard.py`, applied in `/v1/transcribe`. Both systems guarded, test pool, paired speaker bootstrap (`results/asr/ft-vs-base.guarded.20261007.json`):
+
+   | Language | Base WER | Fine-tuned WER | Difference [95% CI] | Registered (unguarded) |
+   |---|---|---|---|---|
+   | Pidgin | 51.1% | **22.7%** | −28.3 [−32.8, −23.4] | 51.1% → 24.8% |
+   | Yoruba | 41.1% | **31.6%** | −9.6 [−12.7, −5.1] | 44.7% → 38.0% |
+
+   The registered ADR-0026 result stands; these are the as-shipped numbers, reported beside it.
 4. **Laptop CPU latency:** Q4 GGUF on the i7-8665U with llama.cpp, plus ASR. Report p50/p95 per visit.
 5. ✅ **6 Oct: HF private upload done** (all three repos **private**; Malik switches them to gated on submission day):
    - `malikbello/N-ATLaS-ASR-Health-Yoruba-Powered-by-Awarri`, commit `c95ed1f0cc6496ed414d0623e347ddcb2d7aa983` (from the laptop, `scripts/publish_asr.py`);

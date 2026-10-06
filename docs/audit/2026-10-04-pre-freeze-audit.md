@@ -99,7 +99,7 @@ The ASR gain is acoustic, not memorised text. The never-seen-sentence numbers ar
 | H1 | **Fixed.** §6a replaces §4 with ADR-0025. |
 | H2 | **Fixed.** `scripts/build_asr_items.py` (+ test): S4-W gold with ASR text as input. |
 | H3 | **Fixed for the LLM** by the builder's duplicate filter (counts to be checked at build). **ASR re-scored** on never-seen sentences (table above). |
-| H4 | **Guard built 6 Oct** (`serve/phc_scribe/asr_guard.py`, in `/v1/transcribe`): Whisper's compression-ratio check (> 2.4); repeated word n-gram runs cut to 2 copies; ordinary text untouched. **Re-score pending (laptop):** `scripts/asr_guard_rescore.py` on the saved base and fine-tuned transcripts, then `scripts/asr_compare.py` on the guarded files. |
+| H4 | **Guard built 6 Oct** (`serve/phc_scribe/asr_guard.py`, in `/v1/transcribe`): Whisper's compression-ratio check (> 2.4); repeated word n-gram runs cut to 2 copies; ordinary text untouched. **Re-scored 6 Oct, both systems guarded** (`results/asr/ft-vs-base.guarded.20261007.json`): Pidgin 51.1% → **22.7%** (−28.3 [−32.8, −23.4]); Yoruba 41.1% → **31.6%** (−9.6 [−12.7, −5.1]). The guard helps both models (base Yoruba loops too); the fine-tuned gain holds. **Closed.** |
 | H5 | **Decided** in §6a: MamaBench and AMR dropped; R built as a small constructed set (pending). |
 | M1, M5, H6 | **Fixed.** |
 | M2 | **Decided** in §6a: the folded-match count is reported per system. |
