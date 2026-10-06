@@ -1,6 +1,6 @@
 # ADR-0029: Salvage schema-invalid model outputs in serving, instead of rejecting the record
 
-- **Status:** Proposed (needs Malik's decision)
+- **Status:** Accepted by Malik, 6 Oct 2026 ("Yes, do what mature teams would do")
 - **Date:** 2026-10-06
 - **Changes:** the serving pipeline (`/v1/extract` with the llama.cpp model). The benchmark, its metrics and the frozen-test verdicts are unchanged.
 
