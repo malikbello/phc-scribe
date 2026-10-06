@@ -25,7 +25,10 @@ foreach ($lang in "yo", "pcm") {
 
 $python = if (Test-Path ".venv\Scripts\python.exe") { (Resolve-Path ".venv\Scripts\python.exe").Path } else { "python" }
 & $python -c "import huggingface_hub" 2>$null
-if ($LASTEXITCODE -ne 0) { & $python -m pip install -q "huggingface_hub[hf_xet]" }
+if ($LASTEXITCODE -ne 0) {
+    if (Get-Command uv -ErrorAction SilentlyContinue) { uv pip install -q --python $python "huggingface_hub[hf_xet]" }
+    else { & $python -m pip install -q "huggingface_hub[hf_xet]" }
+}
 # Modal: the modal command if it is on PATH, else Modal as a module of a Python that has it,
 # else install it into $python. Its sign-in (~/.modal.toml) is per user, not per environment.
 $modalExe = $null
@@ -39,7 +42,9 @@ else {
     }
     if (-not $modalExe) {
         Write-Host "Modal is not installed; installing it into $python..."
-        & $python -m pip install -q modal
+        # .venv is made by uv (scripts/ci_local.sh) and has no pip, so install with uv when there is one
+        if (Get-Command uv -ErrorAction SilentlyContinue) { uv pip install -q --python $python modal }
+        else { & $python -m pip install -q modal }
         if ($LASTEXITCODE -ne 0) { throw "Could not install modal." }
         $modalExe = $python; $modalPre = @("-m", "modal")
     }
