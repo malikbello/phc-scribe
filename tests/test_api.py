@@ -1,13 +1,13 @@
 import hashlib
+import json
 import secrets
 
 import pytest
 from fastapi.testclient import TestClient
 
 from phc_scribe.api.app import create_app
-from phc_scribe.api.extractors import ExtractorError
+from phc_scribe.api.extractors import Draft, ExtractorError, LlamaCppExtractor
 from phc_scribe.api.settings import Settings
-from phc_scribe.encounter import Encounter
 
 KEY = secrets.token_urlsafe(16)  # generated per run: no key-like literal in the repo
 AUTH = {"Authorization": f"Bearer {KEY}"}
@@ -67,7 +67,7 @@ def test_backend_failure_is_a_502(tmp_path):
     class Broken:
         name = "broken"
 
-        def extract(self, text: str) -> Encounter:
+        def extract(self, text: str) -> Draft:
             raise ExtractorError("ConnectError")
 
     s = Settings(env="dev", db_path=str(tmp_path / "db"))
@@ -211,3 +211,45 @@ def test_asr_model_overrides_reach_the_transcriber(tmp_path, monkeypatch):
 def test_bad_asr_model_overrides_fail_at_start_up(tmp_path, bad):
     with pytest.raises(RuntimeError, match="PHC_ASR_MODELS"):
         create_app(Settings(env="dev", db_path=str(tmp_path / "db"), asr="hf", asr_models=bad))
+
+
+def _llamacpp(content: str) -> LlamaCppExtractor:
+    import httpx
+
+    ext = LlamaCppExtractor("http://llama", "m")
+    ext._client = httpx.Client(  # pyright: ignore[reportPrivateUsage]
+        base_url="http://llama",
+        transport=httpx.MockTransport(
+            lambda _: httpx.Response(200, json={"choices": [{"message": {"content": content}}]})
+        ),
+    )
+    return ext
+
+
+def test_a_salvaged_draft_is_returned_for_review(tmp_path):
+    out = {
+        "findings": [
+            {
+                "concept": "severe_headache",
+                "assertion": "present",
+                "evidence": {"text": "severe headache"},
+            }
+        ],
+        "anc": {"tests": [{"test": "urine_protein", "evidence": {"text": "No bleeding"}}]},
+    }
+    s = Settings(env="dev", db_path=str(tmp_path / "db"))
+    c = TestClient(create_app(s, extractor=_llamacpp(json.dumps(out))))
+    body = c.post("/v1/extract", json={"text": NOTE}).json()
+    assert body["record"]["anc"]["tests"] == []
+    assert body["grounding"]["needs_review"] is True
+    assert {
+        "path": "anc.tests[0]",
+        "reason": "schema_repair",
+        "detail": "urine_protein: no result",
+    } in body["grounding"]["dropped"]
+
+
+def test_unrepairable_output_is_still_a_502(tmp_path):
+    s = Settings(env="dev", db_path=str(tmp_path / "db"))
+    c = TestClient(create_app(s, extractor=_llamacpp('{"findings": [')))
+    assert c.post("/v1/extract", json={"text": NOTE}).status_code == 502

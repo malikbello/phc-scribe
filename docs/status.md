@@ -1,6 +1,6 @@
 # Project status and working agreement
 
-_Last updated: 5 Oct 2026, ~23:00 WAT (session 8, end). Keep this file current; it is the handoff between work sessions (local or cloud)._
+_Last updated: 6 Oct 2026, ~22:30 WAT (session 9). Keep this file current; it is the handoff between work sessions (local or cloud)._
 
 ## Resume prompt (paste this into a new session)
 > Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`; branch `fewshot-and-scale` until its PR is merged, then `main`; start at "Cloud handoff") and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution (the `.githooks/commit-msg` guard rejects "claude", co-author or session lines), no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results. Run `./scripts/ci_local.sh` before every push. Start from "Right now" and "Next steps, in order". Keep only truly human tasks human (labelling, clinical decisions, my approvals); automate the rest robustly. Ask me before anything outward-facing or irreversible (the freeze included). Update this file and the resume prompt at the end of every work block.
@@ -61,21 +61,32 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 **Parallel work on 5 Oct (another session):** Takada native apps, hub fixes, and `PHC_ASR_MODELS` for the offline fine-tuned ASR. See "Right now (handoff, 5 Oct ~08:30 WAT…)" below. The 9 Oct pilot phones are the first real-device check.
 
 **Next steps, in order:**
-1. **Salvage step for schema-invalid outputs** (post-freeze product fix; ADR needed). In the serving pipeline, drop `anc.tests` entries with no result or value, drop `other` medications without `name_text`, and de-duplicate findings, instead of rejecting the record.
+1. ✅ **6 Oct: salvage step built** (ADR-0029, **accepted by Malik 6 Oct**). Code: `serve/phc_scribe/salvage.py`, wired into `/v1/extract`; every removal is reported as `schema_repair` with `needs_review`. Pilot check: `results/salvage/pilot.20261006.json` (salvages the base models' 2 invalid outputs; valid outputs changed: 0). Still to do: run `scripts/salvage_check.py` on the dev predictions from the Modal volume (laptop). The original plan for this step: In the serving pipeline, drop `anc.tests` entries with no result or value, drop `other` medications without `name_text`, and de-duplicate findings, instead of rejecting the record.
    - Reference logic: `repair()` in `scripts/g1_sensitivity.py`.
    - Validate on dev and pilot only. **Never re-score the frozen sets to choose it.** Report the frozen-set effect as post hoc only, as in the results doc.
 2. **S4-W human labels (Malik's task)** in the review app: Malik 120 (60 from stratum A + 60 from stratum B); doubles Rahmat 18 and Success 18.
    - Then the **stage-2 freeze**: `scripts/freeze_test_set.py`, as in ADR-0022.
    - Then **PPI scoring** with `bench/ppi.py` (ADR-0025): transcript input, and ASR input with the base and fine-tuned ASR.
-3. **ASR decoding guard (audit H4)**, then re-score the ASR-input condition.
+3. ✅ **6 Oct: ASR decoding guard built and re-scored (audit H4, closed).** `serve/phc_scribe/asr_guard.py`, applied in `/v1/transcribe`. Both systems guarded, test pool, paired speaker bootstrap (`results/asr/ft-vs-base.guarded.20261007.json`):
+
+   | Language | Base WER | Fine-tuned WER | Difference [95% CI] | Registered (unguarded) |
+   |---|---|---|---|---|
+   | Pidgin | 51.1% | **22.7%** | −28.3 [−32.8, −23.4] | 51.1% → 24.8% |
+   | Yoruba | 41.1% | **31.6%** | −9.6 [−12.7, −5.1] | 44.7% → 38.0% |
+
+   The registered ADR-0026 result stands; these are the as-shipped numbers, reported beside it.
 4. **Laptop CPU latency:** Q4 GGUF on the i7-8665U with llama.cpp, plus ASR. Report p50/p95 per visit.
-5. **HF private upload:** needs Malik's HF write token (`HF_WRITE_TOKEN`). Run `scripts/publish_asr.py`, which refuses non-private repos. The LLM GGUF follows the same rule.
+5. ✅ **6 Oct: HF private upload done** (all three repos **private**; Malik switches them to gated on submission day):
+   - `malikbello/N-ATLaS-ASR-Health-Yoruba-Powered-by-Awarri`, commit `c95ed1f0cc6496ed414d0623e347ddcb2d7aa983` (from the laptop, `scripts/publish_asr.py`);
+   - `malikbello/N-ATLaS-ASR-Health-Pidgin-Powered-by-Awarri`, commit `907b2de3ec2c165923d2f7b079f4968b0ee608ed`;
+   - `malikbello/N-ATLaS-Health-ANC-Scribe-GGUF-Powered-by-Awarri`, commit `597a05cc81ce6dd868f85643356477b4dc5c04f1` (4.92 GB Q4_K_M, sent from the Modal volume by `deploy/modal_publish.py` after its SHA-256 matched the manifest).
+   - The write token is a fine-grained token in the Modal secret `phc-scribe-hf-write`. An earlier read-only token was pasted into a chat on 6 Oct: **Malik to revoke it.**
 6. **Takada/app integration** of the offline API; then the **demo video**; then the **error taxonomy** (50 errors per system, eval plan §7); then the **submission package**.
 
 **Malik-only items:**
 - merge the PRs;
 - label the S4-W clips;
-- the HF write token;
+- ~~the HF write token~~ (done 6 Oct; revoke the read token pasted in chat);
 - delete the misplaced Modal volume folder `C:` with `modal volume rm -r phc-scribe-runs "C:"` (a duplicate of `/_backup`).
 
 **A cloud session cannot reach Modal.** Modal jobs run from Malik's laptop. Everything else (code, docs, scoring from committed predictions) works in the cloud.

@@ -274,6 +274,7 @@
             "type": "string"
           },
           "reason": {
+            "description": "ungrounded, out_of_range, value_not_in_evidence, inconsistent, or schema_repair (removed so the model's output fits the schema; ADR-0029).",
             "title": "Reason",
             "type": "string"
           }

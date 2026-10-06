@@ -3,19 +3,29 @@
 from __future__ import annotations
 
 import json
+from dataclasses import dataclass, field
 from typing import Protocol
 
 from phc_scribe.encounter import Encounter
+from phc_scribe.salvage import Repair, salvage
 
 
 class ExtractorError(Exception):
     """The model backend failed or returned something that is not a record."""
 
 
+@dataclass(frozen=True)
+class Draft:
+    """A drafted record, plus any parts removed to make the model's output valid (ADR-0029)."""
+
+    record: Encounter
+    repairs: list[Repair] = field(default_factory=list)
+
+
 class Extractor(Protocol):
     name: str
 
-    def extract(self, text: str) -> Encounter: ...
+    def extract(self, text: str) -> Draft: ...
 
 
 class KeywordExtractor:
@@ -23,10 +33,10 @@ class KeywordExtractor:
 
     name = "keyword-baseline-v0"
 
-    def extract(self, text: str) -> Encounter:
+    def extract(self, text: str) -> Draft:
         from bench.baselines.keyword import extract
 
-        return extract(text)
+        return Draft(extract(text))
 
 
 class LlamaCppExtractor:
@@ -49,7 +59,7 @@ class LlamaCppExtractor:
         self._mode = mode  # the prompt the shipped model was trained and evaluated with
         self._repetition_penalty = repetition_penalty
 
-    def extract(self, text: str) -> Encounter:
+    def extract(self, text: str) -> Draft:
         from bench.prompts import build_messages
         from bench.runners.llamacpp import request_body
 
@@ -61,7 +71,13 @@ class LlamaCppExtractor:
         try:
             r = self._client.post("/v1/chat/completions", json=body)
             r.raise_for_status()
-            content = r.json()["choices"][0]["message"]["content"]
-            return Encounter.model_validate(json.loads(content))
-        except Exception as e:  # network, backend or schema failure
+            data = json.loads(r.json()["choices"][0]["message"]["content"])
+        except Exception as e:  # network, backend or invalid JSON
             raise ExtractorError(type(e).__name__) from e
+        try:
+            return Draft(Encounter.model_validate(data))
+        except ValueError as e:
+            record, repairs = salvage(data)
+            if record is None:
+                raise ExtractorError(type(e).__name__) from e
+            return Draft(record, repairs)
