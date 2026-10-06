@@ -20,7 +20,7 @@ Malik: "innovate… let us win the hackathon with bright and shining colours"; "
    - a short real-user pilot with the nurses (usability and time per record, 9 Oct).
 4. **Impact:** maternal danger signs caught offline, in Yoruba and Pidgin, on cheap phones.
 5. **Scalability:** hub and cloud architecture, Kubernetes, language packs.
-6. **Team:** two nurses (Rahmat, Success), a medical student and a graduate pharmacist; clinical sign-off with a traceability matrix.
+6. **Team:** two nurses (Rahmat, Success), a medical student (Abdullah) and a graduate pharmacist; clinical sign-off with a traceability matrix.
 
 **Build plan (revised 5 Oct, night). Target 11 Oct; deadline 12 Oct 23:59 WAT.**
 
@@ -37,7 +37,7 @@ Malik: "innovate… let us win the hackathon with bright and shining colours"; "
 **People (reminders):**
 - **Malik:** label **120 S4-W clips** (60 stratum A + 60 stratum B) in the review app, **by 8 Oct**.
 - **Rahmat and Success:** **18 double-label clips each, by 8 Oct.** Malik to message them on 6 Oct.
-- **Abdullah:** logged in and started work on 5 Oct, after the login fix. Record his role and progress from the admin page; the agent cannot read the review store, because Vercel keeps those credentials write-only.
+- **Abdullah (medical student):** logged in and started work on 5 Oct, after the login fix. Record his role and progress from the admin page; the agent cannot read the review store, because Vercel keeps those credentials write-only.
 
 GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 
