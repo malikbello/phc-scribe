@@ -12,6 +12,8 @@ import io
 import wave
 from typing import Protocol
 
+from phc_scribe.asr_guard import guard
+
 ASR_MODELS = {
     "yo": "NCAIR1/Yoruba-ASR",
     "ha": "NCAIR1/Hausa-ASR",
@@ -98,4 +100,5 @@ class HfWhisperTranscriber:
             else {}
         )
         out = pipe(audio, **kwargs)  # pyright: ignore[reportCallIssue]
-        return str(out["text"]).strip()  # pyright: ignore[reportIndexIssue, reportArgumentType]
+        text = str(out["text"]).strip()  # pyright: ignore[reportIndexIssue, reportArgumentType]
+        return guard(text)[0]  # audit H4: cut a decoding loop before it reaches the record
