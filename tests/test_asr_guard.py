@@ -45,3 +45,21 @@ def test_rescore_script(tmp_path):
     got = [json.loads(x) for x in dst.read_text(encoding="utf-8").splitlines()]
     assert [g["guard_cut"] for g in got] == [True, False]
     assert got[1]["text"] == SPEECH
+
+
+def test_publish_refuses_a_model_with_an_empty_tokenizer(tmp_path):
+    import importlib.util
+    from pathlib import Path
+
+    spec = importlib.util.spec_from_file_location(
+        "publish_asr", Path(__file__).parents[1] / "scripts" / "publish_asr.py"
+    )
+    assert spec and spec.loader
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    for f in mod.REQUIRED:
+        (tmp_path / f).write_text("{}", encoding="utf-8")
+    assert mod.incomplete(tmp_path) == []
+    (tmp_path / "tokenizer.json").write_text("", encoding="utf-8")
+    (tmp_path / "tokenizer_config.json").unlink()
+    assert mod.incomplete(tmp_path) == ["tokenizer.json", "tokenizer_config.json"]
