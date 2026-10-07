@@ -75,6 +75,10 @@ def main() -> int:
         except Exception as e:  # a failed draft counts as schema-invalid, as in the benchmark
             pred, removed, error = None, {"dropped": []}, f"{type(e).__name__}: {str(e)[:120]}"
         secs = round(time.perf_counter() - t0, 1)
+        if error and not rows:  # the first draft failed: the hub is not ready, so score nothing
+            raise SystemExit(
+                f"first request failed ({error}): is the model loaded? Nothing written."
+            )
         s = score_item(it.item_id, it.group_id, it.gold, pred)
         scores.append(s)
         rows.append(
