@@ -1,9 +1,9 @@
 # Project status and working agreement
 
-_Last updated: 6 Oct 2026, ~22:30 WAT (session 9). Keep this file current; it is the handoff between work sessions (local or cloud)._
+_Last updated: 7 Oct 2026, afternoon WAT (session 9, end). Keep this file current; it is the handoff between work sessions (local or cloud)._
 
 ## Resume prompt (paste this into a new session)
-> Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`; branch `fewshot-and-scale` until its PR is merged, then `main`; start at "Cloud handoff") and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution (the `.githooks/commit-msg` guard rejects "claude", co-author or session lines), no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results. Run `./scripts/ci_local.sh` before every push. Start from "Right now" and "Next steps, in order". Keep only truly human tasks human (labelling, clinical decisions, my approvals); automate the rest robustly. Ask me before anything outward-facing or irreversible (the freeze included). Update this file and the resume prompt at the end of every work block.
+> Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`) from "START HERE (7 Oct)" and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution (the `.githooks/commit-msg` guard rejects "claude", co-author or session lines, so never use a default merge message that names a `claude/...` branch), no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results, and never score the frozen test sets to choose anything. Run `./scripts/ci_local.sh` before every push. The work spans four repos: phc-scribe (model, benchmark, API), takada-app (phone app, clinic hub), scholarship-applications and project-archive; this file's "Zones" table says what is open in each and gives a prompt per zone. Keep only truly human tasks human (labelling, clinical decisions, my approvals); automate the rest robustly. Ask me before anything outward-facing or irreversible (the stage-2 freeze, making a repo public, submitting). Update this file and the resume prompt at the end of every work block.
 
 ## Plan to win (agreed 3 Oct, session 6). Submission target 11 Oct; deadline 12 Oct 23:59 WAT
 Malik: "innovate… let us win the hackathon with bright and shining colours"; "the best way without having to rely on people". Labellers: Malik, Rahmat, Success.
@@ -48,7 +48,105 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 - **Uyo mapping:** both answered with specific mappings, so the ADR-0019 check can now run with `--confirmed-by`.
 - **Phrases, guide and rules:** 31 change requests, mostly local and lay phrasings (e.g. "running temperature", "serious stomach pain", "spotting", "pale +++", ">3 vomits a day") and follow-up tests (urinalysis every visit; PCV with bleeding). To be applied via a traceability matrix (each note → applied, or declined with a reason).
 
-## START HERE (5 Oct 2026, end of session 8): state and the exact next steps
+## START HERE (7 Oct 2026, end of session 9): state, zones and the exact next steps
+**Deadline:** NAIC submission 12 Oct 23:59 WAT; target 11 Oct. Real-user pilot with the nurses: 9 Oct.
+
+### Where everything is (four repos, one branch name)
+All session work is on the branch **`claude/awesome-mccarthy-xk2bgl`** in each repo (pushed). `main` is the base.
+
+| Repo | Branch state (7 Oct) | PR |
+|---|---|---|
+| `malikbello/phc-scribe` | 4 commits ahead of `main`: API Dockerfile, few-shot file in the images, `PHC_LLAMACPP_TIMEOUT`, `fetch_models`, Yoruba tokenizer fix script, `publish_asr` completeness guard, `scripts/hub_check.py`, this handoff | open it if not open (title: "Hub readiness"); merge when CI is green |
+| `malikbello/takada-app` | 2 commits ahead of `main`: `deploy/llm.Dockerfile` (llama.cpp b11387), hub settings as evaluated, `--parallel 1`, 15-min draft wait, model-fetch steps in `docs/operations.md`, removed-field detail on the phone, `docs/status.md` | same |
+| `malikbello/scholarship-applications` | branch = `main` + compiled Chevening drafts | none needed; status lives in its `README.md` |
+| `malikbello/project-archive` | branch has the ArchSim raw idea | none needed until Malik approves the idea |
+
+Already merged on 6 Oct: PR 22 (Abdullah), PR 23 (salvage ADR-0029, ASR guard, HF upload code, source-map-js fix). Issues 8, 9, 10 closed as superseded.
+
+### Done (state of the work)
+- **Model:** run C-fs, Q4_K_M GGUF. Every pre-registered frozen criterion passes (P1, P2, G1, G2; `docs/results-frozen-tests.md`).
+- **ASR:** the fine-tune ships (ADR-0026). With the H4 decoding guard on both systems: Pidgin 51.1% → **22.7%** WER, Yoruba 41.1% → **31.6%** (`results/asr/ft-vs-base.guarded.20261007.json`).
+- **Serving:** salvage of schema-invalid outputs (ADR-0029, accepted); ASR loop guard (H4, closed).
+- **HF (all private):**
+  - `malikbello/N-ATLaS-Health-ANC-Scribe-GGUF-Powered-by-Awarri`: the GGUF and its manifest (SHA-256 `2b1dd8c4…`, llama.cpp `8330e96` = b11387);
+  - `…ASR-Health-Pidgin-…`: complete, loads;
+  - `…ASR-Health-Yoruba-…`: **broken until Malik runs the fix** (empty `tokenizer.json`, no `tokenizer_config.json`; see step 1 below).
+- **Hub, end to end in the cloud session (7 Oct):** `phc-scribe-api:local` (built from `deploy/api.Dockerfile`), `takada-llm:b11387` (built from takada-app `deploy/llm.Dockerfile`) and the real GGUF ran together.
+  - 4 vCPU Xeon with AVX-512, 15 GB RAM: first request 222 s (the 1,857-token few-shot prompt is processed cold, then cached); after that **77–116 s per draft** at about 2.5 tokens/s (memory-bound); 8/8 drafts valid.
+  - Correctness against the pilot gold labels: `results/hub/cloud-4vcpu-20261007.json` (HUB_CHECK_SUMMARY).
+  - Four bugs found and fixed on the way: no API Dockerfile; few-shot file missing from the images (every draft was a 500); 120 s model timeout (long drafts were 502s); several llama.cpp slots let an abandoned request keep the CPU.
+
+### Next steps, in order (owner; exact commands)
+1. **Malik: restore the Yoruba ASR tokenizer** (5 min, needs a Hugging Face **write** token; PowerShell in the phc-scribe folder):
+   ```powershell
+   git fetch origin; git checkout claude/awesome-mccarthy-xk2bgl; git pull
+   $s = Read-Host "HF write token" -AsSecureString
+   $env:HF_TOKEN = [System.Net.NetworkCredential]::new("", $s).Password
+   py scripts\fix_asr_tokenizer.py --lang yo --local data\private\models\asrft-20261003\asr-ft\yo
+   git checkout main
+   ```
+   Expect: `…Yoruba…: tokenizer restored, commit …`. An agent then confirms that `AutoProcessor.from_pretrained("malikbello/N-ATLaS-ASR-Health-Yoruba-Powered-by-Awarri")` loads (the cloud session's read token can do this).
+2. **Agent: open and merge the two PRs** (phc-scribe and takada-app, branch `claude/awesome-mccarthy-xk2bgl` → `main`) once `./scripts/ci_local.sh` and GitHub CI pass. Merge commits, plain titles (the commit-msg hook rejects "claude").
+3. **Malik + nurses: S4-W labels by 8 Oct.** Malik 120 (60 stratum A + 60 stratum B); Rahmat 18 and Success 18 doubles. Then the agent:
+   - stage-2 freeze: `scripts/freeze_test_set.py` (ADR-0022), **only after Malik says "yes freeze"**;
+   - PPI scoring: `bench/ppi.py` (ADR-0025), on transcript input and on ASR input (base and fine-tuned ASR).
+   The review-app export is a laptop step (Vercel keeps the store's credentials write-only).
+4. **Malik: laptop hub dry run and latency (7–8 Oct, before the 9 Oct pilot).** In the takada-app folder (Docker Desktop running; takada-app cloned next to phc-scribe, i.e. `C:\Users\Dell\Downloads\Malik\takada-app`), after both PRs are merged and `git pull` in both repos. PowerShell, one line at a time; `$env:HF_TOKEN` must hold a read token for the fetch line:
+   ```powershell
+   cp deploy/compose/hub.env.example deploy/compose/hub.env      # then fill in the secrets
+   docker build -f ../phc-scribe/deploy/api.Dockerfile -t phc-scribe-api:local ../phc-scribe
+   docker compose -f deploy/compose/hub.yml build llm             # about 10-20 minutes
+   docker compose -f deploy/compose/hub.yml --env-file deploy/compose/hub.env run --rm -e HF_TOKEN -e HF_HUB_OFFLINE=0 scribe python -m phc_scribe.fetch_models
+   docker compose -f deploy/compose/hub.yml -f deploy/compose/hub.check.yml --env-file deploy/compose/hub.env --profile model up -d
+   ```
+   Then, from the phc-scribe folder (PowerShell), with the hub's `PHC_SCRIBE_API_KEY` from `hub.env`:
+   ```powershell
+   $env:PHC_API_KEY = "<PHC_SCRIBE_API_KEY from hub.env>"
+   .venv\Scripts\python scripts\hub_check.py --url http://127.0.0.1:8000 --tag laptop-i7-8665u
+   ```
+   (`hub.check.yml` publishes the scribe API on the laptop's loopback for this check only; drop it for the pilot.) Record p50/p95 here. **Warm the model once before the nurses arrive** (the first draft is about 3–4 minutes).
+5. **Agent: salvage check on dev predictions** (ADR-0029 follow-up; laptop or a session that can reach Modal): `modal volume get phc-scribe-runs /_eval/<dev run>/` then `python scripts/salvage_check.py <dev pred files>`.
+6. **9 Oct: real-user pilot** (Malik + nurses): Takada on phones + the hub; usability and time per record; the first real-device check of the Android app. Record the demo.
+7. **10 Oct:** benchmark report (frozen results + S4-W + the as-shipped ASR numbers), model and dataset cards, error taxonomy (50 errors per system, eval plan §7), technical docs; Malik edits the video.
+8. **11 Oct: submission package** (clean repo, cards, switch the HF repos from private to gated with "Powered by Awarri" naming): **Malik approves and submits.**
+
+### Malik-only items
+- Step 1 (tokenizer), the labels, the pilot, approvals (freeze, submission, making anything public).
+- **Revoke the read-only HF token pasted into a chat on 6 Oct** (huggingface.co/settings/tokens).
+- Delete the misplaced Modal volume folder: `modal volume rm -r phc-scribe-runs "C:"` (a duplicate of `/_backup`).
+- Vercel: lock takada-app.vercel.app behind Vercel Authentication (Settings → Deployment Protection → All Deployments).
+
+### What a cloud session can and cannot do (7 Oct)
+- **Can:**
+  - GitHub (the four repos);
+  - Hugging Face with a **read** token (`HF_TOKEN` is set: it reads the private model repos and the gated NCAIR1 models);
+  - Kaggle API (`KAGGLE_API_TOKEN` set), but not Kaggle output files (`kaggleusercontent.com` is blocked);
+  - **Docker**: start the daemon with `nohup dockerd >/tmp/dockerd.log 2>&1 &`. Builds need the proxy CA injected for the test only; see "Docker in the cloud session" below.
+- **Cannot:**
+  - reach Modal (`api.modal.com` blocked; `MODAL_TOKEN_ID/SECRET` are set but unusable until Malik allows the host in the environment's network settings);
+  - read `data/private/` (it lives on the laptop and in the Modal `/_backup`);
+  - write to HF (the token is read-only).
+- **Docker in the cloud session:** the agent proxy re-signs TLS. For a local test build, add the CA in a throwaway copy of the Dockerfile, never in the committed one:
+  ```bash
+  S=$(mktemp -d); cp /root/.ccr/ca-bundle.crt $S/ca.crt
+  sed '/^FROM /a COPY --from=ca ca.crt /usr/local/share/ca-certificates/proxy.crt\nENV PIP_CERT=/usr/local/share/ca-certificates/proxy.crt REQUESTS_CA_BUNDLE=/usr/local/share/ca-certificates/proxy.crt' deploy/api.Dockerfile > $S/Dockerfile
+  docker build --network host --build-context ca=$S --build-arg HTTPS_PROXY=$HTTPS_PROXY -f $S/Dockerfile -t phc-scribe-api:local .
+  ```
+  For the llama.cpp image, the CA goes into `GIT_SSL_CAINFO` in the build stage. Docker Hub may return 429 (rate limit) for base-image metadata; retry later or build on the cached image.
+
+### Zones: what is open in each, and a prompt to start a session on it
+| Zone | Where | Open now | Start a session with |
+|---|---|---|---|
+| **Model and benchmark** | phc-scribe `bench/`, `scripts/`, `results/` | stage-2 freeze and PPI after the labels; error taxonomy; benchmark report | "Read phc-scribe `docs/status.md` START HERE (7 Oct). Are the S4-W labels exported? If yes, after my 'yes freeze', run the stage-2 freeze and PPI scoring (ADR-0022, ADR-0025) and write the results doc. If not, build the error taxonomy (eval plan §7) from committed predictions." |
+| **Serving API** | phc-scribe `serve/`, `deploy/` | PR "Hub readiness"; dev-set salvage check | "Read START HERE (7 Oct). Open or update the phc-scribe PR from `claude/awesome-mccarthy-xk2bgl`, run `./scripts/ci_local.sh`, rebuild `deploy/api.Dockerfile` from scratch (proxy CA trick in START HERE) and merge when green." |
+| **Models on HF** | HF private repos | Yoruba tokenizer (Malik, step 1); gating on 11 Oct | "Check that all three private HF model repos load (GGUF manifest SHA-256; both ASR processors via `AutoProcessor`). Report anything broken; do not make anything public." |
+| **Clinic hub** | takada-app `deploy/`, `docs/operations.md`; phc-scribe `deploy/api.Dockerfile`, `serve/phc_scribe/fetch_models.py` | PR; laptop dry run (step 4); load test (visits per hour) | "Read takada-app `docs/status.md` and phc-scribe START HERE (7 Oct). Merge the takada-app PR when green, then guide me through the laptop hub dry run and `scripts/hub_check.py`, and write the numbers into both status files." |
+| **Phone and web app (Takada)** | takada-app `apps/mobile`, `apps/server`, `packages/` | first real-device test (9 Oct); Vercel protection (Malik); APK for the nurses' phones | "Read takada-app `docs/status.md`. Build the debug APK (CI workflow `native.yml` artifact, or locally), and prepare the 9 Oct pilot checklist: install, pair with the hub, record, draft, confirm." |
+| **Submission package** | phc-scribe `docs/`, both READMEs, HF cards | 10–11 Oct | "Read START HERE (7 Oct) and `docs/naic-requirements.md`. Draft the submission package checklist and the model and dataset cards from committed results; list what Malik must approve." |
+| **Scholarships** | scholarship-applications `README.md` | Commonwealth Master's, 20 Oct (EAS + CSC); Stanford MS application, 1 Dec | "Read `README.md` in `malikbello/scholarship-applications` and continue from 'Right now', following its rules (AI never writes essay answers)." |
+| **Project ideas** | project-archive `portfolio-projects/` | ArchSim raw idea (not yet researched) | "Read `portfolio-projects/archsim-board/RAW_IDEA.md` in project-archive and do the research pass it lists; do not build anything." |
+
+## Earlier START HERE (5–6 Oct, sessions 8–9): kept for its detail
 **Deadline:** NAIC submission 12 Oct 23:59 WAT; target 11 Oct.
 
 **Done:**
