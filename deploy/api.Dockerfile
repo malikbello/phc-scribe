@@ -30,6 +30,9 @@ COPY serve serve
 COPY bench bench
 COPY rules rules
 COPY schema schema
+# The few-shot prompt's examples (bench/prompts.py FEWSHOT_PATH): the shipped model was
+# trained and evaluated with this prompt, so the drafting step cannot run without them.
+COPY tests/fixtures/smoke_items.jsonl tests/fixtures/smoke_items.jsonl
 
 ENV PYTHONPATH=/app/serve:/app \
     PHC_DB=/data/phc_scribe.sqlite3 \

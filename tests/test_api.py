@@ -253,3 +253,11 @@ def test_unrepairable_output_is_still_a_502(tmp_path):
     s = Settings(env="dev", db_path=str(tmp_path / "db"))
     c = TestClient(create_app(s, extractor=_llamacpp('{"findings": [')))
     assert c.post("/v1/extract", json={"text": NOTE}).status_code == 502
+
+
+def test_the_llamacpp_timeout_is_configurable(monkeypatch):
+    """A laptop CPU can take minutes for one draft; the hub raises the wait, not the model."""
+    monkeypatch.setenv("PHC_LLAMACPP_TIMEOUT", "900")
+    assert Settings.from_env().llamacpp_timeout == 900.0
+    monkeypatch.delenv("PHC_LLAMACPP_TIMEOUT")
+    assert Settings.from_env().llamacpp_timeout == 600.0

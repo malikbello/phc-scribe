@@ -36,6 +36,8 @@ image = (
     .add_local_dir("bench", "/app/bench", ignore=["**/__pycache__"])
     .add_local_dir("rules", "/app/rules")
     .add_local_dir("schema", "/app/schema")
+    # few-shot examples for the llama.cpp extractor's prompt (bench/prompts.py FEWSHOT_PATH)
+    .add_local_file("tests/fixtures/smoke_items.jsonl", "/app/tests/fixtures/smoke_items.jsonl")
 )
 
 app = modal.App("phc-scribe-api")
