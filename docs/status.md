@@ -72,8 +72,14 @@ Already merged on 6 Oct: PR 22 (Abdullah), PR 23 (salvage ADR-0029, ASR guard, H
   - `…ASR-Health-Pidgin-…`: complete, loads;
   - `…ASR-Health-Yoruba-…`: **broken until Malik runs the fix** (empty `tokenizer.json`, no `tokenizer_config.json`; see step 1 below).
 - **Hub, end to end in the cloud session (7 Oct):** `phc-scribe-api:local` (built from `deploy/api.Dockerfile`), `takada-llm:b11387` (built from takada-app `deploy/llm.Dockerfile`) and the real GGUF ran together.
-  - 4 vCPU Xeon with AVX-512, 15 GB RAM: first request 222 s (the 1,857-token few-shot prompt is processed cold, then cached); after that **77–116 s per draft** at about 2.5 tokens/s (memory-bound); 8/8 drafts valid.
-  - Correctness against the pilot gold labels: `results/hub/cloud-4vcpu-20261007.json` (HUB_CHECK_SUMMARY).
+  - 4 vCPU Xeon with AVX-512, 15 GB RAM: first request 168–222 s (the 1,857-token few-shot prompt is processed cold, then cached); after that **70–116 s per draft** at about 2.5 tokens/s (memory-bound); 8/8 drafts valid in both runs.
+  - **`scripts/hub_check.py` on 8 pilot items** (`results/hub/cloud-4vcpu-20261007.json`; pilot is non-test data):
+    - all 8 drafts valid;
+    - danger-sign recall **5/6 (83%)**; the full-precision HF run scored 90% on all 30 pilot items, so this is consistent at n = 8;
+    - **no false alarms** on items without a danger sign; 2 extra signs on danger items;
+    - speed: first (cold) request 168 s, then **median 90 s, p95 106 s**.
+
+    The hub serves the shipped model correctly.
   - Four bugs found and fixed on the way: no API Dockerfile; few-shot file missing from the images (every draft was a 500); 120 s model timeout (long drafts were 502s); several llama.cpp slots let an abandoned request keep the CPU.
 
 ### Next steps, in order (owner; exact commands)
