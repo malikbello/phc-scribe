@@ -70,7 +70,7 @@ Already merged on 6 Oct: PR 22 (Abdullah), PR 23 (salvage ADR-0029, ASR guard, H
 - **HF (all private):**
   - `malikbello/N-ATLaS-Health-ANC-Scribe-GGUF-Powered-by-Awarri`: the GGUF and its manifest (SHA-256 `2b1dd8c4…`, llama.cpp `8330e96` = b11387);
   - `…ASR-Health-Pidgin-…`: complete, loads;
-  - `…ASR-Health-Yoruba-…`: **broken until Malik runs the fix** (empty `tokenizer.json`, no `tokenizer_config.json`; see step 1 below).
+  - `…ASR-Health-Yoruba-…`: complete and loads (tokenizer restored 7 Oct, step 1).
 - **Hub, end to end in the cloud session (7 Oct):** `phc-scribe-api:local` (built from `deploy/api.Dockerfile`), `takada-llm:b11387` (built from takada-app `deploy/llm.Dockerfile`) and the real GGUF ran together.
   - 4 vCPU Xeon with AVX-512, 15 GB RAM: first request 168–222 s (the 1,857-token few-shot prompt is processed cold, then cached); after that **70–116 s per draft** at about 2.5 tokens/s (memory-bound); 8/8 drafts valid in both runs.
   - **`scripts/hub_check.py` on 8 pilot items** (`results/hub/cloud-4vcpu-20261007.json`; pilot is non-test data):
@@ -83,16 +83,8 @@ Already merged on 6 Oct: PR 22 (Abdullah), PR 23 (salvage ADR-0029, ASR guard, H
   - Four bugs found and fixed on the way: no API Dockerfile; few-shot file missing from the images (every draft was a 500); 120 s model timeout (long drafts were 502s); several llama.cpp slots let an abandoned request keep the CPU.
 
 ### Next steps, in order (owner; exact commands)
-1. **Malik: restore the Yoruba ASR tokenizer** (5 min, needs a Hugging Face **write** token; PowerShell in the phc-scribe folder):
-   ```powershell
-   git fetch origin; git checkout claude/awesome-mccarthy-xk2bgl; git pull
-   $s = Read-Host "HF write token" -AsSecureString
-   $env:HF_TOKEN = [System.Net.NetworkCredential]::new("", $s).Password
-   py scripts\fix_asr_tokenizer.py --lang yo --local data\private\models\asrft-20261003\asr-ft\yo
-   git checkout main
-   ```
-   Expect: `…Yoruba…: tokenizer restored, commit …`. An agent then confirms that `AutoProcessor.from_pretrained("malikbello/N-ATLaS-ASR-Health-Yoruba-Powered-by-Awarri")` loads (the cloud session's read token can do this).
-2. **Agent: open and merge the two PRs** (phc-scribe and takada-app, branch `claude/awesome-mccarthy-xk2bgl` → `main`) once `./scripts/ci_local.sh` and GitHub CI pass. Merge commits, plain titles (the commit-msg hook rejects "claude").
+1. ✅ **7 Oct: Yoruba ASR tokenizer restored on HF** (from the cloud session with `HF_WRITE_TOKEN`; repo commit `ac2471cd`). Checked in the hub image: both fine-tuned ASR repos load (processor and model, 241M parameters each), and Yoruba text round-trips exactly. The laptop's local copy `data/private/models/asrft-20261003/asr-ft/yo` still has the empty tokenizer. The hub fetches from HF, so this only matters for local scripts; to repair it, run `py scripts\fix_asr_tokenizer.py --lang yo --local data\private\models\asrft-20261003\asr-ft\yo` (it re-uploads the same files, a no-op on HF).
+2. ✅ **7 Oct: both PRs merged** (phc-scribe 24, takada-app 1), CI green. The handoff, the API image, the model fetch and the hub changes are all on `main` in both repos.
 3. **Malik + nurses: S4-W labels by 8 Oct.** Malik 120 (60 stratum A + 60 stratum B); Rahmat 18 and Success 18 doubles. Then the agent:
    - stage-2 freeze: `scripts/freeze_test_set.py` (ADR-0022), **only after Malik says "yes freeze"**;
    - PPI scoring: `bench/ppi.py` (ADR-0025), on transcript input and on ASR input (base and fine-tuned ASR).
@@ -117,7 +109,7 @@ Already merged on 6 Oct: PR 22 (Abdullah), PR 23 (salvage ADR-0029, ASR guard, H
 8. **11 Oct: submission package** (clean repo, cards, switch the HF repos from private to gated with "Powered by Awarri" naming): **Malik approves and submits.**
 
 ### Malik-only items
-- Step 1 (tokenizer), the labels, the pilot, approvals (freeze, submission, making anything public).
+- The labels, the pilot, approvals (freeze, submission, making anything public).
 - **Revoke the read-only HF token pasted into a chat on 6 Oct** (huggingface.co/settings/tokens).
 - Delete the misplaced Modal volume folder: `modal volume rm -r phc-scribe-runs "C:"` (a duplicate of `/_backup`).
 - Vercel: lock takada-app.vercel.app behind Vercel Authentication (Settings → Deployment Protection → All Deployments).
@@ -131,7 +123,7 @@ Already merged on 6 Oct: PR 22 (Abdullah), PR 23 (salvage ADR-0029, ASR guard, H
 - **Cannot:**
   - reach Modal (`api.modal.com` blocked; `MODAL_TOKEN_ID/SECRET` are set but unusable until Malik allows the host in the environment's network settings);
   - read `data/private/` (it lives on the laptop and in the Modal `/_backup`);
-  - write to HF (the token is read-only).
+  - (since 7 Oct, `HF_WRITE_TOKEN` is also set: fine-grained, write to Malik's repos. Use it only for explicit fixes; never make a repo public.)
 - **Docker in the cloud session:** the agent proxy re-signs TLS. For a local test build, add the CA in a throwaway copy of the Dockerfile, never in the committed one:
   ```bash
   S=$(mktemp -d); cp /root/.ccr/ca-bundle.crt $S/ca.crt
@@ -145,7 +137,7 @@ Already merged on 6 Oct: PR 22 (Abdullah), PR 23 (salvage ADR-0029, ASR guard, H
 |---|---|---|---|
 | **Model and benchmark** | phc-scribe `bench/`, `scripts/`, `results/` | stage-2 freeze and PPI after the labels; error taxonomy; benchmark report | "Read phc-scribe `docs/status.md` START HERE (7 Oct). Are the S4-W labels exported? If yes, after my 'yes freeze', run the stage-2 freeze and PPI scoring (ADR-0022, ADR-0025) and write the results doc. If not, build the error taxonomy (eval plan §7) from committed predictions." |
 | **Serving API** | phc-scribe `serve/`, `deploy/` | PR "Hub readiness"; dev-set salvage check | "Read START HERE (7 Oct). Open or update the phc-scribe PR from `claude/awesome-mccarthy-xk2bgl`, run `./scripts/ci_local.sh`, rebuild `deploy/api.Dockerfile` from scratch (proxy CA trick in START HERE) and merge when green." |
-| **Models on HF** | HF private repos | Yoruba tokenizer (Malik, step 1); gating on 11 Oct | "Check that all three private HF model repos load (GGUF manifest SHA-256; both ASR processors via `AutoProcessor`). Report anything broken; do not make anything public." |
+| **Models on HF** | HF private repos | All three complete and loading (7 Oct); gating on 11 Oct | "Check that all three private HF model repos load (GGUF manifest SHA-256; both ASR processors via `AutoProcessor`). Report anything broken; do not make anything public." |
 | **Clinic hub** | takada-app `deploy/`, `docs/operations.md`; phc-scribe `deploy/api.Dockerfile`, `serve/phc_scribe/fetch_models.py` | PR; laptop dry run (step 4); load test (visits per hour) | "Read takada-app `docs/status.md` and phc-scribe START HERE (7 Oct). Merge the takada-app PR when green, then guide me through the laptop hub dry run and `scripts/hub_check.py`, and write the numbers into both status files." |
 | **Phone and web app (Takada)** | takada-app `apps/mobile`, `apps/server`, `packages/` | first real-device test (9 Oct); Vercel protection (Malik); APK for the nurses' phones | "Read takada-app `docs/status.md`. Build the debug APK (CI workflow `native.yml` artifact, or locally), and prepare the 9 Oct pilot checklist: install, pair with the hub, record, draft, confirm." |
 | **Submission package** | phc-scribe `docs/`, both READMEs, HF cards | 10–11 Oct | "Read START HERE (7 Oct) and `docs/naic-requirements.md`. Draft the submission package checklist and the model and dataset cards from committed results; list what Malik must approve." |
