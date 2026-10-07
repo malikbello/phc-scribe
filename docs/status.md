@@ -83,6 +83,10 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
    - The write token is a fine-grained token in the Modal secret `phc-scribe-hf-write`. An earlier read-only token was pasted into a chat on 6 Oct: **Malik to revoke it.**
 6. **Takada/app integration** of the offline API; then the **demo video**; then the **error taxonomy** (50 errors per system, eval plan §7); then the **submission package**.
 
+**7 Oct, hub readiness (for the 9 Oct pilot):**
+- `deploy/api.Dockerfile` added: the `/v1` API as a CPU container for the Takada clinic hub (`phc-scribe-api:local`). Built and tested in the cloud session: health 200, extract without key 401, keyword extract flags correctly, runs as uid 10001.
+- **Found: the Yoruba ASR repo on HF has an empty `tokenizer.json` and no `tokenizer_config.json`, so it does not load** (checked in the hub image; Pidgin loads). Fine-tuning does not change the Whisper tokenizer (Pidgin fine-tune = base: vocabulary, merges and 1,608 added tokens identical), so the fix restores the base tokenizer files: **Malik runs `python scripts/fix_asr_tokenizer.py --lang yo --local data/private/models/asrft-20261003/asr-ft/yo` with the write token.** `publish_asr.py` now refuses a folder with missing or empty tokenizer files.
+
 **Malik-only items:**
 - merge the PRs;
 - label the S4-W clips;

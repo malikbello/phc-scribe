@@ -67,6 +67,14 @@ offline antenatal-care scribe for Nigerian primary health care (NAIC 2026).
 """
 
 
+REQUIRED = ("config.json", "model.safetensors", "tokenizer.json", "tokenizer_config.json")
+
+
+def incomplete(folder: Path) -> list[str]:
+    """Files a loadable Whisper model folder needs that are missing or empty."""
+    return [f for f in REQUIRED if not (folder / f).is_file() or (folder / f).stat().st_size == 0]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--models", type=Path, required=True)
@@ -78,6 +86,8 @@ def main() -> int:
     result = json.loads(RESULTS.read_text(encoding="utf-8"))
     for lang, name in REPOS.items():
         folder = args.models / lang
+        if bad := incomplete(folder):
+            raise SystemExit(f"{folder}: missing or empty {', '.join(bad)}: refusing to upload")
         summary = json.loads((folder / "asrft-summary.json").read_text(encoding="utf-8"))
         repo = f"{args.owner}/{name}"
         api.create_repo(repo, private=True, exist_ok=True, repo_type="model")
