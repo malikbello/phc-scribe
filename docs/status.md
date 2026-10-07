@@ -81,6 +81,14 @@ Already merged on 6 Oct: PR 22 (Abdullah), PR 23 (salvage ADR-0029, ASR guard, H
 
     The hub serves the shipped model correctly.
   - Four bugs found and fixed on the way: no API Dockerfile; few-shot file missing from the images (every draft was a 500); 120 s model timeout (long drafts were 502s); several llama.cpp slots let an abandoned request keep the CPU.
+- **Pilot-readiness review (7 Oct, evening): takada-app `docs/reviews/2026-10-07-pilot-readiness.md`, PR takada-app#2.**
+  - The full hub was driven from a phone browser and with scripted phones. It found 12 pilot blockers in Takada, now fixed with tests. Among them:
+    - a typed facility name refused every visit;
+    - sync stalled after a long offline day;
+    - visits over this API's 8,000-character limit failed with 413 (Takada now drafts them in parts);
+    - silent audio made Whisper invent a sentence.
+  - **Model finding (O1), for the error taxonomy:** on "is the baby moving well? yes, the baby moves well" (synthetic English speech, not test data), the shipped model wrote `reduced_fetal_movement: present` with that sentence as its evidence. Grounding checks that the evidence is in the transcript, not its polarity. This is a false danger sign: tell the nurses on 9 Oct that every model finding must be checked. A polarity check in grounding would need an ADR.
+  - **ASR (O2):** Whisper invents text from non-speech. Takada now drops digital silence, but noise still gets through: a no-speech or VAD gate here is the fix.
 
 ### Next steps, in order (owner; exact commands)
 1. ✅ **7 Oct: Yoruba ASR tokenizer restored on HF** (from the cloud session with `HF_WRITE_TOKEN`; repo commit `ac2471cd`). Checked in the hub image: both fine-tuned ASR repos load (processor and model, 241M parameters each), and Yoruba text round-trips exactly. The laptop's local copy `data/private/models/asrft-20261003/asr-ft/yo` still has the empty tokenizer. The hub fetches from HF, so this only matters for local scripts; to repair it, run `py scripts\fix_asr_tokenizer.py --lang yo --local data\private\models\asrft-20261003\asr-ft\yo` (it re-uploads the same files, a no-op on HF).
@@ -102,7 +110,7 @@ Already merged on 6 Oct: PR 22 (Abdullah), PR 23 (salvage ADR-0029, ASR guard, H
    $env:PHC_API_KEY = "<PHC_SCRIBE_API_KEY from hub.env>"
    .venv\Scripts\python scripts\hub_check.py --url http://127.0.0.1:8000 --tag laptop-i7-8665u
    ```
-   (`hub.check.yml` publishes the scribe API on the laptop's loopback for this check only; drop it for the pilot.) Record p50/p95 here. **Warm the model once before the nurses arrive** (the first draft is about 3–4 minutes).
+   (`hub.check.yml` publishes the scribe API on the laptop's loopback for this check only; drop it for the pilot.) Record p50/p95 here. **Warm the model once before the nurses arrive** (the first draft is 3–7 minutes: the cold prompt, plus loading the ASR model in the 7 Oct review run).
 5. **Agent: salvage check on dev predictions** (ADR-0029 follow-up; laptop or a session that can reach Modal): `modal volume get phc-scribe-runs /_eval/<dev run>/` then `python scripts/salvage_check.py <dev pred files>`.
 6. **9 Oct: real-user pilot** (Malik + nurses): Takada on phones + the hub; usability and time per record; the first real-device check of the Android app. Record the demo.
 7. **10 Oct:** benchmark report (frozen results + S4-W + the as-shipped ASR numbers), model and dataset cards, error taxonomy (50 errors per system, eval plan §7), technical docs; Malik edits the video.
