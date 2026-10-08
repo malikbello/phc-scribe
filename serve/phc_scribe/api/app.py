@@ -32,6 +32,7 @@ from phc_scribe.api.settings import Settings
 from phc_scribe.api.store import IdempotencyConflict, RecordStore
 from phc_scribe.encounter import SCHEMA_VERSION, Encounter
 from phc_scribe.grounding import ground
+from phc_scribe.polarity import check as polarity_check
 from phc_scribe.rules import Flag, check, load_rules
 from phc_scribe.vocab import load_vocabulary
 
@@ -87,10 +88,24 @@ class DroppedOut(BaseModel):
     detail: str = ""
 
 
+class ReviewCheck(BaseModel):
+    path: str
+    reason: str = Field(
+        description="polarity: the finding's own quote seems to say the opposite (ADR-0030)."
+    )
+    detail: str = ""
+
+
 class Grounding(BaseModel):
-    needs_review: bool = Field(description="True if any field was dropped; a person must check.")
+    needs_review: bool = Field(
+        description="True if any field was dropped or flagged by a check; a person must check."
+    )
     fields_total: int
     dropped: list[DroppedOut]
+    checks: list[ReviewCheck] = Field(
+        default_factory=list,
+        description="Fields kept but flagged for the health worker (nothing is changed).",
+    )
 
 
 class ExtractIn(BaseModel):
@@ -317,13 +332,18 @@ def create_app(
         dropped = [
             DroppedOut(path=r.path, reason="schema_repair", detail=r.detail) for r in draft.repairs
         ] + [DroppedOut(path=d.path, reason=d.reason, detail=d.detail) for d in g.dropped]
+        checks = [
+            ReviewCheck(path=c.path, reason="polarity", detail=c.detail)
+            for c in polarity_check(g.record)
+        ]
         return ExtractOut(
             record=g.record,
             flags=flags_of(g.record),
             grounding=Grounding(
-                needs_review=bool(dropped),
+                needs_review=bool(dropped or checks),
                 fields_total=g.fields_total,
                 dropped=dropped,
+                checks=checks,
             ),
             versions=versions(),
             latency_ms=round((time.perf_counter() - t0) * 1000, 1),

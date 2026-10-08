@@ -261,3 +261,41 @@ def test_the_llamacpp_timeout_is_configurable(monkeypatch):
     assert Settings.from_env().llamacpp_timeout == 900.0
     monkeypatch.delenv("PHC_LLAMACPP_TIMEOUT")
     assert Settings.from_env().llamacpp_timeout == 600.0
+
+
+def test_a_finding_whose_quote_says_the_opposite_is_flagged_not_dropped(tmp_path):
+    """ADR-0030: the 7 Oct hub run wrote reduced fetal movement from "the baby moves well"."""
+    text = "Is the baby moving well? Yes, the baby moves well. Any bleeding? No bleeding."
+    out = {
+        "findings": [
+            {
+                "concept": "reduced_fetal_movement",
+                "assertion": "present",
+                "evidence": {"text": "the baby moves well"},
+            },
+            {
+                "concept": "vaginal_bleeding",
+                "assertion": "absent",
+                "evidence": {"text": "No bleeding"},
+            },
+        ]
+    }
+    s = Settings(env="dev", db_path=str(tmp_path / "db"))
+    body = (
+        TestClient(create_app(s, extractor=_llamacpp(json.dumps(out))))
+        .post("/v1/extract", json={"text": text})
+        .json()
+    )
+    assert [f["concept"] for f in body["record"]["findings"]] == [
+        "reduced_fetal_movement",
+        "vaginal_bleeding",
+    ]
+    assert body["grounding"]["needs_review"] is True
+    assert body["grounding"]["checks"] == [
+        {
+            "path": "findings[0]",
+            "reason": "polarity",
+            "detail": 'reduced_fetal_movement is "present", but its quote reads as the normal'
+            ' state: "the baby moves well"',
+        }
+    ]
