@@ -48,6 +48,20 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 - **Uyo mapping:** both answered with specific mappings, so the ADR-0019 check can now run with `--confirmed-by`.
 - **Phrases, guide and rules:** 31 change requests, mostly local and lay phrasings (e.g. "running temperature", "serious stomach pain", "spotting", "pale +++", ">3 vomits a day") and follow-up tests (urinalysis every visit; PCV with bleeding). To be applied via a traceability matrix (each note → applied, or declined with a reason).
 
+## Update 8 Oct 2026 (session 9, night): read this first, then "START HERE" below
+- **Data access (checked 8 Oct with Malik's HF token):** `intronhealth/NigBench-MAMAI-Speech-QA` and `intronhealth/nig-bench` are **still "awaiting a review from the repo authors"**. Their data files return 403; only the READMEs are readable. WazobiaSpeech (`Africanvoice/*`) is not open to this HF account either (the earlier fetch ran on Kaggle).
+- **Labels (S4-W):** a cloud session cannot see progress; the review app's database credentials stay in Vercel. Malik: open https://phc-scribe-review.vercel.app/admin, where the team table shows each labeller's progress (Rahmat 18, Success 18, Malik 120).
+- **PR 27, open, CI green. Both ADRs are Proposed and need Malik's "yes" before merge.**
+  - **ADR-0030, polarity check (review O1).** A finding whose own quote reads as a denial or as the normal state ("the baby moves well") is flagged in `grounding.checks`, never dropped. Cues are narrow because Pidgin and Yoruba state danger signs with negators. Dev data only: 0 of 78 real findings flagged; 32 of 40 denials caught; on saved pilot predictions, 7 of 7 flags were real errors.
+  - **ADR-0031, speech gate (review O2).** Silero VAD before Whisper on clips of 2 s or more: no speech, no transcript. Clips with speech are unchanged, so ADR-0026 stands. FLEURS dev: speech kept 61 of 61 (59 of 61 at 0 dB SNR); noise and silence passed 0 of 48.
+  - **After merge:** rebuild the hub's API image.
+- **takada-app PR 3, merged:**
+  - recordings survive the app being killed;
+  - plain error messages for nurses, and a live "no sound reaching the microphone" warning;
+  - phc-scribe's checks shown under "Please check";
+  - empty transcripts treated as no speech;
+  - even audio parts.
+
 ## START HERE (7 Oct 2026, end of session 9): state, zones and the exact next steps
 **Deadline:** NAIC submission 12 Oct 23:59 WAT; target 11 Oct. Real-user pilot with the nurses: 9 Oct.
 
