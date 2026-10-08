@@ -1,0 +1,2030 @@
+{
+  "tag": "fleurs-dev.20261008",
+  "min_speech_s": 0.25,
+  "gate_min_clip_s": 2.0,
+  "one_word_by_vad_alone": "38/61",
+  "speech_passed": {
+    "clean": "61/61",
+    "snr5": "61/61",
+    "snr0": "59/61",
+    "one_word_0.5s": "61/61"
+  },
+  "non_speech_passed": "0/48",
+  "non_speech_that_passed": [],
+  "speech_that_failed": [
+    {
+      "clip": "yo_ng-27.wav",
+      "variant": "snr0",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": false
+    },
+    {
+      "clip": "yo_ng-36.wav",
+      "variant": "snr0",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": false
+    }
+  ],
+  "speech": [
+    {
+      "clip": "en_us-00.wav",
+      "variant": "clean",
+      "speech_s": 4.28,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-00.wav",
+      "variant": "snr5",
+      "speech_s": 4.25,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-00.wav",
+      "variant": "snr0",
+      "speech_s": 4.22,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-00.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": true
+    },
+    {
+      "clip": "en_us-01.wav",
+      "variant": "clean",
+      "speech_s": 14.23,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-01.wav",
+      "variant": "snr5",
+      "speech_s": 13.75,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-01.wav",
+      "variant": "snr0",
+      "speech_s": 13.52,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-01.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": true
+    },
+    {
+      "clip": "en_us-02.wav",
+      "variant": "clean",
+      "speech_s": 6.68,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-02.wav",
+      "variant": "snr5",
+      "speech_s": 6.49,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-02.wav",
+      "variant": "snr0",
+      "speech_s": 6.49,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-02.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-03.wav",
+      "variant": "clean",
+      "speech_s": 3.16,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-03.wav",
+      "variant": "snr5",
+      "speech_s": 2.97,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-03.wav",
+      "variant": "snr0",
+      "speech_s": 2.84,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-03.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": true
+    },
+    {
+      "clip": "en_us-04.wav",
+      "variant": "clean",
+      "speech_s": 2.81,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-04.wav",
+      "variant": "snr5",
+      "speech_s": 2.33,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-04.wav",
+      "variant": "snr0",
+      "speech_s": 2.33,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-04.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": true
+    },
+    {
+      "clip": "en_us-05.wav",
+      "variant": "clean",
+      "speech_s": 3.13,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-05.wav",
+      "variant": "snr5",
+      "speech_s": 2.01,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-05.wav",
+      "variant": "snr0",
+      "speech_s": 1.88,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-05.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": true
+    },
+    {
+      "clip": "en_us-06.wav",
+      "variant": "clean",
+      "speech_s": 5.24,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-06.wav",
+      "variant": "snr5",
+      "speech_s": 5.37,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-06.wav",
+      "variant": "snr0",
+      "speech_s": 5.4,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-06.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": true
+    },
+    {
+      "clip": "en_us-07.wav",
+      "variant": "clean",
+      "speech_s": 8.21,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-07.wav",
+      "variant": "snr5",
+      "speech_s": 7.64,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-07.wav",
+      "variant": "snr0",
+      "speech_s": 7.48,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-07.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": true
+    },
+    {
+      "clip": "en_us-08.wav",
+      "variant": "clean",
+      "speech_s": 6.84,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-08.wav",
+      "variant": "snr5",
+      "speech_s": 6.84,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-08.wav",
+      "variant": "snr0",
+      "speech_s": 7.48,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-08.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": true
+    },
+    {
+      "clip": "en_us-09.wav",
+      "variant": "clean",
+      "speech_s": 6.42,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-09.wav",
+      "variant": "snr5",
+      "speech_s": 6.26,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-09.wav",
+      "variant": "snr0",
+      "speech_s": 6.23,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-09.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": true
+    },
+    {
+      "clip": "en_us-10.wav",
+      "variant": "clean",
+      "speech_s": 4.16,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-10.wav",
+      "variant": "snr5",
+      "speech_s": 3.86,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-10.wav",
+      "variant": "snr0",
+      "speech_s": 3.86,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-10.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.47,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-11.wav",
+      "variant": "clean",
+      "speech_s": 6.08,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-11.wav",
+      "variant": "snr5",
+      "speech_s": 5.95,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-11.wav",
+      "variant": "snr0",
+      "speech_s": 5.95,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-11.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": true
+    },
+    {
+      "clip": "en_us-12.wav",
+      "variant": "clean",
+      "speech_s": 5.6,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-12.wav",
+      "variant": "snr5",
+      "speech_s": 5.44,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-12.wav",
+      "variant": "snr0",
+      "speech_s": 5.47,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-12.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": true
+    },
+    {
+      "clip": "en_us-13.wav",
+      "variant": "clean",
+      "speech_s": 4.98,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-13.wav",
+      "variant": "snr5",
+      "speech_s": 5.21,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-13.wav",
+      "variant": "snr0",
+      "speech_s": 5.27,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-13.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.47,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-14.wav",
+      "variant": "clean",
+      "speech_s": 7.9,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-14.wav",
+      "variant": "snr5",
+      "speech_s": 8.38,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-14.wav",
+      "variant": "snr0",
+      "speech_s": 8.21,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-14.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": true
+    },
+    {
+      "clip": "en_us-15.wav",
+      "variant": "clean",
+      "speech_s": 13.62,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-15.wav",
+      "variant": "snr5",
+      "speech_s": 14.52,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-15.wav",
+      "variant": "snr0",
+      "speech_s": 14.65,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-15.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-16.wav",
+      "variant": "clean",
+      "speech_s": 9.26,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-16.wav",
+      "variant": "snr5",
+      "speech_s": 9.33,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-16.wav",
+      "variant": "snr0",
+      "speech_s": 9.14,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-16.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": true
+    },
+    {
+      "clip": "en_us-17.wav",
+      "variant": "clean",
+      "speech_s": 6.04,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-17.wav",
+      "variant": "snr5",
+      "speech_s": 5.79,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-17.wav",
+      "variant": "snr0",
+      "speech_s": 5.79,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-17.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": true
+    },
+    {
+      "clip": "en_us-18.wav",
+      "variant": "clean",
+      "speech_s": 5.24,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-18.wav",
+      "variant": "snr5",
+      "speech_s": 5.21,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-18.wav",
+      "variant": "snr0",
+      "speech_s": 5.18,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-18.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.43,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-19.wav",
+      "variant": "clean",
+      "speech_s": 4.99,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-19.wav",
+      "variant": "snr5",
+      "speech_s": 4.89,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-19.wav",
+      "variant": "snr0",
+      "speech_s": 4.86,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "en_us-19.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-00.wav",
+      "variant": "clean",
+      "speech_s": 10.44,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-00.wav",
+      "variant": "snr5",
+      "speech_s": 11.08,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-00.wav",
+      "variant": "snr0",
+      "speech_s": 11.12,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-00.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-01.wav",
+      "variant": "clean",
+      "speech_s": 13.96,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-01.wav",
+      "variant": "snr5",
+      "speech_s": 14.25,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-01.wav",
+      "variant": "snr0",
+      "speech_s": 14.15,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-01.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-02.wav",
+      "variant": "clean",
+      "speech_s": 8.72,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-02.wav",
+      "variant": "snr5",
+      "speech_s": 8.69,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-02.wav",
+      "variant": "snr0",
+      "speech_s": 8.66,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-02.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.47,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-03.wav",
+      "variant": "clean",
+      "speech_s": 7.92,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-03.wav",
+      "variant": "snr5",
+      "speech_s": 8.05,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-03.wav",
+      "variant": "snr0",
+      "speech_s": 8.02,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-03.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-04.wav",
+      "variant": "clean",
+      "speech_s": 5.6,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-04.wav",
+      "variant": "snr5",
+      "speech_s": 5.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-04.wav",
+      "variant": "snr0",
+      "speech_s": 5.63,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-04.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.31,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-05.wav",
+      "variant": "clean",
+      "speech_s": 6.29,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-05.wav",
+      "variant": "snr5",
+      "speech_s": 6.48,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-05.wav",
+      "variant": "snr0",
+      "speech_s": 6.58,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-05.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.43,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-06.wav",
+      "variant": "clean",
+      "speech_s": 9.11,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-06.wav",
+      "variant": "snr5",
+      "speech_s": 9.05,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-06.wav",
+      "variant": "snr0",
+      "speech_s": 9.02,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-06.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-07.wav",
+      "variant": "clean",
+      "speech_s": 7.51,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-07.wav",
+      "variant": "snr5",
+      "speech_s": 7.7,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-07.wav",
+      "variant": "snr0",
+      "speech_s": 7.77,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-07.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-08.wav",
+      "variant": "clean",
+      "speech_s": 16.1,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-08.wav",
+      "variant": "snr5",
+      "speech_s": 16.29,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-08.wav",
+      "variant": "snr0",
+      "speech_s": 15.52,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-08.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.47,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-09.wav",
+      "variant": "clean",
+      "speech_s": 15.76,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-09.wav",
+      "variant": "snr5",
+      "speech_s": 16.04,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-09.wav",
+      "variant": "snr0",
+      "speech_s": 15.95,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-09.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-10.wav",
+      "variant": "clean",
+      "speech_s": 12.22,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-10.wav",
+      "variant": "snr5",
+      "speech_s": 11.68,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-10.wav",
+      "variant": "snr0",
+      "speech_s": 11.29,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-10.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-11.wav",
+      "variant": "clean",
+      "speech_s": 20.11,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-11.wav",
+      "variant": "snr5",
+      "speech_s": 19.64,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-11.wav",
+      "variant": "snr0",
+      "speech_s": 19.33,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-11.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-12.wav",
+      "variant": "clean",
+      "speech_s": 18.68,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-12.wav",
+      "variant": "snr5",
+      "speech_s": 19.27,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-12.wav",
+      "variant": "snr0",
+      "speech_s": 18.98,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-12.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-13.wav",
+      "variant": "clean",
+      "speech_s": 12.62,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-13.wav",
+      "variant": "snr5",
+      "speech_s": 12.88,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-13.wav",
+      "variant": "snr0",
+      "speech_s": 12.62,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-13.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-14.wav",
+      "variant": "clean",
+      "speech_s": 7.22,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-14.wav",
+      "variant": "snr5",
+      "speech_s": 7.24,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-14.wav",
+      "variant": "snr0",
+      "speech_s": 7.24,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-14.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-15.wav",
+      "variant": "clean",
+      "speech_s": 12.94,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-15.wav",
+      "variant": "snr5",
+      "speech_s": 11.08,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-15.wav",
+      "variant": "snr0",
+      "speech_s": 9.02,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-15.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-16.wav",
+      "variant": "clean",
+      "speech_s": 6.57,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-16.wav",
+      "variant": "snr5",
+      "speech_s": 6.92,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-16.wav",
+      "variant": "snr0",
+      "speech_s": 6.48,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-16.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-17.wav",
+      "variant": "clean",
+      "speech_s": 10.55,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-17.wav",
+      "variant": "snr5",
+      "speech_s": 10.74,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-17.wav",
+      "variant": "snr0",
+      "speech_s": 10.81,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-17.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-18.wav",
+      "variant": "clean",
+      "speech_s": 10.21,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-18.wav",
+      "variant": "snr5",
+      "speech_s": 10.21,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-18.wav",
+      "variant": "snr0",
+      "speech_s": 10.24,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-18.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-19.wav",
+      "variant": "clean",
+      "speech_s": 10.35,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-19.wav",
+      "variant": "snr5",
+      "speech_s": 10.83,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-19.wav",
+      "variant": "snr0",
+      "speech_s": 10.7,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-19.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-20.wav",
+      "variant": "clean",
+      "speech_s": 16.18,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-20.wav",
+      "variant": "snr5",
+      "speech_s": 16.44,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-20.wav",
+      "variant": "snr0",
+      "speech_s": 16.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-20.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-21.wav",
+      "variant": "clean",
+      "speech_s": 5.52,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-21.wav",
+      "variant": "snr5",
+      "speech_s": 5.65,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-21.wav",
+      "variant": "snr0",
+      "speech_s": 5.62,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-21.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-22.wav",
+      "variant": "clean",
+      "speech_s": 14.21,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-22.wav",
+      "variant": "snr5",
+      "speech_s": 14.43,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-22.wav",
+      "variant": "snr0",
+      "speech_s": 14.34,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-22.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-23.wav",
+      "variant": "clean",
+      "speech_s": 12.85,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-23.wav",
+      "variant": "snr5",
+      "speech_s": 13.24,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-23.wav",
+      "variant": "snr0",
+      "speech_s": 13.24,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-23.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-24.wav",
+      "variant": "clean",
+      "speech_s": 11.22,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-24.wav",
+      "variant": "snr5",
+      "speech_s": 11.45,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-24.wav",
+      "variant": "snr0",
+      "speech_s": 11.51,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-24.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-25.wav",
+      "variant": "clean",
+      "speech_s": 15.57,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-25.wav",
+      "variant": "snr5",
+      "speech_s": 15.83,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-25.wav",
+      "variant": "snr0",
+      "speech_s": 15.7,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-25.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-26.wav",
+      "variant": "clean",
+      "speech_s": 6.16,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-26.wav",
+      "variant": "snr5",
+      "speech_s": 6.2,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-26.wav",
+      "variant": "snr0",
+      "speech_s": 6.23,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-26.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-27.wav",
+      "variant": "clean",
+      "speech_s": 16.59,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-27.wav",
+      "variant": "snr5",
+      "speech_s": 0.48,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-27.wav",
+      "variant": "snr0",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": false
+    },
+    {
+      "clip": "yo_ng-27.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-28.wav",
+      "variant": "clean",
+      "speech_s": 5.46,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-28.wav",
+      "variant": "snr5",
+      "speech_s": 5.46,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-28.wav",
+      "variant": "snr0",
+      "speech_s": 5.46,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-28.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.47,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-29.wav",
+      "variant": "clean",
+      "speech_s": 13.0,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-29.wav",
+      "variant": "snr5",
+      "speech_s": 13.32,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-29.wav",
+      "variant": "snr0",
+      "speech_s": 13.35,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-29.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.47,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-30.wav",
+      "variant": "clean",
+      "speech_s": 8.4,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-30.wav",
+      "variant": "snr5",
+      "speech_s": 8.47,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-30.wav",
+      "variant": "snr0",
+      "speech_s": 8.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-30.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-31.wav",
+      "variant": "clean",
+      "speech_s": 9.1,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-31.wav",
+      "variant": "snr5",
+      "speech_s": 9.52,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-31.wav",
+      "variant": "snr0",
+      "speech_s": 8.39,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-31.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-32.wav",
+      "variant": "clean",
+      "speech_s": 8.62,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-32.wav",
+      "variant": "snr5",
+      "speech_s": 8.75,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-32.wav",
+      "variant": "snr0",
+      "speech_s": 8.72,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-32.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-33.wav",
+      "variant": "clean",
+      "speech_s": 14.16,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-33.wav",
+      "variant": "snr5",
+      "speech_s": 14.41,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-33.wav",
+      "variant": "snr0",
+      "speech_s": 14.19,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-33.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-34.wav",
+      "variant": "clean",
+      "speech_s": 4.25,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-34.wav",
+      "variant": "snr5",
+      "speech_s": 4.34,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-34.wav",
+      "variant": "snr0",
+      "speech_s": 4.34,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-34.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.47,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-35.wav",
+      "variant": "clean",
+      "speech_s": 8.18,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-35.wav",
+      "variant": "snr5",
+      "speech_s": 7.86,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-35.wav",
+      "variant": "snr0",
+      "speech_s": 7.9,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-35.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-36.wav",
+      "variant": "clean",
+      "speech_s": 24.71,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-36.wav",
+      "variant": "snr5",
+      "speech_s": 1.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-36.wav",
+      "variant": "snr0",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": false
+    },
+    {
+      "clip": "yo_ng-36.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-37.wav",
+      "variant": "clean",
+      "speech_s": 15.6,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-37.wav",
+      "variant": "snr5",
+      "speech_s": 15.67,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-37.wav",
+      "variant": "snr0",
+      "speech_s": 15.48,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-37.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-38.wav",
+      "variant": "clean",
+      "speech_s": 9.65,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-38.wav",
+      "variant": "snr5",
+      "speech_s": 9.61,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-38.wav",
+      "variant": "snr0",
+      "speech_s": 9.68,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-38.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.0,
+      "vad_alone": false,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-39.wav",
+      "variant": "clean",
+      "speech_s": 6.04,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-39.wav",
+      "variant": "snr5",
+      "speech_s": 6.07,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-39.wav",
+      "variant": "snr0",
+      "speech_s": 6.16,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "yo_ng-39.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.5,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "visit_en16.wav",
+      "variant": "clean",
+      "speech_s": 11.26,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "visit_en16.wav",
+      "variant": "snr5",
+      "speech_s": 11.23,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "visit_en16.wav",
+      "variant": "snr0",
+      "speech_s": 11.23,
+      "vad_alone": true,
+      "passes": true
+    },
+    {
+      "clip": "visit_en16.wav",
+      "variant": "one_word_0.5s",
+      "speech_s": 0.31,
+      "vad_alone": true,
+      "passes": true
+    }
+  ],
+  "non_speech": [
+    {
+      "sound": "silence",
+      "seed": 0,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "hiss_-60dBFS",
+      "seed": 0,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "white_-35dBFS",
+      "seed": 0,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "pink_-35dBFS",
+      "seed": 0,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "brown_-35dBFS",
+      "seed": 0,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "hum_-35dBFS",
+      "seed": 0,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "fan_-35dBFS",
+      "seed": 0,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "taps_-35dBFS",
+      "seed": 0,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "tones_-35dBFS",
+      "seed": 0,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "white_-20dBFS",
+      "seed": 0,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "pink_-20dBFS",
+      "seed": 0,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "brown_-20dBFS",
+      "seed": 0,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "hum_-20dBFS",
+      "seed": 0,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "fan_-20dBFS",
+      "seed": 0,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "taps_-20dBFS",
+      "seed": 0,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "tones_-20dBFS",
+      "seed": 0,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "silence",
+      "seed": 1,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "hiss_-60dBFS",
+      "seed": 1,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "white_-35dBFS",
+      "seed": 1,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "pink_-35dBFS",
+      "seed": 1,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "brown_-35dBFS",
+      "seed": 1,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "hum_-35dBFS",
+      "seed": 1,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "fan_-35dBFS",
+      "seed": 1,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "taps_-35dBFS",
+      "seed": 1,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "tones_-35dBFS",
+      "seed": 1,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "white_-20dBFS",
+      "seed": 1,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "pink_-20dBFS",
+      "seed": 1,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "brown_-20dBFS",
+      "seed": 1,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "hum_-20dBFS",
+      "seed": 1,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "fan_-20dBFS",
+      "seed": 1,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "taps_-20dBFS",
+      "seed": 1,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "tones_-20dBFS",
+      "seed": 1,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "silence",
+      "seed": 2,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "hiss_-60dBFS",
+      "seed": 2,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "white_-35dBFS",
+      "seed": 2,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "pink_-35dBFS",
+      "seed": 2,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "brown_-35dBFS",
+      "seed": 2,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "hum_-35dBFS",
+      "seed": 2,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "fan_-35dBFS",
+      "seed": 2,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "taps_-35dBFS",
+      "seed": 2,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "tones_-35dBFS",
+      "seed": 2,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "white_-20dBFS",
+      "seed": 2,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "pink_-20dBFS",
+      "seed": 2,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "brown_-20dBFS",
+      "seed": 2,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "hum_-20dBFS",
+      "seed": 2,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "fan_-20dBFS",
+      "seed": 2,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "taps_-20dBFS",
+      "seed": 2,
+      "speech_s": 0.0,
+      "passes": false
+    },
+    {
+      "sound": "tones_-20dBFS",
+      "seed": 2,
+      "speech_s": 0.0,
+      "passes": false
+    }
+  ]
+}

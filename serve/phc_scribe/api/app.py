@@ -21,7 +21,17 @@ from pydantic import BaseModel, ConfigDict, Field
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from phc_scribe import __version__
-from phc_scribe.api.asr import ASR_MODELS, AudioError, HfWhisperTranscriber, Transcriber, read_wav
+from phc_scribe.api.asr import (
+    ASR_MODELS,
+    GATE_MIN_CLIP_S,
+    MIN_SPEECH_S,
+    AudioError,
+    HfWhisperTranscriber,
+    SileroGate,
+    SpeechGate,
+    Transcriber,
+    read_wav,
+)
 from phc_scribe.api.extractors import (
     Extractor,
     ExtractorError,
@@ -127,6 +137,12 @@ class TranscribeOut(BaseModel):
     language: str
     model: str = Field(description="The N-ATLaS ASR model used.")
     duration_s: float
+    speech_s: float | None = Field(
+        default=None,
+        description="Seconds of speech the voice-activity gate found (ADR-0031); null when the"
+        " gate is off or the clip is under 2 s. Below 0.25 s of speech the clip is not"
+        " transcribed and text is empty.",
+    )
     latency_ms: float
 
 
@@ -212,6 +228,7 @@ def create_app(
     settings: Settings | None = None,
     extractor: Extractor | None = None,
     transcriber: Transcriber | None = None,
+    speech_gate: SpeechGate | None = None,
 ) -> FastAPI:
     settings = settings or Settings.from_env()
     settings.validate()
@@ -228,6 +245,8 @@ def create_app(
         )
     if transcriber is None and settings.asr == "hf":
         transcriber = HfWhisperTranscriber({**ASR_MODELS, **settings.asr_model_overrides()})
+        if speech_gate is None and settings.asr_vad == "on":
+            speech_gate = SileroGate()
     store = RecordStore(settings.db_path)
 
     app = FastAPI(
@@ -379,7 +398,12 @@ def create_app(
             raise ApiError(415, "unsupported_audio", str(e)) from e
         t0 = time.perf_counter()
         try:
-            text = transcriber.transcribe(samples, language)
+            # ADR-0031: no speech, no transcript. Whisper writes fluent text for silence and
+            # noise, which would reach the record as if it had been said.
+            gated = speech_gate is not None and duration >= GATE_MIN_CLIP_S
+            speech = speech_gate.speech_seconds(samples) if gated and speech_gate else None
+            heard = speech is None or speech >= MIN_SPEECH_S
+            text = transcriber.transcribe(samples, language) if heard else ""
         except Exception as e:  # model download or inference failure
             raise ApiError(502, "model_unavailable", f"ASR failed ({type(e).__name__})") from e
         return TranscribeOut(
@@ -387,6 +411,7 @@ def create_app(
             language=language,
             model=transcriber.model_for(language),
             duration_s=round(duration, 2),
+            speech_s=None if speech is None else round(speech, 2),
             latency_ms=round((time.perf_counter() - t0) * 1000, 1),
         )
 

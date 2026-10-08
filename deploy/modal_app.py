@@ -22,6 +22,7 @@ image = (
         "pyyaml>=6.0",
         "fastapi>=0.115",
         "httpx>=0.27",
+        "silero-vad==6.2.3",  # the speech gate before Whisper (ADR-0031)
     )
     .env(
         {

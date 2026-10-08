@@ -28,6 +28,49 @@ WHISPER_LANGUAGE = {"yo": "yoruba", "ha": "hausa", "ig": "igbo", "en": "english"
 SAMPLE_RATE = 16_000
 
 
+# Less speech than this (seconds) and the clip is treated as having none (ADR-0031). A
+# one-word answer ("yes", "bẹ́ẹ̀ni") is about 0.3-0.5 s; the gate is for silence and noise.
+MIN_SPEECH_S = 0.25
+# Clips shorter than this are always transcribed: a lone word is too short for the VAD to be
+# sure of (FLEURS dev check: 48/60 one-word clips passed), and a visit recording is minutes
+# long, so the gate's job is the long silent or noisy recording (results/asr/vad-gate.*.json).
+GATE_MIN_CLIP_S = 2.0
+
+
+class SpeechGate(Protocol):
+    def speech_seconds(self, samples: list[float]) -> float: ...
+
+
+class SileroGate:
+    """Silero VAD (MIT; the model ships inside the `silero-vad` wheel, so it works offline).
+
+    Whisper-family models write fluent text for silence and noise ("hallucination"); a VAD in
+    front of them is the standard remedy (faster-whisper's vad_filter, WhisperX). Here it only
+    decides whether a clip has speech at all: clips with speech go to Whisper unchanged.
+    """
+
+    def __init__(self, threshold: float = 0.5):
+        self.threshold = threshold
+        self._model = None
+
+    def speech_seconds(self, samples: list[float]) -> float:
+        import torch  # pyright: ignore[reportMissingImports]
+        from silero_vad import (  # pyright: ignore[reportMissingImports]
+            get_speech_timestamps,
+            load_silero_vad,
+        )
+
+        if self._model is None:
+            self._model = load_silero_vad()
+        spans = get_speech_timestamps(
+            torch.tensor(samples, dtype=torch.float32),
+            self._model,
+            threshold=self.threshold,
+            sampling_rate=SAMPLE_RATE,
+        )
+        return sum(s["end"] - s["start"] for s in spans) / SAMPLE_RATE
+
+
 class AudioError(ValueError):
     """The upload is not audio we can read."""
 

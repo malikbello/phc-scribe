@@ -1037,6 +1037,18 @@
             "title": "Model",
             "type": "string"
           },
+          "speech_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Seconds of speech the voice-activity gate found (ADR-0031); null when the gate is off or the clip is under 2 s. Below 0.25 s of speech the clip is not transcribed and text is empty.",
+            "title": "Speech S"
+          },
           "text": {
             "description": "The transcript. Send it to /v1/extract for a record.",
             "title": "Text",
