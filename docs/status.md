@@ -84,7 +84,7 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 ### Next, in order
 1. **Phone test and demo (Malik + agent):**
    - turn on the Windows Mobile Hotspot and connect the phone;
-   - install `Downloads	akada-hub-root.crt` on the phone (Android: Settings → Security → Install a certificate → CA);
+   - install `Downloads\takada-hub-root.crt` on the phone (Android: Settings → Security → Install a certificate → CA);
    - `https://192.168.137.1/healthz` must open without a warning;
    - the agent then issues a pairing code (`POST /v1/admin/pairing-codes`, `ADMIN_TOKEN` from `hub.env`);
    - record one visit; time it; record the demo.
