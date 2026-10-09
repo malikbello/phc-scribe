@@ -49,6 +49,7 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 - **Phrases, guide and rules:** 31 change requests, mostly local and lay phrasings (e.g. "running temperature", "serious stomach pain", "spotting", "pale +++", ">3 vomits a day") and follow-up tests (urinalysis every visit; PCV with bleeding). To be applied via a traceability matrix (each note → applied, or declined with a reason).
 
 ## START HERE (9 Oct 2026, end of session 9): state, open decisions and the exact next steps
+**Prompt for the next session (laptop): `docs/handoff/2026-10-09-next-session.md`.** It syncs all four repos first, then reads this section.
 **Deadline:** NAIC submission 12 Oct 23:59 WAT; target 11 Oct. **9 Oct is the real-user pilot day. Malik reports the S4-W labelling finished (9 Oct).**
 
 ### Where everything is
