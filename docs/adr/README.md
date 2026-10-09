@@ -33,3 +33,4 @@ Format: context → decision → consequences. A decision changes only through a
 | [0027](0027-takada-native-apps.md) | Takada on Android and iPhone as native apps (Capacitor) alongside the web app; no source maps shipped; store routes await approval | Proposed |
 | [0028](0028-synthetic-danger-sign-training-data.md) | In-language synthetic training statements by base N-ATLaS (rule checks + round-trip check) so every danger sign has training examples; the phrase bank is set aside while S5 is a test | Accepted |
 | [0029](0029-salvage-schema-invalid-outputs.md) | Serving salvages schema-invalid model outputs (drops tests without a result, unnamed `other` medications, repeated findings), reports every removal for review; benchmark unchanged | Accepted |
+| [0032](0032-model-footprint-hardware-tiers.md) | Shrink the model footprint in three hardware tiers after v1: int8 CTranslate2 ASR first, then a lite note model, then a distilled 1–3B student; v1 unchanged | Proposed |
