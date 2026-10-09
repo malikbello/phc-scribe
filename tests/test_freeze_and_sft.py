@@ -131,6 +131,28 @@ def test_stage2_records_declared_exclusions_only(tmp_path):
     assert len(load_frozen_items(tmp_path / "m.json", tmp_path)) == 5
 
 
+def test_stage2_cli_passes_exclusions_through(tmp_path, monkeypatch):
+    """The command line used to parse --exclude and drop it (found at the S4-W freeze, 9 Oct)."""
+    import sys
+
+    import scripts.freeze_test_set as cli
+
+    queue = tmp_path / "queue.jsonl"
+    _queue_from(SMOKE, queue)
+    out = tmp_path / "m.json"
+    out.write_text(freeze_items([queue], tmp_path).model_dump_json())
+    rows = SMOKE.read_text().splitlines()
+    gone = json.loads(rows[0])["item_id"]
+    labelled = tmp_path / "gold.jsonl"
+    labelled.write_text("\n".join(rows[1:]) + "\n")
+    monkeypatch.setattr(cli, "ROOT", tmp_path)
+    argv = ["freeze_test_set.py", "labels", "--labelled", f"queue.jsonl={labelled}"]
+    monkeypatch.setattr(sys, "argv", [*argv, "--exclude", f"queue.jsonl={gone}", "--out", str(out)])
+    assert cli.main() == 0
+    frozen = json.loads(out.read_text())["files"][0]
+    assert frozen["excluded"] == [gone] and frozen["items"] == 5
+
+
 def test_critical_spans_cover_concept_and_assertion_values_only():
     from bench.sft import critical_char_spans
 
