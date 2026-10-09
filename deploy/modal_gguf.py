@@ -286,3 +286,16 @@ def eval_main(
     o = res["report"]["overall"]
     keys = ("danger_recall", "micro_f1", "false_alarm_rate", "schema_valid_rate")
     print(system, {k: o[k].get("point") for k in keys})
+
+
+@app.local_entrypoint()
+def eval_spawn(run: str, items: str, mode: str = "fewshot", tag: str = "pilot", scale: float = 1.0):
+    """Start the evaluation and return at once (use with `modal run --detach`).
+
+    For slow or unstable connections: the laptop's link to Modal is not held open for the
+    whole run, so a dropped connection cannot stop it. Results land on the runs volume in
+    /runs/_eval/<system>/ (report.json, pred.jsonl); fetch them with `modal volume get`.
+    """
+    system = f"{run}-q4{'' if scale == 1.0 else f'-s{scale:g}'}-{tag}"
+    call = evaluate.spawn(run, Path(items).read_text(encoding="utf-8"), mode, system, scale)
+    print(f"{system}: started ({call.object_id}); results in /runs/_eval/{system}/")
