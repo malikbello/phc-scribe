@@ -1,0 +1,35 @@
+{
+  "purpose": "S4-W PPI inputs locked at the stage-2 freeze (ADR-0022, ADR-0025), before any S4-W score was read. Hashes only; the files stay in data/private/.",
+  "frozen_with_manifest_labels_at": "2026-10-09T22:50:57+00:00",
+  "settlement": "11 skip-vs-label disagreements settled by the pre-registered clinician (Rahmat; eval plan 6a, guidelines 10.8): 10 skips -> unlabellable (excluded), 1 -> her label (Nothing to record).",
+  "files": {
+    "committee_gold (every item; ADR-0025)": {
+      "path": "data/private/committee/committee.gold.jsonl",
+      "sha256": "94a19eed64de46bb05841062a45fed26e4a7d98cd7f6508af1c18bf23e9e10a6"
+    },
+    "triage (strata A/B, seeded sample)": {
+      "path": "data/private/committee/committee.triage.jsonl",
+      "sha256": "548d6206abc901729b96ba04166229d3ead0b9774b16464c7c1d4eb424e81c8f"
+    },
+    "human_gold (sample, settled)": {
+      "path": "data/private/s4w/s4w.human.jsonl",
+      "sha256": "577f8f5d3418d0c4a27baa61f535fc13ee6974aaaa63c4314f2217c0abece59d"
+    },
+    "human_excluded (unlabellable)": {
+      "path": "data/private/s4w/s4w.human.excluded.txt",
+      "sha256": "9935b2b69671f2402e98cbf5decbf371703a9823a3661e711551d0628fea3508"
+    },
+    "review_labels_export": {
+      "path": "data/private/review/labels.benchmark-real-speech-sample-s4--mut3nut1.2026-10-09.jsonl",
+      "sha256": "32bd0a79c42a2a3291c3d6fb040cde323bbd51f185d499821bf9fc25723b7297"
+    },
+    "review_gold_export_partial": {
+      "path": "data/private/review/gold.benchmark-real-speech-sample-s4--mut3nut1.2026-10-09.partial.jsonl",
+      "sha256": "724299bd0fab7b63edad563e5735e9861e3d9722ae35c9ba34b1da64bb8a8d6f"
+    },
+    "review_gold_settled": {
+      "path": "data/private/review/gold.benchmark-real-speech-sample-s4--mut3nut1.2026-10-09.settled.jsonl",
+      "sha256": "aa6dc1d8805483e0623e62ee1a1f8db8f43a6b4b262c4c5f82c851ba7c24ab17"
+    }
+  }
+}
