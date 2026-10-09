@@ -1,0 +1,94 @@
+{
+  "tag": "laptop-i7-8665u",
+  "items": "data/bench/pilot.20261004.jsonl",
+  "n": 8,
+  "first_request_s": 408.2,
+  "warm_p50_s": 123.9,
+  "warm_p95_s": 230.2,
+  "warm_max_s": 230.2,
+  "danger_recall": 0.8333,
+  "false_alarm_rate": 0.0,
+  "schema_valid_rate": 1.0,
+  "per_item": [
+    {
+      "item_id": "pilot-20261004-0001",
+      "seconds": 408.2,
+      "valid": true,
+      "danger_tp": 1,
+      "danger_fn": 0,
+      "danger_fp": 0,
+      "removed_fields": 0,
+      "error": null
+    },
+    {
+      "item_id": "pilot-20261004-0002",
+      "seconds": 123.9,
+      "valid": true,
+      "danger_tp": 0,
+      "danger_fn": 1,
+      "danger_fp": 0,
+      "removed_fields": 0,
+      "error": null
+    },
+    {
+      "item_id": "pilot-20261004-0003",
+      "seconds": 96.8,
+      "valid": true,
+      "danger_tp": 0,
+      "danger_fn": 0,
+      "danger_fp": 0,
+      "removed_fields": 0,
+      "error": null
+    },
+    {
+      "item_id": "pilot-20261004-0004",
+      "seconds": 116.1,
+      "valid": true,
+      "danger_tp": 0,
+      "danger_fn": 0,
+      "danger_fp": 0,
+      "removed_fields": 0,
+      "error": null
+    },
+    {
+      "item_id": "pilot-20261004-0005",
+      "seconds": 128.2,
+      "valid": true,
+      "danger_tp": 1,
+      "danger_fn": 0,
+      "danger_fp": 0,
+      "removed_fields": 0,
+      "error": null
+    },
+    {
+      "item_id": "pilot-20261004-0006",
+      "seconds": 124.1,
+      "valid": true,
+      "danger_tp": 1,
+      "danger_fn": 0,
+      "danger_fp": 1,
+      "removed_fields": 0,
+      "error": null
+    },
+    {
+      "item_id": "pilot-20261004-0007",
+      "seconds": 123.3,
+      "valid": true,
+      "danger_tp": 1,
+      "danger_fn": 0,
+      "danger_fp": 1,
+      "removed_fields": 1,
+      "error": null
+    },
+    {
+      "item_id": "pilot-20261004-0008",
+      "seconds": 230.2,
+      "valid": true,
+      "danger_tp": 1,
+      "danger_fn": 0,
+      "danger_fp": 1,
+      "removed_fields": 0,
+      "error": null
+    }
+  ]
+}

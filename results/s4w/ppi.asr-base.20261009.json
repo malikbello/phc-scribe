@@ -1,0 +1,140 @@
+{
+  "n_items": 570,
+  "n_human": 90,
+  "per_stratum": {
+    "A": {
+      "items": 244,
+      "human": 44
+    },
+    "B": {
+      "items": 326,
+      "human": 46
+    }
+  },
+  "safety_stop": {
+    "audited": 46,
+    "missed": 0,
+    "upper_bound": 0.06304930167405448,
+    "triggered": false
+  },
+  "systems": {
+    "ft_q4": {
+      "danger_recall": {
+        "ppi": {
+          "point": 1.1395348837209303,
+          "low": -1.1087572150072094,
+          "high": 7.701287185354652,
+          "n_items": 570,
+          "n_groups": 54
+        },
+        "committee_only": 0.6666666666666666,
+        "human_sample_only": NaN
+      },
+      "micro_f1": {
+        "ppi": {
+          "point": 0.05197657393850658,
+          "low": -0.039868624895833905,
+          "high": 0.1303982099755105,
+          "n_items": 570,
+          "n_groups": 54
+        },
+        "committee_only": 0.09056603773584905,
+        "human_sample_only": 0.0
+      },
+      "false_alarm_rate": {
+        "ppi": {
+          "point": 0.15207965312349445,
+          "low": 0.09605147547869919,
+          "high": 0.22220006324630628,
+          "n_items": 570,
+          "n_groups": 54
+        },
+        "committee_only": 0.13513513513513514,
+        "human_sample_only": 0.2
+      },
+      "schema_valid_rate": {
+        "ppi": {
+          "point": 0.956140350877193,
+          "low": 0.9313044001392644,
+          "high": 0.9776252221429271,
+          "n_items": 570,
+          "n_groups": 54
+        },
+        "committee_only": 0.956140350877193,
+        "human_sample_only": 0.9555555555555556
+      }
+    },
+    "base_q4": {
+      "danger_recall": {
+        "ppi": {
+          "point": 1.790697674418605,
+          "low": 0.2875350140056022,
+          "high": 12.75738636363632,
+          "n_items": 570,
+          "n_groups": 54
+        },
+        "committee_only": 0.4666666666666667,
+        "human_sample_only": NaN
+      },
+      "micro_f1": {
+        "ppi": {
+          "point": 0.054650841843775874,
+          "low": 0.019719441849639977,
+          "high": 0.09818161031969615,
+          "n_items": 570,
+          "n_groups": 54
+        },
+        "committee_only": 0.05202312138728324,
+        "human_sample_only": 0.0
+      },
+      "false_alarm_rate": {
+        "ppi": {
+          "point": 0.2510036935924201,
+          "low": 0.18241845825026493,
+          "high": 0.3299374834240366,
+          "n_items": 570,
+          "n_groups": 54
+        },
+        "committee_only": 0.23603603603603604,
+        "human_sample_only": 0.26666666666666666
+      },
+      "schema_valid_rate": {
+        "ppi": {
+          "point": 0.9578947368421052,
+          "low": 0.9410714285714286,
+          "high": 0.971811503231506,
+          "n_items": 570,
+          "n_groups": 54
+        },
+        "committee_only": 0.9578947368421052,
+        "human_sample_only": 0.9333333333333333
+      }
+    }
+  },
+  "pairs": {
+    "ft_q4-base_q4": {
+      "danger_recall": {
+        "point": -0.6511627906976747,
+        "low": -10.43890625000001,
+        "high": 1.0477345415778243,
+        "n_items": 570,
+        "n_groups": 54
+      },
+      "micro_f1": {
+        "point": -0.002674267905269291,
+        "low": -0.09054579970062021,
+        "high": 0.05538188460596313,
+        "n_items": 570,
+        "n_groups": 54
+      },
+      "false_alarm_rate": {
+        "point": -0.09892404046892564,
+        "low": -0.13542024444606843,
+        "high": -0.0657677290861315,
+        "n_items": 570,
+        "n_groups": 54
+      }
+    }
+  },
+  "excluded": 30
+}
