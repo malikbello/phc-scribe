@@ -1,6 +1,6 @@
 # Project status and working agreement
 
-_Last updated: 9 Oct 2026 (session 9, end; pilot day). Keep this file current; it is the handoff between work sessions (local or cloud)._
+_Last updated: 10 Oct 2026, early morning (laptop session 10). Keep this file current; it is the handoff between work sessions (local or cloud)._
 
 ## Resume prompt (paste this into a new session)
 > Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`) from "START HERE (9 Oct)" and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution (the `.githooks/commit-msg` guard rejects "claude", co-author or session lines, so never use a default merge message that names a `claude/...` branch), no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results, and never score the frozen test sets to choose anything. Run `./scripts/ci_local.sh` before every push. The work spans four repos: phc-scribe (model, benchmark, API), takada-app (phone app, clinic hub), scholarship-applications and project-archive; this file's "Zones" table says what is open in each and gives a prompt per zone. Keep only truly human tasks human (labelling, clinical decisions, my approvals); automate the rest robustly. Ask me before anything outward-facing or irreversible (the stage-2 freeze, making a repo public, submitting). Update this file and the resume prompt at the end of every work block.
@@ -48,7 +48,66 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 - **Uyo mapping:** both answered with specific mappings, so the ADR-0019 check can now run with `--confirmed-by`.
 - **Phrases, guide and rules:** 31 change requests, mostly local and lay phrasings (e.g. "running temperature", "serious stomach pain", "spotting", "pale +++", ">3 vomits a day") and follow-up tests (urinalysis every visit; PCV with bleeding). To be applied via a traceability matrix (each note → applied, or declined with a reason).
 
-## START HERE (9 Oct 2026, end of session 9): state, open decisions and the exact next steps
+## START HERE (10 Oct 2026, laptop session 10): S4-W scored, labels frozen, hub running on the laptop
+**Deadline:** NAIC submission 12 Oct 23:59 WAT; target 11 Oct. **Work from `main`.**
+
+### Done in session 10 (9–10 Oct, on Malik's laptop)
+- **Labels:**
+  - S4-W human sample exported and checked (`scripts/label_report.py`): 120 of 120 labelled (Rahmat all, Malik 36 doubles); 25 of 25 agree; **no human label has any finding**.
+  - 11 skip-vs-label disagreements settled by the pre-registered clinician rule (10 → unlabellable, 1 → her label).
+- **Stage-2 freeze** (Malik's yes): 9 Oct 22:50:57 UTC.
+  - S4-W is 570 items: human gold on 90, committee gold on 480; 30 unlabellable excluded.
+  - PPI inputs hashed in `data/bench/s4w.ppi-inputs.json` (PR 33).
+- **S4-W results** (`docs/results-s4w.md`, PR 34). False alarms on real Yoruba and Pidgin speech, fine-tuned − base:
+  - transcript input: **−13.3 points [−15.9, −11.0]**;
+  - shipped fine-tuned ASR: **−10.6 [−13.5, −7.6]**;
+  - base ASR: −9.9 [−13.5, −6.6];
+  - the settlement sensitivity agrees.
+  - Recall is not estimable on S4-W (no human danger signs); it is P1 on S5 and G.
+- **New tooling:**
+  - `scripts/ppi_score.py` with tests (PR 28);
+  - `modal_gguf.py::eval_spawn` starts a run and disconnects, for slow links (PR 31).
+- **Bugs fixed, with tests:**
+  - the freeze CLI dropped `--exclude` (PR 32);
+  - fresh hubs could not write `/models` (PR 30).
+- **ADRs:**
+  - ADR-0030 (polarity check) and ADR-0031 (speech gate) **Accepted and merged** (PR 27, Malik "Yes on the PRs");
+  - ADR-0032 (model footprint tiers, after v1) Proposed (PR 29).
+- **Laptop hub running** (takada-app compose, `--profile model`, `HUB_HOSTNAME=192.168.137.1` for the Windows hotspot; `hub.env` git-ignored):
+  - **latency on i7-8665U: warm p50 124 s, p95 230 s, cold 408 s**; 8 of 8 valid; 0 false alarms (`results/hub/laptop-i7-8665u.json`);
+  - Docker needs 12 GB (`%UserProfile%\.wslconfig`: `memory=12GB`);
+  - the API image is being rebuilt with PR 27.
+- **Models on the hub:**
+  - ASR fine-tunes copied from the laptop, with SHA-256 checked against HF;
+  - GGUF SHA `2b1dd8c4…` matches the manifest.
+
+### Next, in order
+1. **Phone test and demo (Malik + agent):**
+   - turn on the Windows Mobile Hotspot and connect the phone;
+   - install `Downloads\takada-hub-root.crt` on the phone (Android: Settings → Security → Install a certificate → CA);
+   - `https://192.168.137.1/healthz` must open without a warning;
+   - the agent then issues a pairing code (`POST /v1/admin/pairing-codes`, `ADMIN_TOKEN` from `hub.env`);
+   - record one visit; time it; record the demo.
+2. **10 Oct: submission package (agent drafts, Malik approves):**
+   - benchmark report (frozen verdicts + S4-W + hub latency);
+   - error taxonomy (eval plan §7: 50 errors per system, plus review findings O1/O2);
+   - model and dataset cards;
+   - technical docs;
+   - the hardware-tier slide (ADR-0032).
+3. **11 Oct:**
+   - clean the submission repo;
+   - switch the HF repos from private to gated **only on Malik's approval**;
+   - Malik submits.
+
+### Malik-only items
+- The phone test.
+- Approve the submission package and the HF gating.
+- Revoke the read-only HF token pasted on 6 Oct.
+- takada-app Vercel: Root Directory `apps/mobile` and Deployment Protection.
+- Delete the misplaced Modal folder: `modal volume rm -r phc-scribe-runs "C:"`.
+- Optional: ask Pharm Eniola to finish the medicines check (3 of 7).
+
+## Earlier START HERE (9 Oct 2026, end of session 9): state, open decisions and the exact next steps
 **Prompt for the next session (laptop): `docs/handoff/2026-10-09-next-session.md`.** It syncs all four repos first, then reads this section.
 **Deadline:** NAIC submission 12 Oct 23:59 WAT; target 11 Oct. **9 Oct is the real-user pilot day. Malik reports the S4-W labelling finished (9 Oct).**
 
