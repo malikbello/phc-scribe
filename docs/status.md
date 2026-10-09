@@ -1,9 +1,9 @@
 # Project status and working agreement
 
-_Last updated: 7 Oct 2026, afternoon WAT (session 9, end). Keep this file current; it is the handoff between work sessions (local or cloud)._
+_Last updated: 9 Oct 2026 (session 9, end; pilot day). Keep this file current; it is the handoff between work sessions (local or cloud)._
 
 ## Resume prompt (paste this into a new session)
-> Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`) from "START HERE (7 Oct)" and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution (the `.githooks/commit-msg` guard rejects "claude", co-author or session lines, so never use a default merge message that names a `claude/...` branch), no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results, and never score the frozen test sets to choose anything. Run `./scripts/ci_local.sh` before every push. The work spans four repos: phc-scribe (model, benchmark, API), takada-app (phone app, clinic hub), scholarship-applications and project-archive; this file's "Zones" table says what is open in each and gives a prompt per zone. Keep only truly human tasks human (labelling, clinical decisions, my approvals); automate the rest robustly. Ask me before anything outward-facing or irreversible (the stage-2 freeze, making a repo public, submitting). Update this file and the resume prompt at the end of every work block.
+> Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`) from "START HERE (9 Oct)" and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution (the `.githooks/commit-msg` guard rejects "claude", co-author or session lines, so never use a default merge message that names a `claude/...` branch), no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results, and never score the frozen test sets to choose anything. Run `./scripts/ci_local.sh` before every push. The work spans four repos: phc-scribe (model, benchmark, API), takada-app (phone app, clinic hub), scholarship-applications and project-archive; this file's "Zones" table says what is open in each and gives a prompt per zone. Keep only truly human tasks human (labelling, clinical decisions, my approvals); automate the rest robustly. Ask me before anything outward-facing or irreversible (the stage-2 freeze, making a repo public, submitting). Update this file and the resume prompt at the end of every work block.
 
 ## Plan to win (agreed 3 Oct, session 6). Submission target 11 Oct; deadline 12 Oct 23:59 WAT
 Malik: "innovate… let us win the hackathon with bright and shining colours"; "the best way without having to rely on people". Labellers: Malik, Rahmat, Success.
@@ -27,9 +27,9 @@ Malik: "innovate… let us win the hackathon with bright and shining colours"; "
 | Day | Work | Owner |
 |---|---|---|
 | 3–5 Oct ✅ | Committee labels and strata; stage-1 freeze; training data (ADR-0028); runs B, C and C-fs; GGUF Q4; **frozen verdicts: P1, P2, G1 and G2 all pass**; ASR fine-tune ships; Takada native apps and hub fixes (ADR-0027); review-app login fix; all PRs merged | agent |
-| **6 Oct** | **Salvage step** for schema-invalid outputs (new ADR; validated on dev and pilot only); **S4-W labelling starts** | agent; **Malik, Rahmat, Success** |
-| 7 Oct | Laptop CPU latency (Q4 + ASR, p50/p95 per visit); ASR decoding guard (audit H4); private HF upload of the models (needs the HF write token) | agent; Malik (token) |
-| **8 Oct** | **All S4-W labels in** → stage-2 freeze (ADR-0022) → PPI scoring of S4-W, transcript and ASR input (ADR-0025) | Malik, Rahmat, Success → agent |
+| 6 Oct ✅ | **Salvage step** for schema-invalid outputs (new ADR; validated on dev and pilot only); **S4-W labelling starts** | agent; **Malik, Rahmat, Success** |
+| 7 Oct ✅ (cloud latency; laptop run is Malik's dry run) | Laptop CPU latency (Q4 + ASR, p50/p95 per visit); ASR decoding guard (audit H4); private HF upload of the models (needs the HF write token) | agent; Malik (token) |
+| **8–9 Oct** (labels finished 9 Oct; freeze waits for "yes freeze") | **All S4-W labels in** → stage-2 freeze (ADR-0022) → PPI scoring of S4-W, transcript and ASR input (ADR-0025) | Malik, Rahmat, Success → agent |
 | 9 Oct | **Real-user pilot** with the nurses on Takada phones and the hub (usability, time per record), the first real-device check of the native apps; demo recording | Malik, nurses; agent |
 | 10 Oct | Benchmark report (frozen results + S4-W), model and dataset cards, error taxonomy (50 errors per system, eval plan §7), technical docs, video edit | agent; Malik (video) |
 | 11 Oct | Clean submission repo; submit | Malik |
@@ -48,7 +48,138 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 - **Uyo mapping:** both answered with specific mappings, so the ADR-0019 check can now run with `--confirmed-by`.
 - **Phrases, guide and rules:** 31 change requests, mostly local and lay phrasings (e.g. "running temperature", "serious stomach pain", "spotting", "pale +++", ">3 vomits a day") and follow-up tests (urinalysis every visit; PCV with bleeding). To be applied via a traceability matrix (each note → applied, or declined with a reason).
 
-## START HERE (7 Oct 2026, end of session 9): state, zones and the exact next steps
+## START HERE (9 Oct 2026, end of session 9): state, open decisions and the exact next steps
+**Prompt for the next session (laptop): `docs/handoff/2026-10-09-next-session.md`.** It syncs all four repos first, then reads this section.
+**Deadline:** NAIC submission 12 Oct 23:59 WAT; target 11 Oct. **9 Oct is the real-user pilot day. Malik reports the S4-W labelling finished (9 Oct).**
+
+### Where everything is
+Session work goes on the branch **`claude/awesome-mccarthy-xk2bgl`** in each repo; `main` is the base. After a PR merges, the branch is restarted from `main` under the same name.
+
+| Repo | `main` has | Open |
+|---|---|---|
+| `malikbello/phc-scribe` | PRs 24 (hub readiness), 26 (review findings in status) | **PR 27**, CI green, **waiting for Malik's "yes"** (contents below) |
+| `malikbello/takada-app` | PRs 1 (llama.cpp b11387 hub), 2 (13 pilot blockers), 3 (crash-safe recordings, plain errors, checks), 4 (status) | nothing; branch = `main` |
+| `malikbello/scholarship-applications` | KHS submitted 6 Oct; Commonwealth Master's (20 Oct) checklist in `README.md` | none |
+| `malikbello/project-archive` | ArchSim raw idea on the branch | none until Malik approves the idea |
+
+### Decisions waiting for Malik (ask once, then act)
+1. **"yes, merge 27".** Both ADRs are Proposed:
+   - **ADR-0030, polarity check:** a finding whose quote reads as a denial or the normal state is flagged, never dropped;
+   - **ADR-0031, Silero speech gate before Whisper:** no speech, no transcript.
+
+   The PR also adds `scripts/label_report.py`. After the merge, rebuild the hub's API image (step 4).
+2. **"yes freeze".** The stage-2 freeze (ADR-0022) runs only after the gold export is checked (step 2). It is irreversible.
+3. **G1 tolerance:** the nurses asked for +2 points instead of +5 (see "Nurses' clinical sign-off" above). Decide before the S4-W scoring.
+
+### Done in session 9 (6–9 Oct), most recent first
+- **8 Oct, model safety (PR 27, proposed):**
+  - **Polarity check** (`serve/phc_scribe/polarity.py`, `scripts/polarity_check.py`; dev data only, `results/polarity/dev.20261008.json`):
+    - 0 of 78 real findings flagged;
+    - 32 of 40 denials caught;
+    - 7 of 7 flags on saved pilot predictions were real errors.
+
+    It fixes the 7 Oct false alarm ("the baby moves well" → reduced fetal movement). Cues are narrow because Pidgin and Yoruba state danger signs with negators.
+  - **Speech gate:** `SileroGate` in `serve/phc_scribe/api/asr.py`, pinned `silero-vad==6.2.3`; `scripts/vad_check.py`; `results/asr/vad-gate.fleurs-dev.20261008.json`.
+    - On Google FLEURS dev (CC-BY 4.0): speech kept 61 of 61 (59 of 61 at 0 dB SNR); noise and silence passed 0 of 48.
+    - Clips under 2 s are never gated, because a lone word is too short for the VAD to be sure of.
+- **8 Oct, Takada pilot hardening (takada-app PR 3, merged):**
+  - recordings are saved to IndexedDB every second and recovered after a crash (tested by killing the page mid-recording);
+  - plain error messages for nurses;
+  - a live "No sound is reaching the microphone" warning;
+  - phc-scribe's checks shown first under "Please check";
+  - an empty transcript counts as no speech;
+  - long audio is split into even parts.
+- **7 Oct, pilot-readiness review (takada-app PR 2, merged; report: takada-app `docs/reviews/2026-10-07-pilot-readiness.md`).** The full hub ran in a cloud sandbox: real GGUF, real ASR, the Takada server and the PWA in Chromium, plus scripted phones. **13 blockers fixed, with tests.** The main ones:
+  - a typed facility name refused every visit;
+  - sync stalled after more than 200 offline events;
+  - visits over 8,000 characters failed;
+  - silent audio became invented text;
+  - native apps blocked by CORS;
+  - **Node's fetch cut every draft over 5 minutes at 300 s** (the 15-minute wait never applied; fixed with an undici agent).
+
+  Real speech drafts in about 90 s warm; the cold first draft takes 3–7 minutes.
+- **7 Oct:**
+  - hub image and `fetch_models`;
+  - hub check on 8 pilot items: valid 8 of 8, danger recall 5 of 6, 0 false alarms, median 90 s;
+  - Yoruba ASR tokenizer restored on HF;
+  - both hub PRs merged.
+- **6 Oct:** salvage of schema-invalid outputs (ADR-0029); ASR loop guard (H4); all three models uploaded to **private** HF repos.
+- **Data access (checked 8 Oct):** NigBench-MAMAI and nig-bench are **still "awaiting review"** by Intron (403 on data files). The HF account is not on WazobiaSpeech's access list (the earlier fetch ran on Kaggle).
+
+### Next steps, in order (owner; exact commands)
+1. **Malik, 9 Oct: the pilot.**
+   - Before the first patient, send one warm-up draft.
+   - Tell the nurses every AI finding must be checked (until PR 27 is in the hub image).
+   - Note the time per record and any problems, and record the demo.
+   - The dry-run checks are at the end of takada-app `docs/reviews/2026-10-07-pilot-readiness.md`. The most important: the hub's address must open on a pilot phone on the clinic Wi-Fi; use `192.168.137.1` with the laptop hotspot if `takada-hub.local` fails.
+2. **Malik, laptop: export and check the labels** (a cloud session cannot: the review app's store credentials stay in Vercel).
+   1. Go to https://phc-scribe-review.vercel.app/admin → the S4-W set → **Labels (JSONL)** and **Gold (JSONL)**. Save both in `data\private\review\`; never commit them.
+   2. Get the report script without changing branches, then run it. It prints counts only (no transcript text):
+      ```powershell
+      git fetch origin
+      git checkout origin/claude/awesome-mccarthy-xk2bgl -- scripts/label_report.py
+      .venv\Scripts\python scripts\label_report.py data\private\review\labels.<set>.<date>.jsonl --gold data\private\review\gold.<set>.<date>.jsonl
+      ```
+   3. **Paste the output into the session.** It shows:
+      - per-person progress, including Rahmat's and Success's;
+      - agreement and kappa on danger signs;
+      - how gold was settled.
+   4. A gold file name ending in `.partial` means items are still waiting for the clinician (Rahmat) in *Settle disagreements*.
+3. **Agent, after the label report is in:**
+   1. Check it: everyone's quota done, kappa reported, no unsettled items.
+   2. After Malik's **"yes freeze"**, on the laptop:
+      ```powershell
+      .venv\Scripts\python scripts\build_s4_items.py data\private\review\gold.<set>.<date>.jsonl --set s4w --strict
+      .venv\Scripts\python scripts\freeze_test_set.py labels --labelled data/private/label_queue.s4w.jsonl=data/bench/s4w.jsonl [--exclude data/private/label_queue.s4w.jsonl=<ids from s4w.excluded.txt>]
+      ```
+      Commit `data/bench/test-manifest.json` (hashes only).
+   3. **Write the PPI runner**, `scripts/ppi_score.py`: committee gold on all items, plus human gold on the sample, through `bench/ppi.py` (ADR-0025). **It does not exist yet; it is the critical path.**
+   4. Score S4-W on transcript input and on ASR input (base and fine-tuned ASR), then write the results doc.
+4. **After "yes, merge 27": rebuild the hub's API image** on the laptop (takada-app folder):
+   ```powershell
+   docker build -f ../phc-scribe/deploy/api.Dockerfile -t phc-scribe-api:local ../phc-scribe
+   docker compose -f deploy/compose/hub.yml --env-file deploy/compose/hub.env --profile model up -d
+   ```
+5. **10 Oct, agent + Malik:**
+   - benchmark report (frozen results + S4-W + as-shipped ASR);
+   - error taxonomy (eval plan §7, including O1 and O2 from the review);
+   - model and dataset cards;
+   - technical docs;
+   - Malik edits the video.
+6. **11 Oct: submission package.** Clean repo; switch the HF repos from private to gated with the "Powered by Awarri" naming. **Only on Malik's approval.** Malik submits.
+
+### Malik-only items
+- Labels export (step 2), the pilot, and approvals (merge 27, freeze, G1, submission, anything public).
+- **Revoke the read-only HF token pasted into a chat on 6 Oct** (huggingface.co/settings/tokens).
+- Chase Intron for MAMAI/nig-bench access, by email or LinkedIn (still pending, 8 Oct).
+- Vercel, takada-app project:
+  - set Root Directory to `apps/mobile` (every preview fails without it; not a required check);
+  - turn on Deployment Protection → Vercel Authentication.
+- Delete the misplaced Modal folder: `modal volume rm -r phc-scribe-runs "C:"`.
+
+### What a cloud session can and cannot do (9 Oct)
+- **Can:**
+  - GitHub (the four repos);
+  - HF read and write (`HF_TOKEN`, `HF_WRITE_TOKEN`: explicit fixes only, never make anything public);
+  - Kaggle API;
+  - Docker, if the daemon is started: `nohup dockerd >/tmp/dockerd.log 2>&1 &` (the VM can change between days, which clears images; rebuild with the proxy-CA trick in the earlier section);
+  - Chromium via Playwright, for driving the PWA;
+  - torch and silero-vad in a scratch venv.
+- **Cannot:**
+  - reach Modal;
+  - read `data/private/` (laptop and Modal only), the review app's store, WazobiaSpeech or MAMAI audio.
+
+### Zones: what is open in each, and a prompt to start a session on it
+| Zone | Open now | Start a session with |
+|---|---|---|
+| **Labels, freeze, scoring** | label report → freeze → PPI runner → S4-W results | "Read phc-scribe `docs/status.md` START HERE (9 Oct). Here is my `label_report.py` output: [paste]. Check it, then write `scripts/ppi_score.py` (ADR-0025) with tests, and give me the exact laptop commands for the freeze and the scoring. Do not freeze without my 'yes freeze'." |
+| **Serving safety** | PR 27 (ADR-0030, ADR-0031) | "Read START HERE (9 Oct). I say [yes / no] to PR 27. If yes, merge it with a plain merge message and update the ADR statuses to Accepted; then re-measure the polarity check on the pilot-day transcripts if I provide them." |
+| **Clinic hub and Takada** | pilot feedback; load test after 12 Oct | "Read takada-app `docs/status.md` and `docs/reviews/2026-10-07-pilot-readiness.md`. Here is what happened at the pilot: [notes]. Triage it like the 7 Oct review: reproduce, fix with tests, PR, merge when green." |
+| **Submission package** | 10–11 Oct | "Read START HERE (9 Oct) and `docs/naic-requirements.md`. Draft the benchmark report, error taxonomy, and model and dataset cards from committed results; list what I must approve." |
+| **Scholarships** | Commonwealth Master's, 20 Oct | "Read `README.md` in `malikbello/scholarship-applications` and continue from 'Right now', following its rules (AI never writes essay answers)." |
+| **Project ideas** | ArchSim research pass | "Read `portfolio-projects/archsim-board/RAW_IDEA.md` in project-archive and do the research pass it lists; do not build anything." |
+
+## Earlier START HERE (7 Oct 2026, end of session 9): kept for its commands and detail
 **Deadline:** NAIC submission 12 Oct 23:59 WAT; target 11 Oct. Real-user pilot with the nurses: 9 Oct.
 
 ### Where everything is (four repos, one branch name)

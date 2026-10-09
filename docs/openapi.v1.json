@@ -631,6 +631,14 @@
       },
       "Grounding": {
         "properties": {
+          "checks": {
+            "description": "Fields kept but flagged for the health worker (nothing is changed).",
+            "items": {
+              "$ref": "#/components/schemas/ReviewCheck"
+            },
+            "title": "Checks",
+            "type": "array"
+          },
           "dropped": {
             "items": {
               "$ref": "#/components/schemas/DroppedOut"
@@ -643,7 +651,7 @@
             "type": "integer"
           },
           "needs_review": {
-            "description": "True if any field was dropped; a person must check.",
+            "description": "True if any field was dropped or flagged by a check; a person must check.",
             "title": "Needs Review",
             "type": "boolean"
           }
@@ -894,6 +902,30 @@
         "title": "Referral",
         "type": "object"
       },
+      "ReviewCheck": {
+        "properties": {
+          "detail": {
+            "default": "",
+            "title": "Detail",
+            "type": "string"
+          },
+          "path": {
+            "title": "Path",
+            "type": "string"
+          },
+          "reason": {
+            "description": "polarity: the finding's own quote seems to say the opposite (ADR-0030).",
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "reason"
+        ],
+        "title": "ReviewCheck",
+        "type": "object"
+      },
       "Temperature": {
         "additionalProperties": false,
         "properties": {
@@ -1004,6 +1036,18 @@
             "description": "The N-ATLaS ASR model used.",
             "title": "Model",
             "type": "string"
+          },
+          "speech_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Seconds of speech the voice-activity gate found (ADR-0031); null when the gate is off or the clip is under 2 s. Below 0.25 s of speech the clip is not transcribed and text is empty.",
+            "title": "Speech S"
           },
           "text": {
             "description": "The transcript. Send it to /v1/extract for a record.",

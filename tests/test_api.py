@@ -194,6 +194,7 @@ def test_asr_model_overrides_reach_the_transcriber(tmp_path, monkeypatch):
         db_path=str(tmp_path / "db"),
         asr="hf",
         asr_models=" yo=/models/asr-ft/yo , pcm=/models/asr-ft/pcm",
+        asr_vad="off",  # the gate has its own tests; CI has no torch
     )
     c = TestClient(create_app(s))
     models = {
@@ -261,3 +262,90 @@ def test_the_llamacpp_timeout_is_configurable(monkeypatch):
     assert Settings.from_env().llamacpp_timeout == 900.0
     monkeypatch.delenv("PHC_LLAMACPP_TIMEOUT")
     assert Settings.from_env().llamacpp_timeout == 600.0
+
+
+def test_a_finding_whose_quote_says_the_opposite_is_flagged_not_dropped(tmp_path):
+    """ADR-0030: the 7 Oct hub run wrote reduced fetal movement from "the baby moves well"."""
+    text = "Is the baby moving well? Yes, the baby moves well. Any bleeding? No bleeding."
+    out = {
+        "findings": [
+            {
+                "concept": "reduced_fetal_movement",
+                "assertion": "present",
+                "evidence": {"text": "the baby moves well"},
+            },
+            {
+                "concept": "vaginal_bleeding",
+                "assertion": "absent",
+                "evidence": {"text": "No bleeding"},
+            },
+        ]
+    }
+    s = Settings(env="dev", db_path=str(tmp_path / "db"))
+    body = (
+        TestClient(create_app(s, extractor=_llamacpp(json.dumps(out))))
+        .post("/v1/extract", json={"text": text})
+        .json()
+    )
+    assert [f["concept"] for f in body["record"]["findings"]] == [
+        "reduced_fetal_movement",
+        "vaginal_bleeding",
+    ]
+    assert body["grounding"]["needs_review"] is True
+    assert body["grounding"]["checks"] == [
+        {
+            "path": "findings[0]",
+            "reason": "polarity",
+            "detail": 'reduced_fetal_movement is "present", but its quote reads as the normal'
+            ' state: "the baby moves well"',
+        }
+    ]
+
+
+class FakeGate:
+    def __init__(self, speech: float):
+        self.speech = speech
+
+    def speech_seconds(self, samples: list[float]) -> float:
+        return self.speech
+
+
+def test_no_speech_means_no_transcript(tmp_path):
+    """ADR-0031: Whisper writes fluent text for silence and noise; the gate stops it."""
+    asr = FakeAsr()
+    s = Settings(env="dev", db_path=str(tmp_path / "db"))
+    c = TestClient(create_app(s, transcriber=asr, speech_gate=FakeGate(0.1)))
+    body = c.post("/v1/transcribe?language=yo", content=_wav(3.0)).json()
+    assert body["text"] == ""
+    assert body["speech_s"] == 0.1
+    assert asr.calls == []  # Whisper never ran
+
+
+def test_speech_is_transcribed_unchanged_when_the_gate_hears_it(tmp_path):
+    asr = FakeAsr()
+    s = Settings(env="dev", db_path=str(tmp_path / "db"))
+    c = TestClient(create_app(s, transcriber=asr, speech_gate=FakeGate(2.4)))
+    body = c.post("/v1/transcribe?language=yo", content=_wav(3.0)).json()
+    assert body["text"] == "ori n fo mi gan"
+    assert body["speech_s"] == 2.4
+    assert len(asr.calls) == 1
+
+
+def test_a_short_clip_is_never_gated(tmp_path):
+    """A lone word ("yes") is too short for the VAD to be sure of; it is always transcribed."""
+    asr = FakeAsr()
+    s = Settings(env="dev", db_path=str(tmp_path / "db"))
+    c = TestClient(create_app(s, transcriber=asr, speech_gate=FakeGate(0.0)))
+    body = c.post("/v1/transcribe?language=yo", content=_wav(1.5)).json()
+    assert body["text"] == "ori n fo mi gan"
+    assert body["speech_s"] is None
+
+
+def test_the_gate_is_on_by_default_with_hf_asr_and_can_be_switched_off(monkeypatch):
+    from phc_scribe.api.settings import Settings as S
+
+    monkeypatch.delenv("PHC_ASR_VAD", raising=False)
+    assert S.from_env().asr_vad == "on"
+    monkeypatch.setenv("PHC_ASR_VAD", "maybe")
+    with pytest.raises(RuntimeError, match="PHC_ASR_VAD"):
+        S(env="dev", asr_vad="maybe").validate()

@@ -22,7 +22,8 @@ RUN pip install "torch>=2.4,<3" --index-url https://download.pytorch.org/whl/cpu
       "pyyaml>=6.0" \
       "fastapi>=0.115" \
       "httpx>=0.27" \
-      "uvicorn>=0.30"
+      "uvicorn>=0.30" \
+      "silero-vad==6.2.3"
 
 # /models exists and belongs to scribe in the image, so a new named volume mounted there
 # inherits that owner. Without it the volume is root-owned and fetch_models fails with
