@@ -1,6 +1,6 @@
 # ADR-0031: A voice-activity gate before Whisper: no speech, no transcript
 
-- **Status:** Proposed (8 Oct 2026). Built and tested; it never changes the transcript of a clip that has speech.
+- **Status:** Accepted by Malik, 10 Oct 2026 ("Yes on the PRs"). Proposed 8 Oct 2026; built and tested.
 - **Date:** 2026-10-08
 - **Changes:** `/v1/transcribe` with `PHC_ASR=hf`:
   - Silero VAD runs first on clips of 2 s or more; under 0.25 s of speech, Whisper is not run and `text` is empty;

@@ -25,7 +25,10 @@ RUN pip install "torch>=2.4,<3" --index-url https://download.pytorch.org/whl/cpu
       "uvicorn>=0.30" \
       "silero-vad==6.2.3"
 
-RUN useradd --create-home --uid 10001 scribe && mkdir /data && chown scribe /data
+# /models exists and belongs to scribe in the image, so a new named volume mounted there
+# inherits that owner. Without it the volume is root-owned and fetch_models fails with
+# "Permission denied: '/models/hf'" (found on the first laptop hub install, 9 Oct).
+RUN useradd --create-home --uid 10001 scribe && mkdir /data /models && chown scribe /data /models
 WORKDIR /app
 COPY serve serve
 COPY bench bench

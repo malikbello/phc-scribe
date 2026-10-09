@@ -1,6 +1,6 @@
 # ADR-0030: Flag a finding whose own quote seems to say the opposite (polarity check)
 
-- **Status:** Proposed (8 Oct 2026). Built and tested; it only adds review notes, so it is safe to serve, but it is not merged for the pilot without Malik's "yes".
+- **Status:** Accepted by Malik, 10 Oct 2026 ("Yes on the PRs"). Proposed 8 Oct 2026; built and tested.
 - **Date:** 2026-10-08
 - **Changes:** the serving pipeline (`/v1/extract`): a new `grounding.checks` list, and `needs_review` is also true when it is not empty. Additive; existing clients keep working. The benchmark, its metrics and the frozen-test verdicts are unchanged.
 

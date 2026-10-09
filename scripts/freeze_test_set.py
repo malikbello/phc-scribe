@@ -67,7 +67,12 @@ def main() -> int:
         if any(len(p) != 2 for p in pairs + drops):
             sys.exit("--labelled and --exclude take FROZEN=VALUE")
         try:
-            manifest = freeze_labels(load_manifest(args.out), ROOT, {a: Path(b) for a, b in pairs})
+            manifest = freeze_labels(
+                load_manifest(args.out),
+                ROOT,
+                {a: Path(b) for a, b in pairs},
+                {a: [i for i in b.split(",") if i] for a, b in drops},
+            )
         except ValueError as e:
             sys.exit(str(e))
     args.out.parent.mkdir(parents=True, exist_ok=True)
