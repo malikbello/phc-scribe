@@ -81,6 +81,28 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
   - ASR fine-tunes copied from the laptop, with SHA-256 checked against HF;
   - GGUF SHA `2b1dd8c4…` matches the manifest.
 
+### Hub dry run, 10 Oct morning (stopped by Malik to free RAM; resume here)
+**What worked:**
+- the phone (Galaxy S22) opened `https://192.168.137.1/healthz` and the Tákàdá app page;
+- a pairing code was issued (it has since expired; issue a new one).
+
+**Found and fixed (takada-app PR 5, merged):**
+- HTTPS on an IP address (Caddy `default_sni`);
+- the clinical bundle's line endings on Windows;
+- the mobile budget script on Windows.
+
+**One-time setup for a Windows hub laptop** (goes into takada-app `docs/operations.md`):
+1. Docker WSL memory 12 GB (`.wslconfig`).
+2. Firewall rule `Takada hub (laptop hotspot only)`: TCP 80 and 443, local 192.168.137.1, remote 192.168.137.0/24. Created by Malik in admin PowerShell.
+3. Mobile hotspot **Power saving off**; otherwise Windows turns the hotspot off after a few idle minutes.
+4. On each phone, once: keep the Wi-Fi connection when Android says "no internet" (Samsung: Intelligent Wi-Fi → "Switch to mobile data" off). Otherwise hub traffic goes over mobile data.
+   - **Product fix after v1:** the Android app binds hub traffic to the Wi-Fi network (ADR to write).
+
+**Restart the hub** (Docker Desktop first; volumes keep the models, CA and records):
+`docker compose -f deploy/compose/hub.yml --env-file deploy/compose/hub.env --profile model up -d` (takada-app folder). Then turn the hotspot on and issue a pairing code.
+
+**The "deploy failed" emails** come from the takada-app **Vercel** cloud preview (Root Directory not set to `apps/mobile`), not from the hub.
+
 ### Next, in order
 1. **Phone test and demo (Malik + agent):**
    - turn on the Windows Mobile Hotspot and connect the phone;
