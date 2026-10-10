@@ -81,10 +81,18 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
   - ASR fine-tunes copied from the laptop, with SHA-256 checked against HF;
   - GGUF SHA `2b1dd8c4…` matches the manifest.
 
-### Hub dry run, 10 Oct morning (stopped by Malik to free RAM; resume here)
+### Hub dry run, 10 Oct (stopped overnight; resume here on 11 Oct)
 **What worked:**
 - the phone (Galaxy S22) opened `https://192.168.137.1/healthz` and the Tákàdá app page;
 - a pairing code was issued (it has since expired; issue a new one).
+
+**10 Oct night (second start, about 10 minutes from a cold laptop):**
+- all four services healthy; the S22 loaded the app over the hotspot (no pairing yet);
+- warm-up draft after a cold start: **302 s** (a synthetic healthy visit; no findings flagged, as expected). The first draft after every start is this slow, so send one warm-up before a demo;
+- free RAM with the hub running: about 1.1–1.6 GB of 16 GB. Close browsers before starting;
+- the hotspot had turned itself off again by the time the hub stopped: **Power saving off** (step 3 below) is still needed;
+- Windows `curl.exe` reports "revocation status is unknown" for the hub's local CA; use `--ssl-no-revoke` with `--cacert` (phones are not affected). Git Bash's curl cannot match an IP-address certificate; use Windows `curl.exe`.
+- **Still to do (11 Oct morning):** pair, record one full visit, time it, screen-record the demo.
 
 **Found and fixed (takada-app PR 5, merged):**
 - HTTPS on an IP address (Caddy `default_sni`);
@@ -110,7 +118,7 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
    - `https://192.168.137.1/healthz` must open without a warning;
    - the agent then issues a pairing code (`POST /v1/admin/pairing-codes`, `ADMIN_TOKEN` from `hub.env`);
    - record one visit; time it; record the demo.
-2. **10 Oct: submission package (agent drafts, Malik approves):**
+2. **Submission package (agent drafts, Malik approves; moved to 11 Oct):**
    - benchmark report (frozen verdicts + S4-W + hub latency);
    - error taxonomy (eval plan §7: 50 errors per system, plus review findings O1/O2);
    - model and dataset cards;
