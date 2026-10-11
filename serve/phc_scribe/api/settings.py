@@ -26,12 +26,15 @@ class Settings:
     db_path: str = "phc_scribe.sqlite3"
     rate_limit_per_minute: int = 60
     max_text_chars: int = 8000
-    asr: str = "off"  # off | hf (the NCAIR1 N-ATLaS ASR models)
+    # off | hf (the N-ATLaS ASR models, fp32) | ct2 (the same models, int8: ADR-0032 Tier 2)
+    asr: str = "off"
     # Per-language overrides of the ASR model: "yo=/models/asr/yo,pcm=/models/asr/pcm".
-    # The clinic hub points these at the fine-tuned models (ADR-0026), which ship.
+    # The clinic hub points these at the fine-tuned models (ADR-0026), which ship. With
+    # asr=ct2 they name the int8 folders; a language without one uses the fp32 model.
     asr_models: str = ""
     max_audio_bytes: int = 10_000_000  # about 5 minutes of 16 kHz mono WAV
-    # Voice-activity gate before Whisper (ADR-0031): on | off. Only used when asr is hf.
+    # Voice-activity gate before Whisper (ADR-0031): on | off. With ct2 it also cuts long
+    # recordings into windows at pauses.
     asr_vad: str = "on"
 
     @classmethod
@@ -57,11 +60,13 @@ class Settings:
             raise RuntimeError("PHC_API_KEY_HASHES must be set (or PHC_ENV=dev for local use)")
         if self.extractor not in ("keyword", "llamacpp"):
             raise RuntimeError(f"unknown PHC_EXTRACTOR {self.extractor!r}")
-        if self.asr not in ("off", "hf"):
+        if self.asr not in ("off", "hf", "ct2"):
             raise RuntimeError(f"unknown PHC_ASR {self.asr!r}")
         if self.asr_vad not in ("on", "off"):
             raise RuntimeError(f"PHC_ASR_VAD must be on or off, not {self.asr_vad!r}")
-        self.asr_model_overrides()  # fail at start-up, not on the first recording
+        overrides = self.asr_model_overrides()  # fail at start-up, not on the first recording
+        if self.asr == "ct2" and not overrides:
+            raise RuntimeError("PHC_ASR=ct2 needs PHC_ASR_MODELS naming the int8 model folders")
 
     def asr_model_overrides(self) -> dict[str, str]:
         from phc_scribe.api.asr import ASR_MODELS

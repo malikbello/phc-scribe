@@ -24,6 +24,9 @@ RUN pip install "torch>=2.4,<3" --index-url https://download.pytorch.org/whl/cpu
       "httpx>=0.27" \
       "uvicorn>=0.30" \
       "silero-vad==6.2.3"
+# The int8 speech models (PHC_ASR=ct2, ADR-0032 Tier 2). A layer of its own, so adding it
+# does not re-download torch on a slow clinic connection.
+RUN pip install "ctranslate2>=4.5,<5"
 
 # /models exists and belongs to scribe in the image, so a new named volume mounted there
 # inherits that owner. Without it the volume is root-owned and fetch_models fails with

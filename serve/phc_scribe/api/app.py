@@ -26,6 +26,7 @@ from phc_scribe.api.asr import (
     GATE_MIN_CLIP_S,
     MIN_SPEECH_S,
     AudioError,
+    Ct2WhisperTranscriber,
     HfWhisperTranscriber,
     SileroGate,
     SpeechGate,
@@ -243,10 +244,17 @@ def create_app(
             if settings.extractor == "llamacpp"
             else KeywordExtractor()
         )
-    if transcriber is None and settings.asr == "hf":
-        transcriber = HfWhisperTranscriber({**ASR_MODELS, **settings.asr_model_overrides()})
+    if transcriber is None and settings.asr in ("hf", "ct2"):
         if speech_gate is None and settings.asr_vad == "on":
             speech_gate = SileroGate()
+        overrides = settings.asr_model_overrides()
+        if settings.asr == "hf":
+            transcriber = HfWhisperTranscriber({**ASR_MODELS, **overrides})
+        else:
+            gate = speech_gate if isinstance(speech_gate, SileroGate) else None
+            transcriber = Ct2WhisperTranscriber(
+                overrides, gate=gate, fallback=HfWhisperTranscriber(dict(ASR_MODELS))
+            )
     store = RecordStore(settings.db_path)
 
     app = FastAPI(
