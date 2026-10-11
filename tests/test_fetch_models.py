@@ -13,12 +13,12 @@ def _folder(path, names):
 
 def test_int8_build_needs_weights_vocabulary_tokenizer_and_feature_config(tmp_path):
     core = ["model.bin", "config.json", "vocabulary.json", "tokenizer.json"]
-    assert int8_incomplete(_folder(tmp_path / "a", core + ["processor_config.json"])) == []
-    assert int8_incomplete(_folder(tmp_path / "b", core + ["preprocessor_config.json"])) == []
+    assert int8_incomplete(_folder(tmp_path / "a", [*core, "processor_config.json"])) == []
+    assert int8_incomplete(_folder(tmp_path / "b", [*core, "preprocessor_config.json"])) == []
     # the first conversion of the fine-tunes left the feature-extractor config out (11 Oct)
     assert int8_incomplete(_folder(tmp_path / "c", core)) == [
         "preprocessor_config.json or processor_config.json"
     ]
     assert "model.bin" in int8_incomplete(
-        _folder(tmp_path / "d", core[1:] + ["processor_config.json"])
+        _folder(tmp_path / "d", [*core[1:], "processor_config.json"])
     )
