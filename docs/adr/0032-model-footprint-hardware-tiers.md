@@ -76,7 +76,8 @@ Many primary health centres have 8 GB laptops, or none. Setup is also slow on cl
 **Found on the pilot laptop the same day, fixed, and re-checked:**
 - **The bug:** a 33 s Pidgin recording, decoded in one ~30 s window, gave 13 words with int8 and 78 with fp32. With windows of at most 20 s the two matched (78 = 78; at 15 s, 80 = 80).
 - **The fix:** serving now cuts any recording over 20 s at pauses into windows of at most 20 s (`INT8_WINDOW_S`).
-- **The dev check was re-run** with exactly these windows for both versions, since the decoding that ships had changed. Results:
+- **The dev check was re-run** with exactly these windows for both versions, since the decoding that ships had changed (`results/asr/int8-dev-recheck.20261011.json`). **All three pass:**
+  - Yoruba: 29.30% → 29.33%, +0.03 [−0.60, +0.67], **pass**, 6.6× faster;
   - Pidgin: 30.57% → 30.23%, −0.35 [−1.05, +0.28], **pass**, 5.5× faster;
   - English: 16.78% → 16.97%, +0.20 [−0.48, +0.89], **pass**, 5.9× faster.
 - **Laptop** (`results/hub/int8-speech-laptop.20261011.json`): with all three speech models loaded, peak memory falls from 3,908 MB to **1,871 MB**. A 20 s English recording takes 6.3 s instead of 55.7 s.

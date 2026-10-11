@@ -105,11 +105,11 @@ General (non-health) speech improved too, on held-out training speakers: Pidgin 
   - an int8 decoding failure on long windows (below).
 
 ## 8. Smaller and faster: Tier 2 (ADR-0032, 11 Oct)
-**Speech in int8 (CTranslate2).** Same models and same decoding; only the weights change. The rule was written before measuring: int8 may be at most 3 points worse in WER (upper bound of the CI).
+**Speech in int8 (CTranslate2).** Same models and same decoding; only the weights change. The rule was written before measuring: int8 may be at most 3 points worse in WER (upper bound of the CI). The numbers below are the re-check with the windows that ship (`results/asr/int8-dev-recheck.20261011.json`); int8 was 5.5–6.6× faster per clip.
 
 | Model | Dev clips (public, not test) | fp32 WER | int8 WER | int8 − fp32 [95% CI] |
 |---|---|---|---|---|
-| Yorùbá fine-tune | FLEURS Yorùbá dev, 300 | 29.57% | 29.52% | −0.04 [−0.62, +0.52] |
+| Yorùbá fine-tune | FLEURS Yorùbá dev, 300 | 29.30% | 29.33% | +0.03 [−0.60, +0.67] |
 | Pidgin fine-tune | AfriSpeech-200 dev (Nigerian accents), 300 | 30.57% | 30.23% | −0.35 [−1.05, +0.28] |
 | English | AfriSpeech-200 dev, 300 | 16.78% | 16.97% | +0.20 [−0.48, +0.89] |
 
