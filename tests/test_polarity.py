@@ -16,6 +16,9 @@ from phc_scribe.polarity import reads_opposite
         ),
         ("reduced_fetal_movement", "Ọmọ inú mi ń mì dáadáa", "normal_state"),
         ("reduced_fetal_movement", "pikin dey kick well well", "normal_state"),
+        # past tense, as speech recognition wrote "moves well" in the 11 Oct hub test
+        ("reduced_fetal_movement", "the baby moved well", "normal_state"),
+        ("reduced_fetal_movement", "the baby kicked well this morning", "normal_state"),
         ("unconscious", "she is conscious and alert", "normal_state"),
         ("unconscious", "denies unresponsiveness", "denial"),
         ("vaginal_bleeding", "No bleeding", "denial"),
@@ -38,6 +41,8 @@ def test_flags_a_quote_that_says_the_opposite(concept, quote, cue):
         ("reduced_fetal_movement", "Ọmọ inú mi kò mì dáadáa bí ti tẹ́lẹ̀ mọ́"),
         ("reduced_fetal_movement", "the baby is not moving well"),
         ("reduced_fetal_movement", "baby hasn't kicked since yesterday"),
+        ("reduced_fetal_movement", "the baby has not moved well since yesterday"),
+        ("reduced_fetal_movement", "the baby moved less today"),
         ("unconscious", "she no dey respond"),
         ("unconscious", "she is unconscious"),
         ("blurred_vision", "I no fit see well"),
