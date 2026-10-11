@@ -118,7 +118,7 @@ The sets are labelled as they are:
 ## Team
 | Member | Role | Affiliation |
 |---|---|---|
-| **Malik Bello** | Lead; machine learning and engineering | Enterprise AI/ML Engineer, Wema Bank Plc |
+| **Malik Bello** | Lead; machine learning and engineering | Enterprise AI/ML Engineer |
 | **Rahmat Adebayo** | Nurse; clinical adviser, clinical sign-off and adjudication of labels | University College Hospital (UCH), Ibadan |
 | **Abdullahi Oseni** | Medical student; annotation | Osun State University |
 | **Eniola Oluwatosin** | Pharmacist; medicines content | Druglet Pharmacy, Lagos State |
