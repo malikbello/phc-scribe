@@ -1,0 +1,84 @@
+{
+  "date": "2026-10-11",
+  "rule": "ADR-0032 (11 Oct, before measuring): int8 minus fp32 WER, 95% clustered bootstrap upper bound <= +3.0 points per model",
+  "decoding": "greedy, language forced, no timestamps, H4 guard; fp32 = transformers 5.19 WhisperForConditionalGeneration, int8 = CTranslate2 Whisper int8; one clip at a time, 8 vCPU (Modal)",
+  "note": "Load memory is not reported here: transformers maps fp32 weights lazily, so the in-process delta was not a fair measure. Memory is measured on the pilot laptop instead (results/hub/).",
+  "disk_mb": {
+    "fp32": 967,
+    "int8": 253
+  },
+  "models": {
+    "yo": {
+      "model": "yo",
+      "repo": "malikbello/N-ATLaS-ASR-Health-Yoruba-Powered-by-Awarri",
+      "clips": 300,
+      "speakers": 137,
+      "dev_source": "fleurs-yo",
+      "health_clips": 0,
+      "wer_fp32": 29.57,
+      "wer_int8": 29.52,
+      "diff_points": -0.04,
+      "diff_ci95": [
+        -0.62,
+        0.52
+      ],
+      "rule": "upper bound <= +3.0 points, clustered bootstrap (ADR-0032, 11 Oct)",
+      "passes": true,
+      "identical_outputs": 107,
+      "seconds_per_clip": {
+        "fp32": 5.754,
+        "int8": 1.23
+      },
+      "audio_seconds": 4667.8,
+      "cpu": 8.0
+    },
+    "pcm": {
+      "model": "pcm",
+      "repo": "malikbello/N-ATLaS-ASR-Health-Pidgin-Powered-by-Awarri",
+      "clips": 300,
+      "speakers": 84,
+      "dev_source": "afrispeech-ng",
+      "health_clips": 167,
+      "wer_fp32": 30.25,
+      "wer_int8": 29.94,
+      "diff_points": -0.3,
+      "diff_ci95": [
+        -1.04,
+        0.38
+      ],
+      "rule": "upper bound <= +3.0 points, clustered bootstrap (ADR-0032, 11 Oct)",
+      "passes": true,
+      "identical_outputs": 195,
+      "seconds_per_clip": {
+        "fp32": 3.103,
+        "int8": 1.355
+      },
+      "audio_seconds": 2655.8,
+      "cpu": 8.0
+    },
+    "en": {
+      "model": "en",
+      "repo": "NCAIR1/NigerianAccentedEnglish",
+      "clips": 300,
+      "speakers": 84,
+      "dev_source": "afrispeech-ng",
+      "health_clips": 167,
+      "wer_fp32": 16.73,
+      "wer_int8": 16.69,
+      "diff_points": -0.04,
+      "diff_ci95": [
+        -0.77,
+        0.76
+      ],
+      "rule": "upper bound <= +3.0 points, clustered bootstrap (ADR-0032, 11 Oct)",
+      "passes": true,
+      "identical_outputs": 213,
+      "seconds_per_clip": {
+        "fp32": 2.879,
+        "int8": 1.357
+      },
+      "audio_seconds": 2655.8,
+      "cpu": 8.0
+    }
+  }
+}

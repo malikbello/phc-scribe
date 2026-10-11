@@ -208,6 +208,45 @@ def test_asr_model_overrides_reach_the_transcriber(tmp_path, monkeypatch):
     }
 
 
+def test_int8_speech_uses_its_folders_and_fp32_for_the_rest(tmp_path, monkeypatch):
+    """ADR-0032 Tier 2: PHC_ASR=ct2 serves the int8 folders; a language without one (here
+    English) falls back to the fp32 model, so no language stops working."""
+    from phc_scribe.api import app as app_module
+
+    monkeypatch.setattr(app_module.Ct2WhisperTranscriber, "_load", lambda self, p: None)
+    monkeypatch.setattr(
+        app_module.HfWhisperTranscriber, "transcribe", lambda self, s, lang: f"fp32 {lang}"
+    )
+    s = Settings(
+        env="dev",
+        db_path=str(tmp_path / "db"),
+        asr="ct2",
+        asr_models="yo=/models/asr-int8/yo,pcm=/models/asr-int8/pcm",
+        asr_vad="off",
+    )
+    c = TestClient(create_app(s))
+    en = c.post("/v1/transcribe?language=en", content=_wav()).json()
+    assert en["model"] == "NCAIR1/NigerianAccentedEnglish" and en["text"] == "fp32 en"
+    assert c.get("/v1/health").status_code == 200
+    with pytest.raises(RuntimeError, match="int8 model folders"):
+        create_app(Settings(env="dev", db_path=str(tmp_path / "db2"), asr="ct2"))
+
+
+def test_speech_windows_end_in_pauses_and_never_exceed_30_s():
+    from phc_scribe.api.asr import SAMPLE_RATE, speech_windows
+
+    r = SAMPLE_RATE
+    # 70 s of talk in short turns with pauses: windows group whole turns, each <= 30 s
+    spans = [(int(t * r), int((t + 4) * r)) for t in range(0, 70, 5)]
+    wins = speech_windows(spans, 72 * r)
+    assert all(b - a <= 30 * r for a, b in wins)
+    assert all(any(a <= s and e <= b for a, b in wins) for s, e in spans)  # no turn cut
+    # one 75 s monologue is split evenly into full windows and a remainder
+    assert [(b - a) / r for a, b in speech_windows([(0, 75 * r)], 75 * r)] == [30.0, 30.0, 15.0]
+    # no speech found: fixed windows over the whole clip
+    assert speech_windows([], 65 * r) == [(0, 30 * r), (30 * r, 60 * r), (60 * r, 65 * r)]
+
+
 @pytest.mark.parametrize("bad", ["yo", "xx=/m", "yo=", "=/m"])
 def test_bad_asr_model_overrides_fail_at_start_up(tmp_path, bad):
     with pytest.raises(RuntimeError, match="PHC_ASR_MODELS"):

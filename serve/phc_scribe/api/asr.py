@@ -53,7 +53,8 @@ class SileroGate:
         self.threshold = threshold
         self._model = None
 
-    def speech_seconds(self, samples: list[float]) -> float:
+    def speech_spans(self, samples: list[float]) -> list[tuple[int, int]]:
+        """(start, end) sample offsets of the speech in a clip."""
         import torch  # pyright: ignore[reportMissingImports]
         from silero_vad import (  # pyright: ignore[reportMissingImports]
             get_speech_timestamps,
@@ -68,7 +69,10 @@ class SileroGate:
             threshold=self.threshold,
             sampling_rate=SAMPLE_RATE,
         )
-        return sum(s["end"] - s["start"] for s in spans) / SAMPLE_RATE
+        return [(int(s["start"]), int(s["end"])) for s in spans]
+
+    def speech_seconds(self, samples: list[float]) -> float:
+        return sum(b - a for a, b in self.speech_spans(samples)) / SAMPLE_RATE
 
 
 class AudioError(ValueError):
@@ -145,3 +149,112 @@ class HfWhisperTranscriber:
         out = pipe(audio, **kwargs)  # pyright: ignore[reportCallIssue]
         text = str(out["text"]).strip()  # pyright: ignore[reportIndexIssue, reportArgumentType]
         return guard(text)[0]  # audit H4: cut a decoding loop before it reaches the record
+
+
+# Whisper reads 30 seconds at a time.
+WINDOW_S = 30.0
+# Whisper's own language codes for the language tokens.
+WHISPER_CODE = {"yoruba": "yo", "hausa": "ha", "igbo": "ig", "english": "en"}
+
+
+def speech_windows(
+    spans: list[tuple[int, int]],
+    total: int,
+    max_s: float = WINDOW_S,
+    pad_s: float = 0.2,
+    rate: int = SAMPLE_RATE,
+) -> list[tuple[int, int]]:
+    """Cut a recording into windows of at most `max_s` seconds at pauses.
+
+    Speech spans (from the VAD) are padded a little and grouped while they fit in one window,
+    so a window ends in a pause and no word is cut in two (the approach of WhisperX). A span
+    longer than a window is split evenly. With no spans, fixed windows cover the whole clip.
+    """
+    limit, pad = int(max_s * rate), int(pad_s * rate)
+    if not spans:
+        return [(s, min(s + limit, total)) for s in range(0, total, limit)]
+    pieces: list[tuple[int, int]] = []
+    for a, b in sorted(spans):
+        a, b = max(0, a - pad), min(total, b + pad)
+        while b - a > limit:
+            pieces.append((a, a + limit))
+            a += limit
+        pieces.append((a, b))
+    out: list[tuple[int, int]] = []
+    for a, b in pieces:
+        if out and max(out[-1][1], b) - out[-1][0] <= limit:
+            out[-1] = (out[-1][0], max(out[-1][1], b))
+        else:
+            out.append((a, b))
+    return out
+
+
+class Ct2WhisperTranscriber:
+    """The same models converted to int8 for CTranslate2 (ADR-0032, Tier 2).
+
+    About a quarter of the memory of fp32 and faster on a laptop CPU. Decoding is the
+    evaluated one (ADR-0032): greedy, the language forced, no timestamps, each window on its
+    own, then the H4 loop guard. A recording longer than one window is cut at pauses
+    (`speech_windows`). Languages without an int8 build use `fallback` (the fp32 models).
+    """
+
+    def __init__(
+        self,
+        models: dict[str, str],
+        gate: SileroGate | None = None,
+        fallback: Transcriber | None = None,
+        threads: int = 0,
+    ):
+        self.models = models
+        self.gate = gate
+        self.fallback = fallback
+        self.threads = threads
+        self._loaded: dict[str, tuple[object, object]] = {}
+
+    def model_for(self, language: str) -> str:
+        if language in self.models:
+            return self.models[language]
+        if self.fallback is None:
+            raise KeyError(f"no int8 speech model for {language!r}")
+        return self.fallback.model_for(language)
+
+    def _load(self, path: str):
+        if path not in self._loaded:
+            import ctranslate2  # pyright: ignore[reportMissingImports]
+            from transformers import WhisperProcessor  # pyright: ignore[reportMissingImports]
+
+            model = ctranslate2.models.Whisper(
+                path, device="cpu", compute_type="int8", intra_threads=self.threads
+            )
+            self._loaded[path] = (model, WhisperProcessor.from_pretrained(path))
+        return self._loaded[path]
+
+    def transcribe(self, samples: list[float], language: str) -> str:
+        if language not in self.models:
+            if self.fallback is None:
+                raise KeyError(f"no int8 speech model for {language!r}")
+            return self.fallback.transcribe(samples, language)
+        import ctranslate2  # pyright: ignore[reportMissingImports]
+        import numpy as np
+
+        model, proc = self._load(self.models[language])
+        x = np.asarray(samples, dtype=np.float32)
+        long = len(x) > WINDOW_S * SAMPLE_RATE
+        spans = self.gate.speech_spans(samples) if long and self.gate is not None else []
+        windows = speech_windows(spans, len(x)) if long else [(0, len(x))]
+        code = WHISPER_CODE[WHISPER_LANGUAGE[language]]
+        tok = proc.tokenizer  # pyright: ignore[reportAttributeAccessIssue]
+        prompt = tok.convert_tokens_to_ids(
+            ["<|startoftranscript|>", f"<|{code}|>", "<|transcribe|>", "<|notimestamps|>"]
+        )
+        feats = proc.feature_extractor(  # pyright: ignore[reportAttributeAccessIssue]
+            [x[a:b] for a, b in windows], sampling_rate=SAMPLE_RATE, return_tensors="np"
+        ).input_features
+        results = model.generate(  # pyright: ignore[reportAttributeAccessIssue]
+            ctranslate2.StorageView.from_array(np.ascontiguousarray(feats, dtype=np.float32)),
+            [prompt] * len(windows),
+            beam_size=1,
+            max_length=448,
+        )
+        parts = [tok.decode(r.sequences_ids[0], skip_special_tokens=True).strip() for r in results]
+        return guard(" ".join(" ".join(parts).split()))[0]

@@ -1,6 +1,6 @@
 # ADR-0032: Shrink the model footprint in three hardware tiers, after v1
 
-- **Status:** Proposed (9 Oct 2026). Malik: "We will do all after we have a v1 to submit". **Nothing here changes v1.**
+- **Status:** Proposed (9 Oct 2026). Malik: "We will do all after we have a v1 to submit"; on 11 Oct, step 1 was brought forward ("needs to be done now"). **The v1 results are unchanged.**
 - **Date:** 2026-10-09
 - **Changes:** none until accepted. Later work changes the speech runtime, adds model variants, and needs new evaluations. The v1 artefact, its pre-registered frozen-test verdicts (P1, P2, G1, G2) and its ASR results (ADR-0026) are untouched.
 
@@ -28,6 +28,15 @@ Many primary health centres have 8 GB laptops, or none. Setup is also slow on cl
    - faster-whisper bundles Silero VAD (ONNX), so the ADR-0031 gate can drop its torch dependency.
    - **Accept only if** the WER on the ASR dev split (speaker-disjoint, ADR-0026) stays within the ADR-0026 test CIs' width of the fp32 models. Then re-test once on the ASR test pool, as a new pre-registered check.
    - Interim step, if needed: fp16 storage (half the disk; loaded as fp32 on CPU; no behaviour change).
+   - **Brought forward and made precise, 11 Oct 2026, before any int8 measurement** (Malik: Tier 2 "needs to be done now"). The rule above was loose (CI widths of 11–12 points); this replaces it:
+     - **Same decoding as serving:** greedy, language forced (yo → Yoruba; pcm and en → English), no timestamps, no conditioning on earlier windows, the H4 loop guard applied to both. Only the weights differ: fp32 (transformers) against int8 (CTranslate2).
+     - **Dev check (chooses):** up to 300 clips per model of **public Nigerian speech that is not the test pool and that none of these models was fine-tuned on**:
+       - the Yoruba model on **FLEURS Yoruba dev** (`google/fleurs`, `yo_ng`, CC-BY 4.0);
+       - the Pidgin and English models on **AfriSpeech-200 dev**, Yoruba, Igbo and Hausa accents (`intronhealth/afrispeech-200`, CC BY-NC-SA 4.0, used for evaluation only). Nigerian-accented English, general and clinical. For the Pidgin model it is a fidelity check: the question is whether int8 changes the output, not how well the model knows English.
+       - *Changed before any measurement:* the first plan (held-out WazobiaSpeech training speakers) failed on access. The gated dataset is not readable with the tokens available here (it was read on Kaggle before). No int8 number existed when the change was made.
+     - **Rule (non-inferiority, per model):** the 95% paired bootstrap interval of int8 WER minus fp32 WER has an **upper bound ≤ +3.0 points**, resampling speakers (AfriSpeech) or sentences (FLEURS, which has no speaker ids; each sentence is read by a few people).
+     - **Test-pool check (confirms, run once):** the same rule on the 600 test-pool clips (ADR-0026), for Yoruba and Pidgin. int8 becomes the hub default only if both checks pass for a model; otherwise that model stays fp32, and the result is reported either way.
+     - **Also measured, not part of the rule:** load memory and seconds per clip on the same CPU, and later on the pilot laptop.
 2. **Tier 2, note model:** a **lite variant** for 8 GB machines.
    - Candidates: IQ3_M / Q3_K_M of the same merged model, with the same training-text imatrix (about 3.6–3.9 GB; about 1 GB less RAM).
    - **Chosen on dev and pilot data only (ADR-0022).** It ships as an option next to Q4_K_M, never replacing it without a new pre-registered test.
@@ -42,8 +51,21 @@ Many primary health centres have 8 GB laptops, or none. Setup is also slow on cl
 | Tier | Hardware | Models | Status |
 |---|---|---|---|
 | 1 | 16 GB laptop hub | v1: 8B Q4_K_M + fp32 Whisper-Small | **measured (v1)** |
-| 2 | 8 GB laptop hub | int8 ASR + lite or distilled note model | planned (this ADR) |
+| 2 | 8 GB laptop hub | int8 ASR + lite or distilled note model | **int8 speech: built and dev-checked (11 Oct)**; note model planned |
 | 3 | phone, no hub | distilled student + tiny ASR | roadmap |
+
+## Result: step 1, int8 speech (11 Oct 2026, dev check)
+`deploy/modal_asr_int8.py`; numbers in `results/asr/int8-dev.20261011.json`. 300 clips per model, one at a time on 8 vCPU, the decoding above.
+
+| Model | Dev clips | fp32 WER | int8 WER | int8 − fp32 [95% CI] | Rule (upper ≤ +3.0) | Seconds per clip, fp32 → int8 |
+|---|---|---|---|---|---|---|
+| Yoruba fine-tune | FLEURS Yoruba dev (137 sentences) | 29.57% | 29.52% | −0.04 [−0.62, +0.52] | **pass** | 5.75 → 1.23 (4.7×) |
+| Pidgin fine-tune | AfriSpeech dev, 3 Nigerian accents (84 speakers) | 30.25% | 29.94% | −0.30 [−1.04, +0.38] | **pass** | 3.10 → 1.36 (2.3×) |
+| English (NCAIR1) | the same AfriSpeech clips | 16.73% | 16.69% | −0.04 [−0.77, +0.76] | **pass** | 2.88 → 1.36 (2.1×) |
+
+- **Size on disk:** 967 MB → 253 MB per model (−74%).
+- **Memory** is measured on the pilot laptop (results/hub/), not here: transformers maps fp32 weights lazily, so an in-process difference is not a fair figure.
+- **Still to run before int8 becomes the hub default for Yoruba and Pidgin:** the test-pool check (ADR-0026's 600 WazobiaSpeech clips, same rule). It needs the gated dataset, which the tokens available on 11 Oct could not read. Until it passes, the hub ships int8 as an option (`PHC_ASR=ct2`) and keeps fp32 as the default. English had no test-pool check planned, so its dev check is its gate.
 
 ## Consequences
 - **v1 is unchanged.** The tiers are presented as a plan, with only Tier 1 claimed as measured.
