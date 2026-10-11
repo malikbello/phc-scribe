@@ -6,6 +6,7 @@ build-backend = "hatchling.build"
 name = "phc-scribe"
 version = "0.1.0.dev0"
 description = "Offline-first AI scribe and safety net for Nigerian primary health care, built on N-ATLaS."
+license = {text = "Apache-2.0"}
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

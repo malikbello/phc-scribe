@@ -1,3 +1,11 @@
+PHC Scribe
+Copyright 2026 Malik Bello and the PHC Scribe contributors.
+
+The source code in this repository is licensed under the Apache License, Version 2.0
+(see LICENSE). The licence covers the code only, not the models or third-party data below.
+
+Models
+------
 PHC Scribe uses N-ATLaS and the N-ATLaS ASR models.
 
 N-ATLaS is an initiative of the Federal Ministry of Communications, Innovation and Digital Economy, and powered by Awarri Technologies.
@@ -5,3 +13,11 @@ N-ATLaS is an initiative of the Federal Ministry of Communications, Innovation a
 Awarri Technologies and the Federal Government of Nigeria, developers of N-ATLaS (Hausa-ASR / Igbo-ASR / Yoruba-ASR / NigerianAccentedEnglish).
 
 The N-ATLaS models are licensed under the N-ATLaS Terms of Use ("Open-Source Research and Innovation License", v1.0, Sept 2025). They are not covered by this repository's code license. Model derivatives published from this project carry the same terms and the suffix "Powered by Awarri". Deployments are subject to the cap of 1,000 active end-users per rolling 30 days unless a commercial license is obtained from Awarri Technologies.
+
+Third-party data in this repository
+-----------------------------------
+- data/bench/h.adeola.jsonl: sentences from the Antenatal Orientation Speech Dataset
+  (Ajagbe 2024), MIT licence; see data/bench/h.adeola.LICENSE.
+- Labels on WazobiaSpeech clips (CC-BY-4.0, EqualyzAI / DSN) are kept private; no audio
+  is stored here.
+- Every source and its terms: docs/license-ledger.md.
