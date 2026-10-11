@@ -44,6 +44,7 @@ eval_image = (
         "numpy>=1.26",
         "pydantic>=2.8,<3",
         "pyyaml>=6.0",
+        "silero-vad==6.2.3",  # the serving windows (phc_scribe.api.asr)
     )
     .env({"PYTHONPATH": f"{APP_DIR}/serve:{APP_DIR}", "HF_HOME": "/cache/hf"})
     .add_local_dir("serve", f"{APP_DIR}/serve", ignore=["**/__pycache__"])
@@ -257,14 +258,23 @@ def _compare(model: str, clips: list[dict], stage: str, source: str) -> dict:
     prompt = proc.tokenizer.convert_tokens_to_ids(
         ["<|startoftranscript|>", f"<|{code}|>", "<|transcribe|>", "<|notimestamps|>"]
     )
-    window = 30 * 16_000  # a clip longer than one window is cut the same way for both
+    # The serving windows (phc_scribe.api.asr): a clip over 20 s is cut at pauses into windows
+    # of at most 20 s, the same windows for both versions.
+    from phc_scribe.api.asr import INT8_WINDOW_S, SileroGate, speech_windows
+
+    gate = SileroGate()
+
+    def windows(audio):
+        if len(audio) <= INT8_WINDOW_S * 16_000:
+            return [(0, len(audio))]
+        return speech_windows(gate.speech_spans(audio.tolist()), len(audio), INT8_WINDOW_S)
 
     rows, secs = [], {"fp32": 0.0, "int8": 0.0}
     for c in clips:
         parts32, parts8 = [], []
-        for i in range(0, len(c["audio"]), window):
+        for a, b in windows(c["audio"]):
             f = proc.feature_extractor(
-                c["audio"][i : i + window], sampling_rate=16_000, return_tensors="np"
+                c["audio"][a:b], sampling_rate=16_000, return_tensors="np"
             ).input_features
             t = time.time()
             with torch.no_grad():
@@ -401,6 +411,14 @@ def pipeline(model: str) -> dict:
 def dev_spawn(model: str):
     call = pipeline.spawn(model)
     print(f"{model}: started ({call.object_id}); results in {OUT}/{model}/dev.json")
+
+
+@app.local_entrypoint()
+def recheck_spawn(model: str):
+    """The dev check again on the converted model (no new conversion), e.g. after a change to
+    the serving windows."""
+    call = dev_check.spawn(model)
+    print(f"{model}: dev check started ({call.object_id}); results in {OUT}/{model}/dev.json")
 
 
 @app.local_entrypoint()

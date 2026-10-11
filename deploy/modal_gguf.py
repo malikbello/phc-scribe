@@ -7,6 +7,10 @@ llama.cpp (ADR-0024 steps 5-6; eval plan §6a, audit C3).
     # evaluate it on non-test items (dev, pilot) or, after model selection, the frozen tests
     modal run deploy/modal_gguf.py::eval_main --run natlas-qlora-v1-weighted-fs --mode fewshot \
         --items data/bench/pilot.20261004.jsonl --tag pilot
+    # Tier 2 (ADR-0032 step 2): 3-bit variants, scored with the Q4 on dev and pilot only
+    modal run --detach deploy/modal_gguf.py::lite_spawn --run natlas-qlora-v1-weighted-fs \
+        --calib data/private/train/sft.v1fs.jsonl --dev data/private/train/sft.v1.dev.items.jsonl \
+        --pilot data/bench/pilot.20261004.jsonl
 
 The importance matrix is computed on TRAINING text only (prompts and answers from the
 training set), never on test items. Artefacts land on the `phc-scribe-runs` volume under
@@ -92,7 +96,7 @@ def _sha256(path: Path) -> str:
     volumes=VOLUMES,
     timeout=4 * 3600,
 )
-def build(run: str, calib_text: str, scale: float = 1.0) -> dict:
+def build(run: str, calib_text: str, scale: float = 1.0, quants: str = "Q4_K_M") -> dict:
     import shutil
 
     import torch
@@ -149,28 +153,35 @@ def build(run: str, calib_text: str, scale: float = 1.0) -> dict:
     out_dir = Path("/runs") / run / "gguf"
     out_dir.mkdir(parents=True, exist_ok=True)
     tag = run if scale == 1.0 else f"{run}-s{scale:g}"
-    q4 = out_dir / f"{tag}.Q4_K_M.gguf"
-    _sh(f"{BIN}/llama-quantize", "--imatrix", str(imatrix), str(f16), str(q4), "Q4_K_M")
-    manifest = {
-        "run": run,
-        "scale": scale,
-        "base": {"model": model_id, "revision": revision},
-        "llama_cpp_commit": Path("/llama.cpp/COMMIT").read_text().strip(),
-        "quant": "Q4_K_M",
-        "imatrix_from": "training text only",
-        "file": q4.name,
-        "bytes": q4.stat().st_size,
-        "sha256": _sha256(q4),
-    }
-    (out_dir / f"{tag}.manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
+    manifests = {}
+    for quant in quants.split(","):
+        gguf = out_dir / f"{tag}.{quant}.gguf"
+        _sh(f"{BIN}/llama-quantize", "--imatrix", str(imatrix), str(f16), str(gguf), quant)
+        manifest = {
+            "run": run,
+            "scale": scale,
+            "base": {"model": model_id, "revision": revision},
+            "llama_cpp_commit": Path("/llama.cpp/COMMIT").read_text().strip(),
+            "quant": quant,
+            "imatrix_from": "training text only",
+            "file": gguf.name,
+            "bytes": gguf.stat().st_size,
+            "sha256": _sha256(gguf),
+        }
+        # The shipped Q4 keeps its manifest name (serve/phc_scribe/fetch_models.py reads it).
+        name = f"{tag}.manifest.json" if quant == "Q4_K_M" else f"{tag}.{quant}.manifest.json"
+        (out_dir / name).write_text(json.dumps(manifest, indent=2) + "\n")
+        manifests[quant] = manifest
     shutil.rmtree(work, ignore_errors=True)
     runs.commit()
     hf_cache.commit()
-    return manifest
+    return manifests["Q4_K_M"] if list(manifests) == ["Q4_K_M"] else manifests
 
 
 @app.function(image=image, gpu="A10G", volumes=VOLUMES, timeout=3 * 3600)
-def evaluate(run: str, items_jsonl: str, mode: str, system: str, scale: float = 1.0) -> dict:
+def evaluate(
+    run: str, items_jsonl: str, mode: str, system: str, scale: float = 1.0, quant: str = "Q4_K_M"
+) -> dict:
     import os
     import subprocess
     import sys
@@ -181,7 +192,7 @@ def evaluate(run: str, items_jsonl: str, mode: str, system: str, scale: float = 
 
     runs.reload()
     tag = run if scale == 1.0 else f"{run}-s{scale:g}"
-    q4 = Path("/runs") / run / "gguf" / f"{tag}.Q4_K_M.gguf"
+    q4 = Path("/runs") / run / "gguf" / f"{tag}.{quant}.gguf"
     server = subprocess.Popen(  # noqa: S603 (fixed argv)
         [
             f"{BIN}/llama-server",
@@ -254,6 +265,33 @@ def evaluate(run: str, items_jsonl: str, mode: str, system: str, scale: float = 
     return {"report": json.loads(report.read_text()), "pred": pred.read_text(encoding="utf-8")}
 
 
+LITE_METRICS = ("danger_recall", "micro_f1", "false_alarm_rate", "schema_valid_rate")
+
+
+@app.function(image=image, volumes=VOLUMES, timeout=12 * 3600)
+def lite_pipeline(run: str, calib_text: str, sets: dict[str, str], quants: str) -> dict:
+    """ADR-0032 step 2: build 3-bit variants with the same training-text imatrix, then score
+    them beside the shipped Q4 (same llama.cpp, same prompt) on non-test items only."""
+    built = build.remote(run, calib_text, 1.0, quants)
+    calls = [
+        (q, tag, evaluate.spawn(run, items, "fewshot", f"{run}-{q.lower()}-{tag}", 1.0, q))
+        for q in ["Q4_K_M", *quants.split(",")]
+        for tag, items in sets.items()
+    ]
+    summary: dict = {"run": run, "sets": {t: len(i.splitlines()) for t, i in sets.items()}}
+    summary["scores"] = {}
+    for q, tag, call in calls:
+        overall = call.get()["report"]["overall"]
+        summary["scores"].setdefault(q, {})[tag] = {k: overall[k] for k in LITE_METRICS}
+    q4 = Path("/runs") / run / "gguf" / f"{run}.Q4_K_M.gguf"
+    summary["bytes"] = {"Q4_K_M": q4.stat().st_size, **{q: m["bytes"] for q, m in built.items()}}
+    keep = Path("/runs") / "_eval" / f"{run}-lite"
+    keep.mkdir(parents=True, exist_ok=True)
+    (keep / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
+    runs.commit()
+    return summary
+
+
 def _calibration(train_file: str, limit: int = 300) -> str:
     """Prompts and answers from the training set (never test items) for the importance matrix."""
     rows = [json.loads(x) for x in Path(train_file).read_text(encoding="utf-8").splitlines() if x]
@@ -299,3 +337,12 @@ def eval_spawn(run: str, items: str, mode: str = "fewshot", tag: str = "pilot", 
     system = f"{run}-q4{'' if scale == 1.0 else f'-s{scale:g}'}-{tag}"
     call = evaluate.spawn(run, Path(items).read_text(encoding="utf-8"), mode, system, scale)
     print(f"{system}: started ({call.object_id}); results in /runs/_eval/{system}/")
+
+
+@app.local_entrypoint()
+def lite_spawn(run: str, calib: str, dev: str, pilot: str, quants: str = "Q3_K_M,IQ3_M"):
+    """Start the Tier 2 note-model check and return at once (use with `modal run --detach`).
+    Results: /runs/_eval/<run>-lite/summary.json. Dev and pilot only, never a frozen set."""
+    sets = {t: Path(f).read_text(encoding="utf-8") for t, f in (("dev", dev), ("pilot", pilot))}
+    call = lite_pipeline.spawn(run, _calibration(calib), sets, quants)
+    print(f"{run}: lite build and check started ({call.object_id}); see /runs/_eval/{run}-lite/")

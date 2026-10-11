@@ -40,6 +40,12 @@ Many primary health centres have 8 GB laptops, or none. Setup is also slow on cl
 2. **Tier 2, note model:** a **lite variant** for 8 GB machines.
    - Candidates: IQ3_M / Q3_K_M of the same merged model, with the same training-text imatrix (about 3.6–3.9 GB; about 1 GB less RAM).
    - **Chosen on dev and pilot data only (ADR-0022).** It ships as an option next to Q4_K_M, never replacing it without a new pre-registered test.
+   - **Rule, written 11 Oct 2026 before any 3-bit result:**
+     - candidates Q3_K_M and IQ3_M, built from the same merged model with the same training-text imatrix (`deploy/modal_gguf.py::lite_spawn`);
+     - each is scored with the shipped Q4_K_M, same llama.cpp and prompt, on dev (127 items) and pilot (30);
+     - a candidate qualifies only if **on both sets**: danger recall at most 5 points below Q4, micro-F1 at most 0.03 below, false alarms at most 5 points above, and schema-valid at least 95%;
+     - of those that qualify, the smaller file is offered as the 8 GB option;
+     - none qualifying is a result too, and is reported. Dev is small (41 groups), so this is a screen, not proof.
 3. **Tier 2→3, distillation:** the fine-tuned N-ATLaS is the teacher for a **1–3B student**, trained on teacher outputs over the training transcripts (never test items).
    - Goal: 1–2 GB, 3–5× faster, fits 8 GB laptops.
    - Needs its own ADR and a fresh pre-registered evaluation against the 8B on new frozen items.
