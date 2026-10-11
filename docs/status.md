@@ -92,11 +92,18 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 4. ADR-0035 Android Wi-Fi binding; ADR-0034 live listening; the load test.
 5. Ethics approval and a DPIA before any clinic pilot; clinical source verification; medicines check (Eniola, 3 of 7).
 
-**Malik's housekeeping:**
-- Vercel: Root Directory and Deployment Protection;
-- revoke the HF token pasted on 6 Oct;
-- `modal volume rm -r phc-scribe-runs "C:"`;
-- hotspot Power saving off.
+**Housekeeping (11 Oct, late):**
+- **Done:**
+  - Vercel: Root Directory `apps/mobile`; git builds skipped (checks show "Canceled by Ignored Build Step", not failures); Deployment Protection on;
+  - the stray `C:` folder (a path-mangled partial copy of `/_backup`) deleted from the Modal volume;
+  - README names no employer (PR 45).
+- **Malik only:**
+  - Hotspot **Power saving: Off** (Settings → Network & internet → Mobile hotspot). The agent's admin change was blocked by the safety check; a hotspot watchdog covers the phone test.
+  - Revoke the HF token pasted into a chat on 6 Oct (huggingface.co/settings/tokens). It is not the laptop's `phc-scribe` read token, so nothing here breaks.
+  - Optional: request access to the gated WazobiaSpeech datasets (`Africanvoice/yoruba_african_voices`, `naija_african_voices`) with the malikbello account. The read token works for gated repos, so the account itself lacks access. This only unlocks the int8 test-pool check (Yorùbá and Pidgin int8 on the hub).
+- **Decisions recorded:**
+  - **GitHub repos go public at submission** (12 Oct), not before;
+  - the NAIC form lists Malik as "Enterprise AI/ML Engineer, Wema Bank Plc"; the public README names no employer.
 
 ## Earlier START HERE (10 Oct 2026, laptop session 10): S4-W scored, labels frozen, hub running on the laptop
 **Deadline:** NAIC submission 12 Oct 23:59 WAT; target 11 Oct. **Work from `main`.**
