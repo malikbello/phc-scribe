@@ -1,0 +1,82 @@
+{
+  "date": "2026-10-11",
+  "why": "re-run after serving changed to windows of at most 20 s (INT8_WINDOW_S); same rule (ADR-0032)",
+  "decoding": "greedy, language forced, no timestamps, H4 guard; clips over 20 s cut at pauses (Silero) into windows of at most 20 s, the same windows for fp32 and int8",
+  "models": {
+    "yo": {
+      "model": "yo",
+      "repo": "malikbello/N-ATLaS-ASR-Health-Yoruba-Powered-by-Awarri",
+      "stage": "dev",
+      "source": "fleurs-yo",
+      "clips": 300,
+      "speakers": 137,
+      "health_clips": 0,
+      "wer_fp32": 29.3,
+      "wer_int8": 29.33,
+      "diff_points": 0.03,
+      "diff_ci95": [
+        -0.6,
+        0.67
+      ],
+      "rule": "upper bound <= +3.0 points, clustered bootstrap (ADR-0032, 11 Oct)",
+      "passes": true,
+      "identical_outputs": 86,
+      "seconds_per_clip": {
+        "fp32": 12.343,
+        "int8": 1.866
+      },
+      "audio_seconds": 4667.8,
+      "cpu": 8.0
+    },
+    "pcm": {
+      "model": "pcm",
+      "repo": "malikbello/N-ATLaS-ASR-Health-Pidgin-Powered-by-Awarri",
+      "stage": "dev",
+      "source": "afrispeech-ng",
+      "clips": 300,
+      "speakers": 84,
+      "health_clips": 167,
+      "wer_fp32": 30.57,
+      "wer_int8": 30.23,
+      "diff_points": -0.35,
+      "diff_ci95": [
+        -1.05,
+        0.28
+      ],
+      "rule": "upper bound <= +3.0 points, clustered bootstrap (ADR-0032, 11 Oct)",
+      "passes": true,
+      "identical_outputs": 194,
+      "seconds_per_clip": {
+        "fp32": 6.345,
+        "int8": 1.157
+      },
+      "audio_seconds": 2655.8,
+      "cpu": 8.0
+    },
+    "en": {
+      "model": "en",
+      "repo": "NCAIR1/NigerianAccentedEnglish",
+      "stage": "dev",
+      "source": "afrispeech-ng",
+      "clips": 300,
+      "speakers": 84,
+      "health_clips": 167,
+      "wer_fp32": 16.78,
+      "wer_int8": 16.97,
+      "diff_points": 0.2,
+      "diff_ci95": [
+        -0.48,
+        0.89
+      ],
+      "rule": "upper bound <= +3.0 points, clustered bootstrap (ADR-0032, 11 Oct)",
+      "passes": true,
+      "identical_outputs": 209,
+      "seconds_per_clip": {
+        "fp32": 5.183,
+        "int8": 0.877
+      },
+      "audio_seconds": 2655.8,
+      "cpu": 8.0
+    }
+  }
+}

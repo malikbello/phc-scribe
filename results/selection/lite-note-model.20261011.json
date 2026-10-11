@@ -1,0 +1,223 @@
+{
+  "date": "2026-10-11",
+  "adr": "ADR-0032 step 2 (rule written before results)",
+  "data": "dev (127 items, sft.v1.dev) and pilot (30); no frozen test item",
+  "runtime": "llama.cpp (the shipped build), the base model's few-shot prompt, same imatrix (training text)",
+  "rule": {
+    "recall_max_drop_points": 5,
+    "f1_max_drop": 0.03,
+    "false_alarm_max_rise_points": 5,
+    "schema_valid_min": 0.95
+  },
+  "gguf_bytes": {
+    "Q4_K_M": 4920739136,
+    "Q3_K_M": 4018922816,
+    "IQ3_M": 3784828224
+  },
+  "scores": {
+    "Q4_K_M": {
+      "dev": {
+        "danger_recall": {
+          "point": 0.4865,
+          "low": 0.2727,
+          "high": 0.7692,
+          "n_items": 127,
+          "n_groups": 41
+        },
+        "micro_f1": {
+          "point": 0.4368,
+          "low": 0.2963,
+          "high": 0.6316,
+          "n_items": 127,
+          "n_groups": 41
+        },
+        "false_alarm_rate": {
+          "point": 0.0753,
+          "low": 0.0118,
+          "high": 0.1558,
+          "n_items": 127,
+          "n_groups": 41
+        },
+        "schema_valid_rate": {
+          "point": 0.9685,
+          "low": 0.9286,
+          "high": 1.0,
+          "n_items": 127,
+          "n_groups": 41
+        }
+      },
+      "pilot": {
+        "danger_recall": {
+          "point": 0.9,
+          "low": 0.75,
+          "high": 1.0,
+          "n_items": 30,
+          "n_groups": 30
+        },
+        "micro_f1": {
+          "point": 0.7375,
+          "low": 0.6316,
+          "high": 0.8353,
+          "n_items": 30,
+          "n_groups": 30
+        },
+        "false_alarm_rate": {
+          "point": 0.2308,
+          "low": 0.0,
+          "high": 0.5,
+          "n_items": 30,
+          "n_groups": 30
+        },
+        "schema_valid_rate": {
+          "point": 1.0,
+          "low": 1.0,
+          "high": 1.0,
+          "n_items": 30,
+          "n_groups": 30
+        }
+      }
+    },
+    "Q3_K_M": {
+      "dev": {
+        "danger_recall": {
+          "point": 0.3514,
+          "low": 0.16,
+          "high": 0.6452,
+          "n_items": 127,
+          "n_groups": 41
+        },
+        "micro_f1": {
+          "point": 0.3889,
+          "low": 0.2486,
+          "high": 0.5652,
+          "n_items": 127,
+          "n_groups": 41
+        },
+        "false_alarm_rate": {
+          "point": 0.0753,
+          "low": 0.0118,
+          "high": 0.1558,
+          "n_items": 127,
+          "n_groups": 41
+        },
+        "schema_valid_rate": {
+          "point": 0.9764,
+          "low": 0.9381,
+          "high": 1.0,
+          "n_items": 127,
+          "n_groups": 41
+        }
+      },
+      "pilot": {
+        "danger_recall": {
+          "point": 0.8,
+          "low": 0.6111,
+          "high": 0.9524,
+          "n_items": 30,
+          "n_groups": 30
+        },
+        "micro_f1": {
+          "point": 0.7296,
+          "low": 0.6145,
+          "high": 0.831,
+          "n_items": 30,
+          "n_groups": 30
+        },
+        "false_alarm_rate": {
+          "point": 0.0,
+          "low": 0.0,
+          "high": 0.0,
+          "n_items": 30,
+          "n_groups": 30
+        },
+        "schema_valid_rate": {
+          "point": 1.0,
+          "low": 1.0,
+          "high": 1.0,
+          "n_items": 30,
+          "n_groups": 30
+        }
+      }
+    },
+    "IQ3_M": {
+      "dev": {
+        "danger_recall": {
+          "point": 0.4054,
+          "low": 0.2105,
+          "high": 0.68,
+          "n_items": 127,
+          "n_groups": 41
+        },
+        "micro_f1": {
+          "point": 0.3371,
+          "low": 0.215,
+          "high": 0.4967,
+          "n_items": 127,
+          "n_groups": 41
+        },
+        "false_alarm_rate": {
+          "point": 0.1075,
+          "low": 0.0309,
+          "high": 0.2059,
+          "n_items": 127,
+          "n_groups": 41
+        },
+        "schema_valid_rate": {
+          "point": 0.9685,
+          "low": 0.937,
+          "high": 0.9928,
+          "n_items": 127,
+          "n_groups": 41
+        }
+      },
+      "pilot": {
+        "danger_recall": {
+          "point": 0.85,
+          "low": 0.6874,
+          "high": 1.0,
+          "n_items": 30,
+          "n_groups": 30
+        },
+        "micro_f1": {
+          "point": 0.6667,
+          "low": 0.5263,
+          "high": 0.7929,
+          "n_items": 30,
+          "n_groups": 30
+        },
+        "false_alarm_rate": {
+          "point": 0.0769,
+          "low": 0.0,
+          "high": 0.25,
+          "n_items": 30,
+          "n_groups": 30
+        },
+        "schema_valid_rate": {
+          "point": 1.0,
+          "low": 1.0,
+          "high": 1.0,
+          "n_items": 30,
+          "n_groups": 30
+        }
+      }
+    }
+  },
+  "verdict": {
+    "Q3_K_M": {
+      "qualifies": false,
+      "fails": [
+        "dev recall",
+        "dev F1",
+        "pilot recall"
+      ]
+    },
+    "IQ3_M": {
+      "qualifies": false,
+      "fails": [
+        "dev recall",
+        "dev F1",
+        "pilot F1"
+      ]
+    }
+  }
+}
