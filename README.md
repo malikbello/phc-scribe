@@ -113,12 +113,14 @@ The sets are labelled as they are:
 4. **A clinic pilot** with ethics approval; then Hausa and Igbo.
 
 ## Team
-- **Malik Bello:** lead; machine learning and engineering
-- **Rahmat:** nurse; clinical adviser, clinical sign-off and adjudication of labels
-- **Abdullah Oseni:** medical student; annotation
-- **Eniola Oluwatosin:** pharmacist; medicines content
+| Member | Role | Affiliation |
+|---|---|---|
+| **Malik Bello** | Lead; machine learning and engineering | Enterprise AI/ML Engineer, Wema Bank Plc |
+| **Rahmat Adebayo** | Nurse; clinical adviser, clinical sign-off and adjudication of labels | University College Hospital (UCH), Ibadan |
+| **Abdullahi Oseni** | Medical student; annotation | Osun State University |
+| **Eniola Oluwatosin** | Pharmacist; medicines content | Druglet Pharmacy, Lagos State |
 
 ## Licensing
-- Code licence: to be decided before public release.
-- N-ATLaS models and derivatives are governed by the N-ATLaS Terms of Use. See [`NOTICE`](NOTICE).
+- **Code:** [Apache License 2.0](LICENSE).
+- **Models:** N-ATLaS and its derivatives are governed by the N-ATLaS Terms of Use, not by the code licence. See [`NOTICE`](NOTICE).
 - Data licences for every benchmark source: [`docs/license-ledger.md`](docs/license-ledger.md).
