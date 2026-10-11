@@ -208,12 +208,18 @@ def test_asr_model_overrides_reach_the_transcriber(tmp_path, monkeypatch):
     }
 
 
-def test_int8_speech_uses_its_folders_and_fp32_for_the_rest(tmp_path, monkeypatch):
-    """ADR-0032 Tier 2: PHC_ASR=ct2 serves the int8 folders; a language without one (here
-    English) falls back to the fp32 model, so no language stops working."""
+def test_int8_speech_one_model_at_a_time_and_fine_tuned_fp32_for_the_rest(tmp_path, monkeypatch):
+    """ADR-0032 Tier 2: PHC_ASR=ct2 serves the folders in PHC_ASR_INT8_MODELS; every other
+    language keeps its fp32 model, the fine-tuned one where PHC_ASR_MODELS names it. So int8
+    is switched on per model as each passes its checks (the 11 Oct hub: English only)."""
     from phc_scribe.api import app as app_module
 
-    monkeypatch.setattr(app_module.Ct2WhisperTranscriber, "_load", lambda self, p: None)
+    real = app_module.Ct2WhisperTranscriber.transcribe
+
+    def int8_or_fallback(self, samples, lang):  # int8 decoding itself needs CTranslate2
+        return f"int8 {lang}" if lang in self.models else real(self, samples, lang)
+
+    monkeypatch.setattr(app_module.Ct2WhisperTranscriber, "transcribe", int8_or_fallback)
     monkeypatch.setattr(
         app_module.HfWhisperTranscriber, "transcribe", lambda self, s, lang: f"fp32 {lang}"
     )
@@ -221,15 +227,21 @@ def test_int8_speech_uses_its_folders_and_fp32_for_the_rest(tmp_path, monkeypatc
         env="dev",
         db_path=str(tmp_path / "db"),
         asr="ct2",
-        asr_models="yo=/models/asr-int8/yo,pcm=/models/asr-int8/pcm",
+        asr_models="yo=/models/asr-ft/yo,pcm=/models/asr-ft/pcm",
+        asr_int8_models="en=/models/asr-int8/en",
         asr_vad="off",
     )
     c = TestClient(create_app(s))
+    yo = c.post("/v1/transcribe?language=yo", content=_wav()).json()
+    assert yo["model"] == "/models/asr-ft/yo" and yo["text"] == "fp32 yo"  # fine-tuned, not base
     en = c.post("/v1/transcribe?language=en", content=_wav()).json()
-    assert en["model"] == "NCAIR1/NigerianAccentedEnglish" and en["text"] == "fp32 en"
-    assert c.get("/v1/health").status_code == 200
-    with pytest.raises(RuntimeError, match="int8 model folders"):
+    assert en["model"] == "/models/asr-int8/en" and en["text"] == "int8 en"
+    with pytest.raises(RuntimeError, match="PHC_ASR_INT8_MODELS"):
         create_app(Settings(env="dev", db_path=str(tmp_path / "db2"), asr="ct2"))
+    with pytest.raises(RuntimeError, match="PHC_ASR_INT8_MODELS"):
+        create_app(
+            Settings(env="dev", db_path=str(tmp_path / "db3"), asr="ct2", asr_int8_models="xx=/m")
+        )
 
 
 def test_speech_windows_end_in_pauses_and_never_exceed_30_s():

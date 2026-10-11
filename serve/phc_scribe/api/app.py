@@ -247,13 +247,13 @@ def create_app(
     if transcriber is None and settings.asr in ("hf", "ct2"):
         if speech_gate is None and settings.asr_vad == "on":
             speech_gate = SileroGate()
-        overrides = settings.asr_model_overrides()
+        fp32 = HfWhisperTranscriber({**ASR_MODELS, **settings.asr_model_overrides()})
         if settings.asr == "hf":
-            transcriber = HfWhisperTranscriber({**ASR_MODELS, **overrides})
-        else:
+            transcriber = fp32
+        else:  # int8 where a folder is given; every other language keeps its fp32 model
             gate = speech_gate if isinstance(speech_gate, SileroGate) else None
             transcriber = Ct2WhisperTranscriber(
-                overrides, gate=gate, fallback=HfWhisperTranscriber(dict(ASR_MODELS))
+                settings.asr_int8_overrides(), gate=gate, fallback=fp32
             )
     store = RecordStore(settings.db_path)
 
