@@ -36,7 +36,7 @@ _NEGATOR = re.compile(
 
 _NORMAL: dict[str, re.Pattern[str]] = {
     "reduced_fetal_movement": re.compile(
-        r"\b(mov(e|es|ing)|kick(s|ing)?|active)\b.*\b(well|fine|normal(ly)?|ok|okay|good|plenty|"
+        r"\b(mov(e|es|ed|ing)|kick(s|ed|ing)?|active)\b.*\b(well|fine|normal(ly)?|ok|okay|good|plenty|"
         r"well well|as (usual|before|normal))\b"
         r"|\b(normal|good|active) (fetal |foetal |baby )?movements?\b"
         r"|\bfetal movements? (felt|present|normal|good|active)\b"
