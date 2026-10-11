@@ -99,6 +99,7 @@ def convert(model: str) -> str:
         "tokenizer.json",
         "tokenizer_config.json",
         "preprocessor_config.json",
+        "processor_config.json",  # transformers 5 keeps the feature extractor here
         "special_tokens_map.json",
         "added_tokens.json",
         "vocab.json",

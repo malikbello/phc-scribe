@@ -67,7 +67,10 @@ The sets are labelled as they are:
   - `NCAIR1/Yoruba-ASR`, fine-tuned on Yorùbá speech;
   - `NCAIR1/NigerianAccentedEnglish`, fine-tuned on Pidgin and used as-is for English (ADR-0026);
   - int8 builds of all three (ADR-0032).
-- **Model repos on Hugging Face:** `malikbello/N-ATLaS-Health-ANC-Scribe-GGUF-Powered-by-Awarri` and `malikbello/N-ATLaS-ASR-Health-{Yoruba,Pidgin}-Powered-by-Awarri`, under the N-ATLaS Terms.
+- **Model repos on Hugging Face** (gated, approved automatically after accepting the N-ATLaS Terms):
+  - [`malikbello/N-ATLaS-Health-ANC-Scribe-GGUF-Powered-by-Awarri`](https://huggingface.co/malikbello/N-ATLaS-Health-ANC-Scribe-GGUF-Powered-by-Awarri): the note model;
+  - [`malikbello/N-ATLaS-ASR-Health-Yoruba-Powered-by-Awarri`](https://huggingface.co/malikbello/N-ATLaS-ASR-Health-Yoruba-Powered-by-Awarri) and [`…-Pidgin-…`](https://huggingface.co/malikbello/N-ATLaS-ASR-Health-Pidgin-Powered-by-Awarri): speech, with their int8 builds in `ct2-int8/`;
+  - [`malikbello/N-ATLaS-ASR-NigerianAccentedEnglish-int8-Powered-by-Awarri`](https://huggingface.co/malikbello/N-ATLaS-ASR-NigerianAccentedEnglish-int8-Powered-by-Awarri): the English speech model in int8.
 
 ## Try it
 - **Clinic hub on a laptop, with the phone app:** takada-app `docs/operations.md` (Docker Desktop, one command, then pair a phone with a code).
