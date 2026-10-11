@@ -81,14 +81,14 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 ### Open issues (owner)
 **Before submitting (12 Oct):**
 1. Phone test (Tests 1–4) and the demo video, 3–5 min (Malik). Tick the new consent box when starting a visit.
-2. Decide repo and model visibility (public or gated) and the code licence (Malik). Then upload `docs/cards/*` as the HF READMEs.
-3. Team affiliations for the profile (Malik).
+2. ~~Model visibility and code licence~~: **done 11 Oct**. The four HF model repos are gated with automatic approval, with cards and the int8 builds (`deploy/modal_release.py`). The code is Apache-2.0 (PRs 43, takada-app 10). **Still to decide: GitHub repo visibility** for the judges.
+3. ~~Team affiliations~~: done (README team table).
 4. ID and the submission form (Malik).
 
 **Product, next:**
 1. int8 test-pool check for Yorùbá and Pidgin (`deploy/modal_asr_int8.py::test_spawn`). It needs gated WazobiaSpeech access; the tokens here cannot read it.
 2. The concept–quote check (error taxonomy §4.1): the main false-alarm source.
-3. Publish the int8 folders and add them to `fetch_models`.
+3. ~~Publish the int8 folders and add them to `fetch_models`~~: done 11 Oct (`fetch_models --only int8`).
 4. ADR-0035 Android Wi-Fi binding; ADR-0034 live listening; the load test.
 5. Ethics approval and a DPIA before any clinic pilot; clinical source verification; medicines check (Eniola, 3 of 7).
 
