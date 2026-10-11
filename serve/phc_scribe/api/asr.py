@@ -153,6 +153,11 @@ class HfWhisperTranscriber:
 
 # Whisper reads 30 seconds at a time.
 WINDOW_S = 30.0
+# The int8 engine decodes at most 20 s per window. On the 11 Oct laptop check, a 33 s Pidgin
+# recording in one ~30 s window gave 13 words with int8 and 78 with fp32; at <= 20 s windows
+# the two matched (78 = 78; at 15 s, 80 = 80). Shorter windows also suit the fine-tunes,
+# which were trained on short clips.
+INT8_WINDOW_S = 20.0
 # Whisper's own language codes for the language tokens.
 WHISPER_CODE = {"yoruba": "yo", "hausa": "ha", "igbo": "ig", "english": "en"}
 
@@ -194,8 +199,9 @@ class Ct2WhisperTranscriber:
 
     About a quarter of the memory of fp32 and faster on a laptop CPU. Decoding is the
     evaluated one (ADR-0032): greedy, the language forced, no timestamps, each window on its
-    own, then the H4 loop guard. A recording longer than one window is cut at pauses
-    (`speech_windows`). Languages without an int8 build use `fallback` (the fp32 models).
+    own, then the H4 loop guard. A recording longer than 20 s is cut at pauses into windows
+    of at most 20 s (`speech_windows`, INT8_WINDOW_S). Languages without an int8 build use
+    `fallback` (the fp32 models).
     """
 
     def __init__(
@@ -239,9 +245,9 @@ class Ct2WhisperTranscriber:
 
         model, proc = self._load(self.models[language])
         x = np.asarray(samples, dtype=np.float32)
-        long = len(x) > WINDOW_S * SAMPLE_RATE
+        long = len(x) > INT8_WINDOW_S * SAMPLE_RATE
         spans = self.gate.speech_spans(samples) if long and self.gate is not None else []
-        windows = speech_windows(spans, len(x)) if long else [(0, len(x))]
+        windows = speech_windows(spans, len(x), INT8_WINDOW_S) if long else [(0, len(x))]
         code = WHISPER_CODE[WHISPER_LANGUAGE[language]]
         tok = proc.tokenizer  # pyright: ignore[reportAttributeAccessIssue]
         prompt = tok.convert_tokens_to_ids(
