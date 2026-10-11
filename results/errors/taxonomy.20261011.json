@@ -1,0 +1,464 @@
+{
+  "sets": [
+    "data/bench/g.20261002.jsonl",
+    "data/bench/s5.20261004.jsonl",
+    "data/bench/h.adeola.jsonl",
+    "data/bench/r.20261004.jsonl"
+  ],
+  "seed": 20261011,
+  "sample": 50,
+  "systems": {
+    "base N-ATLaS few-shot (comparator)": {
+      "items": 1090,
+      "items_with_an_error": 647,
+      "all_errors": {
+        "other finding: added": 645,
+        "false danger sign: not said": 261,
+        "other finding: missed": 162,
+        "false danger sign: a past pregnancy read as current": 58,
+        "missed danger sign: not recorded": 53,
+        "missed danger sign: recorded as a milder symptom": 33,
+        "false danger sign: a milder symptom escalated": 30,
+        "other finding: wrong assertion": 23,
+        "invalid output": 17,
+        "false danger sign: gold says denied": 14,
+        "measurement wrong or missing": 12
+      },
+      "missed_danger_by_set": {
+        "S5-yo": 37,
+        "G-en": 33,
+        "S5-pcm": 13,
+        "R-yo": 3
+      },
+      "false_danger_by_set": {
+        "G-en": 120,
+        "S5-yo": 66,
+        "S5-pcm": 64,
+        "H-yo": 49,
+        "H-pcm": 28,
+        "H-en": 14,
+        "R-en": 11,
+        "R-pcm": 6,
+        "R-yo": 5
+      },
+      "sample_primary": {
+        "other finding: added": 20,
+        "false danger sign: not said": 18,
+        "other finding: wrong assertion": 3,
+        "false danger sign: a milder symptom escalated": 2,
+        "other finding: missed": 2,
+        "false danger sign: a past pregnancy read as current": 2,
+        "invalid output": 1,
+        "missed danger sign: recorded as a milder symptom": 1,
+        "false danger sign: gold says denied": 1
+      },
+      "sample_items": {
+        "g-20261002-0006": [
+          "other finding: added",
+          "other finding: missed",
+          "other finding: added"
+        ],
+        "g-20261002-0020": [
+          "false danger sign: a milder symptom escalated",
+          "other finding: missed"
+        ],
+        "g-20261002-0025": [
+          "other finding: added"
+        ],
+        "g-20261002-0036": [
+          "false danger sign: gold says denied",
+          "other finding: missed"
+        ],
+        "g-20261002-0052": [
+          "false danger sign: not said",
+          "false danger sign: a past pregnancy read as current"
+        ],
+        "g-20261002-0055": [
+          "other finding: wrong assertion"
+        ],
+        "g-20261002-0079": [
+          "other finding: added",
+          "other finding: missed"
+        ],
+        "g-20261002-0097": [
+          "other finding: added"
+        ],
+        "g-20261002-0152": [
+          "false danger sign: not said",
+          "other finding: added",
+          "other finding: added",
+          "other finding: added",
+          "other finding: added",
+          "other finding: added",
+          "other finding: added",
+          "other finding: added"
+        ],
+        "g-20261002-0180": [
+          "missed danger sign: recorded as a milder symptom",
+          "other finding: added"
+        ],
+        "g-20261002-0197": [
+          "false danger sign: a past pregnancy read as current",
+          "other finding: added"
+        ],
+        "g-20261002-0211": [
+          "other finding: missed",
+          "other finding: added"
+        ],
+        "g-20261002-0229": [
+          "other finding: added"
+        ],
+        "g-20261002-0271": [
+          "false danger sign: a past pregnancy read as current",
+          "other finding: added",
+          "other finding: missed"
+        ],
+        "g-20261002-0280": [
+          "false danger sign: not said",
+          "false danger sign: not said"
+        ],
+        "h-adeola-en-001": [
+          "other finding: added"
+        ],
+        "h-adeola-en-007": [
+          "false danger sign: not said"
+        ],
+        "h-adeola-en-010": [
+          "other finding: added"
+        ],
+        "h-adeola-en-011": [
+          "false danger sign: not said"
+        ],
+        "h-adeola-en-034": [
+          "other finding: added"
+        ],
+        "h-adeola-en-054": [
+          "other finding: added",
+          "other finding: added",
+          "other finding: added"
+        ],
+        "h-adeola-en-103": [
+          "false danger sign: not said"
+        ],
+        "h-adeola-pcm-029": [
+          "other finding: added"
+        ],
+        "h-adeola-pcm-043": [
+          "false danger sign: not said"
+        ],
+        "h-adeola-pcm-047": [
+          "other finding: added",
+          "other finding: added"
+        ],
+        "h-adeola-pcm-068": [
+          "false danger sign: not said",
+          "false danger sign: not said"
+        ],
+        "h-adeola-pcm-104": [
+          "other finding: added",
+          "other finding: added"
+        ],
+        "h-adeola-yo-026": [
+          "invalid output"
+        ],
+        "h-adeola-yo-029": [
+          "false danger sign: not said",
+          "false danger sign: not said"
+        ],
+        "h-adeola-yo-030": [
+          "other finding: added"
+        ],
+        "h-adeola-yo-033": [
+          "false danger sign: not said",
+          "other finding: added"
+        ],
+        "h-adeola-yo-034": [
+          "other finding: added"
+        ],
+        "h-adeola-yo-042": [
+          "other finding: added",
+          "other finding: added"
+        ],
+        "h-adeola-yo-050": [
+          "false danger sign: not said"
+        ],
+        "h-adeola-yo-052": [
+          "false danger sign: not said"
+        ],
+        "h-adeola-yo-063": [
+          "false danger sign: not said"
+        ],
+        "h-adeola-yo-071": [
+          "false danger sign: not said"
+        ],
+        "r-pcm-wife": [
+          "other finding: added"
+        ],
+        "s5-pcm-040": [
+          "false danger sign: not said"
+        ],
+        "s5-pcm-051": [
+          "other finding: added"
+        ],
+        "s5-pcm-065": [
+          "other finding: added"
+        ],
+        "s5-pcm-078": [
+          "other finding: wrong assertion"
+        ],
+        "s5-pcm-079": [
+          "other finding: wrong assertion"
+        ],
+        "s5-pcm-092": [
+          "false danger sign: a milder symptom escalated",
+          "other finding: missed"
+        ],
+        "s5-pcm-112": [
+          "other finding: added"
+        ],
+        "s5-pcm-120": [
+          "other finding: added"
+        ],
+        "s5-pcm-141": [
+          "false danger sign: not said",
+          "other finding: missed"
+        ],
+        "s5-yo-020": [
+          "other finding: missed",
+          "other finding: added",
+          "other finding: added"
+        ],
+        "s5-yo-114": [
+          "false danger sign: not said"
+        ],
+        "s5-yo-121": [
+          "false danger sign: not said",
+          "other finding: missed"
+        ]
+      }
+    },
+    "fine-tuned Q4 (shipped)": {
+      "items": 1090,
+      "items_with_an_error": 545,
+      "all_errors": {
+        "other finding: added": 445,
+        "false danger sign: not said": 157,
+        "other finding: missed": 129,
+        "missed danger sign: not recorded": 36,
+        "invalid output": 35,
+        "false danger sign: a milder symptom escalated": 31,
+        "missed danger sign: recorded as a milder symptom": 19,
+        "false danger sign: gold says denied": 18,
+        "false danger sign: a past pregnancy read as current": 17,
+        "other finding: wrong assertion": 16,
+        "measurement wrong or missing": 4,
+        "missed danger sign: marked absent": 2
+      },
+      "missed_danger_by_set": {
+        "S5-yo": 24,
+        "G-en": 15,
+        "S5-pcm": 15,
+        "R-yo": 2,
+        "R-en": 1
+      },
+      "false_danger_by_set": {
+        "G-en": 73,
+        "S5-pcm": 48,
+        "S5-yo": 42,
+        "H-yo": 27,
+        "H-en": 8,
+        "H-pcm": 8,
+        "R-en": 6,
+        "R-yo": 6,
+        "R-pcm": 5
+      },
+      "sample_primary": {
+        "false danger sign: not said": 17,
+        "other finding: added": 17,
+        "missed danger sign: not recorded": 4,
+        "other finding: missed": 3,
+        "false danger sign: a milder symptom escalated": 3,
+        "invalid output": 3,
+        "other finding: wrong assertion": 2,
+        "missed danger sign: recorded as a milder symptom": 1
+      },
+      "sample_items": {
+        "g-20261002-0006": [
+          "other finding: added",
+          "other finding: missed",
+          "other finding: added"
+        ],
+        "g-20261002-0022": [
+          "other finding: added"
+        ],
+        "g-20261002-0030": [
+          "false danger sign: a milder symptom escalated",
+          "other finding: missed"
+        ],
+        "g-20261002-0053": [
+          "other finding: added"
+        ],
+        "g-20261002-0075": [
+          "false danger sign: a milder symptom escalated",
+          "other finding: added"
+        ],
+        "g-20261002-0077": [
+          "other finding: added"
+        ],
+        "g-20261002-0089": [
+          "false danger sign: not said"
+        ],
+        "g-20261002-0100": [
+          "other finding: missed"
+        ],
+        "g-20261002-0126": [
+          "false danger sign: not said"
+        ],
+        "g-20261002-0199": [
+          "other finding: added",
+          "other finding: missed"
+        ],
+        "g-20261002-0216": [
+          "false danger sign: not said"
+        ],
+        "g-20261002-0232": [
+          "false danger sign: not said"
+        ],
+        "g-20261002-0252": [
+          "other finding: added",
+          "other finding: wrong assertion",
+          "other finding: missed"
+        ],
+        "g-20261002-0269": [
+          "false danger sign: not said"
+        ],
+        "g-20261002-0289": [
+          "other finding: missed",
+          "other finding: missed",
+          "other finding: added"
+        ],
+        "h-adeola-en-080": [
+          "invalid output"
+        ],
+        "h-adeola-en-088": [
+          "invalid output"
+        ],
+        "h-adeola-pcm-008": [
+          "false danger sign: not said"
+        ],
+        "h-adeola-pcm-011": [
+          "other finding: added"
+        ],
+        "h-adeola-pcm-019": [
+          "other finding: added"
+        ],
+        "h-adeola-pcm-020": [
+          "other finding: added"
+        ],
+        "h-adeola-pcm-029": [
+          "other finding: added"
+        ],
+        "h-adeola-pcm-046": [
+          "false danger sign: not said"
+        ],
+        "h-adeola-pcm-093": [
+          "invalid output"
+        ],
+        "h-adeola-yo-027": [
+          "false danger sign: not said"
+        ],
+        "h-adeola-yo-041": [
+          "other finding: added",
+          "other finding: added"
+        ],
+        "h-adeola-yo-046": [
+          "false danger sign: not said",
+          "other finding: added"
+        ],
+        "h-adeola-yo-066": [
+          "other finding: added"
+        ],
+        "h-adeola-yo-106": [
+          "other finding: added"
+        ],
+        "r-en-hypo": [
+          "false danger sign: not said",
+          "false danger sign: not said"
+        ],
+        "r-en-question": [
+          "other finding: added"
+        ],
+        "r-en-third-child": [
+          "false danger sign: not said",
+          "other finding: added"
+        ],
+        "r-pcm-mixed": [
+          "false danger sign: not said",
+          "measurement wrong or missing"
+        ],
+        "r-pcm-question": [
+          "false danger sign: not said"
+        ],
+        "r-yo-hypo": [
+          "false danger sign: not said"
+        ],
+        "s5-pcm-003": [
+          "other finding: added"
+        ],
+        "s5-pcm-009": [
+          "other finding: wrong assertion"
+        ],
+        "s5-pcm-021": [
+          "missed danger sign: not recorded",
+          "false danger sign: not said"
+        ],
+        "s5-pcm-029": [
+          "false danger sign: not said",
+          "other finding: missed"
+        ],
+        "s5-pcm-130": [
+          "missed danger sign: not recorded",
+          "other finding: added"
+        ],
+        "s5-yo-035": [
+          "missed danger sign: not recorded",
+          "false danger sign: not said"
+        ],
+        "s5-yo-039": [
+          "other finding: wrong assertion"
+        ],
+        "s5-yo-052": [
+          "other finding: added"
+        ],
+        "s5-yo-064": [
+          "missed danger sign: recorded as a milder symptom",
+          "false danger sign: gold says denied",
+          "other finding: added"
+        ],
+        "s5-yo-065": [
+          "false danger sign: not said"
+        ],
+        "s5-yo-078": [
+          "missed danger sign: not recorded",
+          "false danger sign: a past pregnancy read as current",
+          "other finding: added"
+        ],
+        "s5-yo-092": [
+          "false danger sign: not said",
+          "other finding: missed"
+        ],
+        "s5-yo-096": [
+          "other finding: added"
+        ],
+        "s5-yo-118": [
+          "false danger sign: a milder symptom escalated",
+          "other finding: missed"
+        ],
+        "s5-yo-148": [
+          "other finding: missed",
+          "other finding: added"
+        ]
+      }
+    }
+  }
+}

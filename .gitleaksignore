@@ -1,0 +1,3 @@
+# Reviewed 11 Oct 2026: a dummy test key ("test..."), in tests/test_api.py at the commit
+# that added the /v1 API. Never a real credential; the test now generates a key per run.
+5fdd96f9b7cbbbe90ab86e5ce852dbda4533c76b:tests/test_api.py:generic-api-key:11

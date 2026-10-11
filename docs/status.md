@@ -1,9 +1,9 @@
 # Project status and working agreement
 
-_Last updated: 10 Oct 2026, early morning (laptop session 10). Keep this file current; it is the handoff between work sessions (local or cloud)._
+_Last updated: 11 Oct 2026, evening (laptop session 11). Keep this file current; it is the handoff between work sessions (local or cloud)._
 
 ## Resume prompt (paste this into a new session)
-> Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`) from "START HERE (9 Oct)" and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution (the `.githooks/commit-msg` guard rejects "claude", co-author or session lines, so never use a default merge message that names a `claude/...` branch), no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results, and never score the frozen test sets to choose anything. Run `./scripts/ci_local.sh` before every push. The work spans four repos: phc-scribe (model, benchmark, API), takada-app (phone app, clinic hub), scholarship-applications and project-archive; this file's "Zones" table says what is open in each and gives a prompt per zone. Keep only truly human tasks human (labelling, clinical decisions, my approvals); automate the rest robustly. Ask me before anything outward-facing or irreversible (the stage-2 freeze, making a repo public, submitting). Update this file and the resume prompt at the end of every work block.
+> Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`) from "START HERE (11 Oct)" and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution (the `.githooks/commit-msg` guard rejects "claude", co-author or session lines, so never use a default merge message that names a `claude/...` branch), no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results, and never score the frozen test sets to choose anything. Run `./scripts/ci_local.sh` before every push. The work spans four repos: phc-scribe (model, benchmark, API), takada-app (phone app, clinic hub), scholarship-applications and project-archive; this file's "Zones" table says what is open in each and gives a prompt per zone. Keep only truly human tasks human (labelling, clinical decisions, my approvals); automate the rest robustly. Ask me before anything outward-facing or irreversible (the stage-2 freeze, making a repo public, submitting). Update this file and the resume prompt at the end of every work block.
 
 ## Plan to win (agreed 3 Oct, session 6). Submission target 11 Oct; deadline 12 Oct 23:59 WAT
 Malik: "innovate… let us win the hackathon with bright and shining colours"; "the best way without having to rely on people". Labellers: Malik, Rahmat, Success.
@@ -48,7 +48,57 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 - **Uyo mapping:** both answered with specific mappings, so the ADR-0019 check can now run with `--confirmed-by`.
 - **Phrases, guide and rules:** 31 change requests, mostly local and lay phrasings (e.g. "running temperature", "serious stomach pain", "spotting", "pale +++", ">3 vomits a day") and follow-up tests (urinalysis every visit; PCV with bleeding). To be applied via a traceability matrix (each note → applied, or declined with a reason).
 
-## START HERE (10 Oct 2026, laptop session 10): S4-W scored, labels frozen, hub running on the laptop
+## START HERE (11 Oct 2026, laptop session 11): Tier 2 speech live for English, retention and consent built, submission documents drafted
+**Deadline:** NAIC submission 12 Oct 23:59 WAT. **Work from `main`.**
+
+### Done in session 11 (11 Oct)
+- **Phone test findings, all fixed with tests:**
+  - **"the baby moved well"** slipped past the polarity cue (phc-scribe PR 38);
+  - **two visits confirmed with no AI draft:** the draft now starts by itself when recording stops, and Review says "AI draft not back yet" (takada-app PR 6);
+  - **phones kept the old app:** an "update available" banner (takada-app PR 8);
+  - **int8 decoded a ~30 s window into 13 words** (fp32 78): windows are now at most 20 s (phc-scribe PR 40).
+- **Tier 2 speech (ADR-0032 step 1):**
+  - int8 engine (`PHC_ASR=ct2`, `PHC_ASR_INT8_MODELS`, PRs 39–40);
+  - dev check against a pre-registered rule: **all three pass** (`results/asr/int8-dev.20261011.json`; re-run with 20 s windows);
+  - laptop: speech memory 3.9 → 1.9 GB; a 20 s clip 56 s → 6 s (`results/hub/int8-speech-laptop.20261011.json`).
+- **Tier 2 note model (step 2):** Q3_K_M and IQ3_M **rejected** by the pre-registered dev and pilot rule (`results/selection/lite-note-model.20261011.json`). 8 GB laptops need a distilled model (step 3).
+- **ADR-0033 retention and consent** built (takada-app PR 7):
+  - a consent tick before recording;
+  - the phone deletes its copy of a recording once the hub has it and the record is confirmed;
+  - the hub deletes recordings and full transcripts 7 days after confirmation (30 days if unfinished).
+- **ADR-0034** (live listening, v2) and **ADR-0035** (Android stays on the clinic Wi-Fi), both Proposed (PR 41).
+- **Submission documents:**
+  - README rewritten from what is built and measured (NHMIS, DHIS2 and vLLM claims removed; S5 and G labelled as constructed);
+  - `docs/benchmark-report.md`, `docs/error-taxonomy.md` (+ `scripts/error_taxonomy.py`), `docs/scalability-and-sustainability.md`;
+  - `docs/cards/model-card.md`, `docs/cards/dataset-card.md`;
+  - takada-app `docs/operations.md` (PR 9).
+- **Secret scan of the full history** of both repos: clean. One reviewed dummy test key is allowlisted in `.gitleaksignore`. `data/private/` and `hub.env` were never committed.
+- **Hub on the laptop:**
+  - running from `main` images; int8 English live, Yorùbá and Pidgin on fine-tuned fp32;
+  - int8 folders for all three languages are in the models volume under `asr-int8/`;
+  - **hub secrets rotated on 11 Oct**.
+
+### Open issues (owner)
+**Before submitting (12 Oct):**
+1. Phone test (Tests 1–4) and the demo video, 3–5 min (Malik). Tick the new consent box when starting a visit.
+2. Decide repo and model visibility (public or gated) and the code licence (Malik). Then upload `docs/cards/*` as the HF READMEs.
+3. Team affiliations for the profile (Malik).
+4. ID and the submission form (Malik).
+
+**Product, next:**
+1. int8 test-pool check for Yorùbá and Pidgin (`deploy/modal_asr_int8.py::test_spawn`). It needs gated WazobiaSpeech access; the tokens here cannot read it.
+2. The concept–quote check (error taxonomy §4.1): the main false-alarm source.
+3. Publish the int8 folders and add them to `fetch_models`.
+4. ADR-0035 Android Wi-Fi binding; ADR-0034 live listening; the load test.
+5. Ethics approval and a DPIA before any clinic pilot; clinical source verification; medicines check (Eniola, 3 of 7).
+
+**Malik's housekeeping:**
+- Vercel: Root Directory and Deployment Protection;
+- revoke the HF token pasted on 6 Oct;
+- `modal volume rm -r phc-scribe-runs "C:"`;
+- hotspot Power saving off.
+
+## Earlier START HERE (10 Oct 2026, laptop session 10): S4-W scored, labels frozen, hub running on the laptop
 **Deadline:** NAIC submission 12 Oct 23:59 WAT; target 11 Oct. **Work from `main`.**
 
 ### Done in session 10 (9–10 Oct, on Malik's laptop)

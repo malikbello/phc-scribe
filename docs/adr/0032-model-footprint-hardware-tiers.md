@@ -73,6 +73,27 @@ Many primary health centres have 8 GB laptops, or none. Setup is also slow on cl
 - **Memory** is measured on the pilot laptop (results/hub/), not here: transformers maps fp32 weights lazily, so an in-process difference is not a fair figure.
 - **Still to run before int8 becomes the hub default for Yoruba and Pidgin:** the test-pool check (ADR-0026's 600 WazobiaSpeech clips, same rule). It needs the gated dataset, which the tokens available on 11 Oct could not read. Until it passes, the hub ships int8 as an option (`PHC_ASR=ct2`) and keeps fp32 as the default. English had no test-pool check planned, so its dev check is its gate.
 
+**Found on the pilot laptop the same day, fixed, and re-checked:**
+- **The bug:** a 33 s Pidgin recording, decoded in one ~30 s window, gave 13 words with int8 and 78 with fp32. With windows of at most 20 s the two matched (78 = 78; at 15 s, 80 = 80).
+- **The fix:** serving now cuts any recording over 20 s at pauses into windows of at most 20 s (`INT8_WINDOW_S`).
+- **The dev check was re-run** with exactly these windows for both versions, since the decoding that ships had changed. Results:
+  - Pidgin: 30.57% → 30.23%, −0.35 [−1.05, +0.28], **pass**, 5.5× faster;
+  - English: 16.78% → 16.97%, +0.20 [−0.48, +0.89], **pass**, 5.9× faster.
+- **Laptop** (`results/hub/int8-speech-laptop.20261011.json`): with all three speech models loaded, peak memory falls from 3,908 MB to **1,871 MB**. A 20 s English recording takes 6.3 s instead of 55.7 s.
+- **On the hub since 11 Oct:** English uses int8 (`PHC_ASR_INT8_MODELS=en=…`); Yoruba and Pidgin stay on fp32.
+
+## Result: step 2, a 3-bit note model (11 Oct 2026): rejected
+`deploy/modal_gguf.py::lite_spawn`; `results/selection/lite-note-model.20261011.json`. Same merged model, same training-text imatrix, same llama.cpp and prompt; dev 127 items, pilot 30; no frozen item.
+
+| Model | Size | Dev recall | Dev F1 | Dev false alarms | Pilot recall | Pilot F1 | Rule |
+|---|---|---|---|---|---|---|---|
+| Q4_K_M (ships) | 4.92 GB | 48.6% | 0.437 | 7.5% | 90% | 0.738 | n/a |
+| Q3_K_M | 4.02 GB | 35.1% | 0.389 | 7.5% | 80% | 0.730 | **fails:** dev recall, dev F1, pilot recall |
+| IQ3_M | 3.78 GB | 40.5% | 0.337 | 10.7% | 85% | 0.667 | **fails:** dev recall, dev F1, pilot F1 |
+
+- **Neither qualifies.** Saving about 1 GB costs too many danger signs, so no 3-bit option ships.
+- **8 GB laptops wait for step 3** (a distilled 1–3B student). The 3-bit files stay on the runs volume only.
+
 ## Consequences
 - **v1 is unchanged.** The tiers are presented as a plan, with only Tier 1 claimed as measured.
 - **Each step brings its own evidence:** non-test data to choose, then a fresh pre-registered test. No frozen set is reused to pick a variant.
