@@ -45,6 +45,7 @@ from phc_scribe.encounter import SCHEMA_VERSION, Encounter
 from phc_scribe.grounding import ground
 from phc_scribe.polarity import check as polarity_check
 from phc_scribe.rules import Flag, check, load_rules
+from phc_scribe.support import check as support_check
 from phc_scribe.vocab import load_vocabulary
 
 log = logging.getLogger("phc_scribe.api")
@@ -102,7 +103,9 @@ class DroppedOut(BaseModel):
 class ReviewCheck(BaseModel):
     path: str
     reason: str = Field(
-        description="polarity: the finding's own quote seems to say the opposite (ADR-0030)."
+        description="polarity: the finding's own quote seems to say the opposite (ADR-0030);"
+        " support: the quote does not mention the danger sign, or a measurement's quote has no"
+        " number (ADR-0036)."
     )
     detail: str = ""
 
@@ -362,6 +365,9 @@ def create_app(
         checks = [
             ReviewCheck(path=c.path, reason="polarity", detail=c.detail)
             for c in polarity_check(g.record)
+        ] + [
+            ReviewCheck(path=c.path, reason="support", detail=c.detail)
+            for c in support_check(g.record)
         ]
         return ExtractOut(
             record=g.record,

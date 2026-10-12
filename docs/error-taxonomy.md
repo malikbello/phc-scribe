@@ -58,7 +58,10 @@ It introduced one pattern of its own, bleeding (section 4.1).
 1. **A danger sign attached to a quote that has nothing to do with it.** This is the shipped model's main false alarm.
    - 48 of its 70 false "vaginal bleeding" findings are in the English clinical notes (G), marked *possible*, with quotes such as "TCA 4/52." (the return date), "nil" or "everything taken".
    - Grounding checks only that the quote exists in the transcript, so these pass, and the bleeding rule fires.
-   - **Next:** a concept–quote check that flags a danger finding whose quote has none of the concept's words in any language ("bleed", "blood", "spotting", "ẹ̀jẹ̀", "blood dey comot"). It flags and never drops, like the polarity check (ADR-0030), and is developed on dev data only.
+   - **Done, 12 Oct (ADR-0036):**
+     - **What it does:** a support check flags a danger finding whose quote has none of the concept's words in any language ("bleed", "blood", "spotting", "ẹ̀jẹ̀", "blood dey comot"). It flags and never drops, like the polarity check (ADR-0030).
+     - **Dev data only:** 0 of 145 clean gold danger findings were flagged; 52 of the 54 flagged model predictions were wrong by gold. It was not run on the frozen sets.
+     - **Why now:** the first end-to-end test on the laptop hub drafted a right headache finding with a quote about the baby.
 2. **General advice read as her symptom.**
    - *"If pregnant woman leg swell, make she raise the leg up"* became "swelling of face/hands: present".
    - Health talk contains advice and other people's stories, so the speaker-role rule (ADR-0024 F5) needs training examples of advice sentences.
