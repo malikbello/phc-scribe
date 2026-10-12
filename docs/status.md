@@ -1,6 +1,6 @@
 # Project status and working agreement
 
-_Last updated: 11 Oct 2026, evening (laptop session 11). Keep this file current; it is the handoff between work sessions (local or cloud)._
+_Last updated: 12 Oct 2026, evening (deadline day). Keep this file current; it is the handoff between work sessions (local or cloud)._
 
 ## Resume prompt (paste this into a new session)
 > Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`) from "START HERE (11 Oct)" and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution (the `.githooks/commit-msg` guard rejects "claude", co-author or session lines, so never use a default merge message that names a `claude/...` branch), no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results, and never score the frozen test sets to choose anything. Run `./scripts/ci_local.sh` before every push. The work spans four repos: phc-scribe (model, benchmark, API), takada-app (phone app, clinic hub), scholarship-applications and project-archive; this file's "Zones" table says what is open in each and gives a prompt per zone. Keep only truly human tasks human (labelling, clinical decisions, my approvals); automate the rest robustly. Ask me before anything outward-facing or irreversible (the stage-2 freeze, making a repo public, submitting). Update this file and the resume prompt at the end of every work block.
@@ -48,7 +48,26 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 - **Uyo mapping:** both answered with specific mappings, so the ADR-0019 check can now run with `--confirmed-by`.
 - **Phrases, guide and rules:** 31 change requests, mostly local and lay phrasings (e.g. "running temperature", "serious stomach pain", "spotting", "pale +++", ">3 vomits a day") and follow-up tests (urinalysis every visit; PCV with bleeding). To be applied via a traceability matrix (each note → applied, or declined with a reason).
 
-## START HERE (11 Oct 2026, laptop session 11): Tier 2 speech live for English, retention and consent built, submission documents drafted
+## START HERE (12 Oct 2026, deadline day)
+**Deadline:** 12 Oct 23:59 WAT. **Work from `main`.**
+
+### Done on 12 Oct
+- **First end-to-end test of the whole system.** The real app was driven on a phone-sized screen against the laptop hub, with a recorded 20 s English visit as the microphone. Both real danger signs were found. A false "reduced fetal movement" was flagged by the polarity check; a wrong headache quote and a made-up temperature were not caught.
+- **Support check (ADR-0036, PR 48):** flags a danger finding whose quote never mentions it, and a measurement whose quote has no number. Dev data only: 0/145 false flags on clean gold; 52 of 54 flagged predictions were wrong by gold. It is live on the hub, and the re-run draft showed every error under "Please check".
+- **Hub:** `PHC_LLAMACPP_TIMEOUT` 840 s, plus the operations note to close other programs on clinic days (takada-app PR 14). One draft took 12.9 minutes with under 2 GB of memory free.
+- **Submission:**
+  - `docs/submission.md` maps the seven NAIC components to evidence, linked from the README;
+  - the takada-app README now claims only what is built: no DHIS2 report, pairing by code;
+  - operations-guide references are now links.
+- **Film** (3:10, not in a repo): `Malik/content/phc-film/renders/takada-phc-scribe.web.mp4`. It shows the real app and draft from the 12 Oct capture, narration and subtitles, and every number checked against the benchmark report.
+
+### Left for Malik
+1. The phone test (close other programs first).
+2. "Make them public" for both repos.
+3. Upload the film and paste its link into the form.
+4. ID and the form (`Malik/content/naic-submission/form-answers.md`, private).
+
+## Earlier START HERE (11 Oct 2026, laptop session 11): Tier 2 speech live for English, retention and consent built, submission documents drafted
 **Deadline:** NAIC submission 12 Oct 23:59 WAT. **Work from `main`.**
 
 ### Done in session 11 (11 Oct)

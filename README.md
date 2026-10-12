@@ -9,7 +9,7 @@ A nurse talks with a pregnant woman in Yorùbá, Nigerian Pidgin or English whil
 
 The nurse checks the draft, corrects it if needed, and holds to confirm. The record, a referral note and a FHIR R4 export follow from that.
 
-> Entry for the **National AI Innovation Challenge 2026** (NCAIR / ONDI / FMCIDE), **Problem Statement 3, Sectoral Fine-Tuning: primary health care**.
+> Entry for the **National AI Innovation Challenge 2026** (NCAIR / ONDI / FMCIDE), **Problem Statement 3, Sectoral Fine-Tuning: primary health care**. Judges: [where to find each submission component](docs/submission.md).
 
 ## Why
 - Nigeria has **28.7% of the world's maternal deaths** (about 75,000 in 2023) and about **one doctor per 9,000 people**. Most antenatal care is given by nurses, midwives and community health workers.
@@ -74,7 +74,7 @@ The sets are labelled as they are:
   - [`malikbello/N-ATLaS-ASR-NigerianAccentedEnglish-int8-Powered-by-Awarri`](https://huggingface.co/malikbello/N-ATLaS-ASR-NigerianAccentedEnglish-int8-Powered-by-Awarri): the English speech model in int8.
 
 ## Try it
-- **Clinic hub on a laptop, with the phone app:** takada-app `docs/operations.md` (Docker Desktop, one command, then pair a phone with a code).
+- **Clinic hub on a laptop, with the phone app:** [takada-app `docs/operations.md`](https://github.com/malikbello/takada-app/blob/main/docs/operations.md) (Docker Desktop, one command, then pair a phone with a code).
 - **The API on its own:**
   ```bash
   pip install -e ".[dev,data]"
