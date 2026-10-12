@@ -9,7 +9,7 @@ The clinic hub's Wi-Fi has **no internet**. That is the point: the laptop hotspo
 
 Android treats a Wi-Fi network without internet as second best. In the 10 Oct pilot on a Galaxy S22, Samsung's "Switch to mobile data" setting sent requests for `https://192.168.137.1` over **mobile data**, where the hub does not exist. The app could not reach the hub until mobile data was turned off.
 
-The v1 workaround is a phone setting, done once at enrolment (takada-app `docs/operations.md`): keep the Wi-Fi connection, with "Switch to mobile data" off. A clinic should not depend on every nurse's phone settings.
+The v1 workaround is a phone setting, done once at enrolment ([takada-app `docs/operations.md`](https://github.com/malikbello/takada-app/blob/main/docs/operations.md)): keep the Wi-Fi connection, with "Switch to mobile data" off. A clinic should not depend on every nurse's phone settings.
 
 ## Decision (after v1)
 1. **Native Android app: bind hub requests to the Wi-Fi network.**
@@ -25,4 +25,4 @@ The v1 workaround is a phone setting, done once at enrolment (takada-app `docs/o
 - **Cost:**
   - native code in one more place, so the plugin needs its own tests;
   - Apple's iOS has the same issue in a milder form (its "Wi-Fi Assist"); it gets the same treatment when the iPhone app is used.
-- **Still needed:** the hub laptop's hotspot must not switch itself off (Windows "Power saving" off, takada-app `docs/operations.md`).
+- **Still needed:** the hub laptop's hotspot must not switch itself off (Windows "Power saving" off, [takada-app `docs/operations.md`](https://github.com/malikbello/takada-app/blob/main/docs/operations.md)).

@@ -108,5 +108,5 @@ Many primary health centres have 8 GB laptops, or none. Setup is also slow on cl
 ## Consequences
 - **v1 is unchanged.** The tiers are presented as a plan, with only Tier 1 claimed as measured.
 - **Each step brings its own evidence:** non-test data to choose, then a fresh pre-registered test. No frozen set is reused to pick a variant.
-- **Operations now:** the hub guide must say "Docker Desktop: give WSL 12 GB (`%UserProfile%\.wslconfig`: `memory=12GB`)" until Tier 2 lands. This is a takada-app `docs/operations.md` change.
+- **Operations now:** the hub guide must say "Docker Desktop: give WSL 12 GB (`%UserProfile%\.wslconfig`: `memory=12GB`)" until Tier 2 lands. This is a [takada-app `docs/operations.md`](https://github.com/malikbello/takada-app/blob/main/docs/operations.md) change.
 - **Install time:** int8 ASR and a lite model cut the first download roughly in half, which matters on clinic connections.

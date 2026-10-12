@@ -6,7 +6,7 @@
   - the nurses' own Android phones or iPhones;
   - the laptop's Wi-Fi hotspot, or a cheap router.
 - **No internet is needed for a visit, and there is no cloud bill.** The internet is used once, to install the models, and optionally to sync a second copy of the records.
-- **Setup is one command** (Docker Compose) plus pairing each phone with a code (takada-app `docs/operations.md`).
+- **Setup is one command** (Docker Compose) plus pairing each phone with a code ([takada-app `docs/operations.md`](https://github.com/malikbello/takada-app/blob/main/docs/operations.md)).
 - **The models are about 7 GB with fp32 speech, or about 5.6 GB with int8.** On clinic internet at 0.8 MB/s that is 2–3 hours, so a clinic should be installed from a USB drive (planned).
 
 ## Capacity, measured on the reference laptop (i7-8665U, 16 GB)
