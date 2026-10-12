@@ -1,0 +1,58 @@
+{
+  "date": "2026-10-12",
+  "check": "ADR-0032 step 1 confirming check, run once on the ADR-0026 test pool (WazobiaSpeech dev + dev_test, 300 clips per language); same rule as dev (int8 - fp32 WER upper 95% bound <= +3.0 points, speaker bootstrap)",
+  "decoding": "greedy, language forced, no timestamps, H4 guard; clips over 20 s cut at pauses into windows of at most 20 s, the same for both",
+  "note": "Absolute WERs differ from ADR-0026 (Yoruba 38.0%, Pidgin 24.8%) because the decoding differs: ADR-0026 used the transformers pipeline's 30 s chunks; this compares int8 with fp32 under the serving decoding.",
+  "models": {
+    "yo": {
+      "model": "yo",
+      "repo": "malikbello/N-ATLaS-ASR-Health-Yoruba-Powered-by-Awarri",
+      "stage": "test",
+      "source": "wazobiaspeech-test-pool",
+      "clips": 300,
+      "speakers": 16,
+      "health_clips": 300,
+      "wer_fp32": 28.9,
+      "wer_int8": 29.26,
+      "diff_points": 0.36,
+      "diff_ci95": [
+        -0.09,
+        0.99
+      ],
+      "rule": "upper bound <= +3.0 points, clustered bootstrap (ADR-0032, 11 Oct)",
+      "passes": true,
+      "identical_outputs": 177,
+      "seconds_per_clip": {
+        "fp32": 8.781,
+        "int8": 1.349
+      },
+      "audio_seconds": 4907.2,
+      "cpu": 8.0
+    },
+    "pcm": {
+      "model": "pcm",
+      "repo": "malikbello/N-ATLaS-ASR-Health-Pidgin-Powered-by-Awarri",
+      "stage": "test",
+      "source": "wazobiaspeech-test-pool",
+      "clips": 300,
+      "speakers": 19,
+      "health_clips": 300,
+      "wer_fp32": 18.3,
+      "wer_int8": 18.16,
+      "diff_points": -0.14,
+      "diff_ci95": [
+        -0.67,
+        0.3
+      ],
+      "rule": "upper bound <= +3.0 points, clustered bootstrap (ADR-0032, 11 Oct)",
+      "passes": true,
+      "identical_outputs": 224,
+      "seconds_per_clip": {
+        "fp32": 7.269,
+        "int8": 1.014
+      },
+      "audio_seconds": 4226.1,
+      "cpu": 8.0
+    }
+  }
+}

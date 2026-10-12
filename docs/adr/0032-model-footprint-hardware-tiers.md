@@ -57,7 +57,7 @@ Many primary health centres have 8 GB laptops, or none. Setup is also slow on cl
 | Tier | Hardware | Models | Status |
 |---|---|---|---|
 | 1 | 16 GB laptop hub | v1: 8B Q4_K_M + fp32 Whisper-Small | **measured (v1)** |
-| 2 | 8 GB laptop hub | int8 ASR + lite or distilled note model | **int8 speech: built and dev-checked (11 Oct)**; note model planned |
+| 2 | 8 GB laptop hub | int8 ASR + lite or distilled note model | **int8 speech: built, dev-checked and test-confirmed (11–12 Oct), live on the hub**; 3-bit note model rejected; distilled model planned |
 | 3 | phone, no hub | distilled student + tiny ASR | roadmap |
 
 ## Result: step 1, int8 speech (11 Oct 2026, dev check)
@@ -71,7 +71,7 @@ Many primary health centres have 8 GB laptops, or none. Setup is also slow on cl
 
 - **Size on disk:** 967 MB → 253 MB per model (−74%).
 - **Memory** is measured on the pilot laptop (results/hub/), not here: transformers maps fp32 weights lazily, so an in-process difference is not a fair figure.
-- **Still to run before int8 becomes the hub default for Yoruba and Pidgin:** the test-pool check (ADR-0026's 600 WazobiaSpeech clips, same rule). It needs the gated dataset, which the tokens available on 11 Oct could not read. Until it passes, the hub ships int8 as an option (`PHC_ASR=ct2`) and keeps fp32 as the default. English had no test-pool check planned, so its dev check is its gate.
+- **The confirming test-pool check** (ADR-0026's 600 WazobiaSpeech clips, same rule) needed the gated dataset. Malik's account was granted access on 11 Oct, and the check ran once on 12 Oct (see below). English had no test-pool check planned, so its dev check is its gate.
 
 **Found on the pilot laptop the same day, fixed, and re-checked:**
 - **The bug:** a 33 s Pidgin recording, decoded in one ~30 s window, gave 13 words with int8 and 78 with fp32. With windows of at most 20 s the two matched (78 = 78; at 15 s, 80 = 80).
@@ -81,7 +81,17 @@ Many primary health centres have 8 GB laptops, or none. Setup is also slow on cl
   - Pidgin: 30.57% → 30.23%, −0.35 [−1.05, +0.28], **pass**, 5.5× faster;
   - English: 16.78% → 16.97%, +0.20 [−0.48, +0.89], **pass**, 5.9× faster.
 - **Laptop** (`results/hub/int8-speech-laptop.20261011.json`): with all three speech models loaded, peak memory falls from 3,908 MB to **1,871 MB**. A 20 s English recording takes 6.3 s instead of 55.7 s.
-- **On the hub since 11 Oct:** English uses int8 (`PHC_ASR_INT8_MODELS=en=…`); Yoruba and Pidgin stay on fp32.
+- **On the hub:** English uses int8 since 11 Oct; Yoruba and Pidgin since 12 Oct, after the check below.
+
+**Confirming check on the test pool (12 Oct 2026; run once; `results/asr/int8-test.20261012.json`).** Same rule, same serving decoding, 300 clips per language, speaker bootstrap:
+
+| Model | Speakers | fp32 WER | int8 WER | int8 − fp32 [95% CI] | Rule | Seconds per clip, fp32 → int8 |
+|---|---|---|---|---|---|---|
+| Yoruba fine-tune | 16 | 28.90% | 29.26% | +0.36 [−0.09, +0.99] | **pass** | 8.78 → 1.35 (6.5×) |
+| Pidgin fine-tune | 19 | 18.30% | 18.16% | −0.14 [−0.67, +0.30] | **pass** | 7.27 → 1.01 (7.2×) |
+
+- **Both pass, so int8 is the hub default for all three languages** (`PHC_ASR_INT8_MODELS=en=…,yo=…,pcm=…`).
+- **Why the absolute WERs differ from ADR-0026's** (38.0% and 24.8%): the decoding differs. ADR-0026 used the transformers pipeline's 30 s chunks; this check uses the serving windows (at most 20 s, cut at pauses). The rule compares int8 with fp32 under the same decoding, so the difference does not affect the verdict. It is a post-hoc observation, not a claim about the fine-tunes.
 
 ## Result: step 2, a 3-bit note model (11 Oct 2026): rejected
 `deploy/modal_gguf.py::lite_spawn`; `results/selection/lite-note-model.20261011.json`. Same merged model, same training-text imatrix, same llama.cpp and prompt; dev 127 items, pilot 30; no frozen item.

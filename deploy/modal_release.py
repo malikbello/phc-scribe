@@ -255,3 +255,51 @@ def complete_int8(owner: str) -> list[str]:
 def complete(owner: str = "malikbello") -> None:
     for line in complete_int8.remote(owner):
         print(line)
+
+
+# Confirming check on the ADR-0026 test pool (results/asr/int8-test.20261012.json).
+TEST = {
+    "yo": ("300 held-out test clips, 16 speakers", 28.90, 29.26, 0.36, -0.09, 0.99),
+    "pcm": ("300 held-out test clips, 19 speakers", 18.30, 18.16, -0.14, -0.67, 0.30),
+}
+
+
+@app.function(image=image, secrets=SECRETS, timeout=1800)
+def add_test_results(owner: str) -> list[str]:
+    """Add the test-pool confirmation (run once, 12 Oct) to each int8 section of the cards."""
+    from huggingface_hub import HfApi, hf_hub_download
+
+    api = HfApi()
+    log = []
+    for lang, name in ASR.items():
+        repo = f"{owner}/{name}"
+        card = Path(hf_hub_download(repo, "README.md")).read_text(encoding="utf-8")
+        if "Confirmed on the held-out test pool" in card:
+            log.append(f"{repo}: already has the test-pool result")
+            continue
+        clips, fp32, int8, diff, lo, hi = TEST[lang]
+        line = (
+            f"\n**Confirmed on the held-out test pool** (run once, same rule and decoding): {clips}, "
+            f"fp32 {fp32:.2f}% → int8 {int8:.2f}%, {diff:+.2f} points [{lo:+.2f}, {hi:+.2f}]: **pass**. "
+            "PHC Scribe's clinic hub serves this int8 build.\n"
+        )
+        anchor = "Serve it with PHC Scribe"
+        card = (
+            card.replace(anchor, line.lstrip("\n") + "\n" + anchor, 1)
+            if anchor in card
+            else card.rstrip() + "\n" + line
+        )
+        api.upload_file(
+            path_or_fileobj=card.encode(),
+            path_in_repo="README.md",
+            repo_id=repo,
+            commit_message="int8: test-pool confirmation (ADR-0032)",
+        )
+        log.append(f"{repo}: test-pool result added")
+    return log
+
+
+@app.local_entrypoint()
+def test_results(owner: str = "malikbello") -> None:
+    for line in add_test_results.remote(owner):
+        print(line)

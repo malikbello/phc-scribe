@@ -123,9 +123,14 @@ On the clinic laptop (`results/hub/int8-speech-laptop.20261011.json`):
 | Disk per model | 967 MB | **242 MB** |
 
 - **Found on the laptop and fixed:** int8 decoded one ~30 s window into 13 words where fp32 gave 78. Windows of at most 20 s match (78 = 78), so serving cuts recordings at pauses into windows of at most 20 s, and the dev check was re-run with them.
-- **Status:**
-  - int8 serves English on the hub now;
-  - Yorùbá and Pidgin stay on fp32 until the confirming check on the 600 test-pool clips, which needs access to the gated dataset.
+- **Confirmed on the test pool** (12 Oct, run once; 300 real clips per language; `results/asr/int8-test.20261012.json`):
+
+  | Model | fp32 WER | int8 WER | int8 − fp32 [95% CI] |
+  |---|---|---|---|
+  | Yorùbá (16 speakers) | 28.90% | 29.26% | +0.36 [−0.09, +0.99] |
+  | Pidgin (19 speakers) | 18.30% | 18.16% | −0.14 [−0.67, +0.30] |
+
+  Both pass. **int8 now serves all three languages on the hub**, 6.5–7.2× faster per clip.
 - **A 3-bit note model was rejected.** Q3_K_M and IQ3_M (4.0 and 3.8 GB, against 4.9 GB for Q4) both failed the pre-registered dev and pilot rule:
   - danger-sign recall on dev fell from 48.6% to 35.1% and to 40.5%;
   - details in `results/selection/lite-note-model.20261011.json`.
