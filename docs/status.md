@@ -74,7 +74,7 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
   - takada-app `docs/operations.md` (PR 9).
 - **Secret scan of the full history** of both repos: clean. One reviewed dummy test key is allowlisted in `.gitleaksignore`. `data/private/` and `hub.env` were never committed.
 - **Hub on the laptop:**
-  - running from `main` images; int8 English live, Yorùbá and Pidgin on fine-tuned fp32;
+  - running from `main` images; **int8 speech for all three languages** (Yorùbá and Pidgin switched on 12 Oct, after their test-pool check passed);
   - int8 folders for all three languages are in the models volume under `asr-int8/`;
   - **hub secrets rotated on 11 Oct**.
 
@@ -86,7 +86,7 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 4. ID and the submission form (Malik).
 
 **Product, next:**
-1. int8 test-pool check for Yorùbá and Pidgin (`deploy/modal_asr_int8.py::test_spawn`). It needs gated WazobiaSpeech access; the tokens here cannot read it.
+1. ~~int8 test-pool check for Yorùbá and Pidgin~~: **done 12 Oct, both pass**; int8 is live for all three languages (ADR-0032).
 2. The concept–quote check (error taxonomy §4.1): the main false-alarm source.
 3. ~~Publish the int8 folders and add them to `fetch_models`~~: done 11 Oct (`fetch_models --only int8`).
 4. ADR-0035 Android Wi-Fi binding; ADR-0034 live listening; the load test.
@@ -97,10 +97,10 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
   - Vercel: Root Directory `apps/mobile`; git builds skipped (checks show "Canceled by Ignored Build Step", not failures); Deployment Protection on;
   - the stray `C:` folder (a path-mangled partial copy of `/_backup`) deleted from the Modal volume;
   - README names no employer (PR 45).
-- **Malik only:**
-  - Hotspot **Power saving: Off** (Settings → Network & internet → Mobile hotspot). The agent's admin change was blocked by the safety check; a hotspot watchdog covers the phone test.
-  - Revoke the HF token pasted into a chat on 6 Oct (huggingface.co/settings/tokens). It is not the laptop's `phc-scribe` read token, so nothing here breaks.
-  - Optional: request access to the gated WazobiaSpeech datasets (`Africanvoice/yoruba_african_voices`, `naija_african_voices`) with the malikbello account. The read token works for gated repos, so the account itself lacks access. This only unlocks the int8 test-pool check (Yorùbá and Pidgin int8 on the hub).
+- **Also done (late 11 Oct):**
+  - hotspot Power saving off, by Malik; confirmed in the registry (`PeerlessTimeoutEnabled = 0`);
+  - **HF tokens audited.** The 6 Oct read token no longer exists. The unused WRITE token `phc-deploy` was revoked by Malik, and its GitHub secret `HF_WRITE_TOKEN` deleted. Kept: `phc-scribe` (laptop, Modal `phc-scribe-api`, GitHub `HF_READ_TOKEN`), `modal-write` (Modal `phc-scribe-hf-write`), `maya-ai` (Maya on Render; it was pasted in chat on 27 Sept, so rotate it after checking Render's settings);
+  - WazobiaSpeech access granted to Malik's account; the int8 test-pool check ran.
 - **Decisions recorded:**
   - **GitHub repos go public at submission** (12 Oct), not before;
   - the NAIC form lists Malik as "Enterprise AI/ML Engineer, Wema Bank Plc"; the public README names no employer.
@@ -793,7 +793,7 @@ Point [95% bootstrap CI]. Reports: `results/pilot-20261001/`. 30 items is a pilo
 | WazobiaSpeech fallback queue (ADR-0018) | `python scripts/fetch_wazobia.py [--check-speakers]` → `data/private/wazobia/*_health.jsonl`, `data/private/label_queue.s4w.jsonl` + `.meta.json` (pools, groups, terms, speaker overlap). Enrichment terms and sampling: `bench/label_queue.py` (`ENRICH_TERMS`, `sample_enriched_queue`). Calibration practice set: `python scripts/build_s4w_calibration.py` → `data/private/label_queue.s4w-cal.jsonl`. Both uploaded per Next steps 3 (labelling started 1 Oct; counted only if ADR-0018 triggers on 5 Oct, otherwise a reported supplement). Freeze: `scripts/freeze_test_set.py items|labels` (ADR-0022). |
 | Review app | https://phc-scribe-review.vercel.app; source `review-app/`; env vars `SESSION_SECRET`, `REVIEWERS` (Malik's admin code is in `REVIEWERS` in the Vercel dashboard) |
 | Modal deploy | `deploy/modal_app.py` (set `PRIVATE = False` on submission day), workflow `.github/workflows/deploy-modal.yml` (manual: Actions → deploy-modal → Run workflow) |
-| GitHub secrets (Actions) | `MODAL_TOKEN_ID`, `MODAL_TOKEN_SECRET`, `HF_WRITE_TOKEN` (spare; was for the HF Space), `HF_READ_TOKEN`, `PHC_API_KEY` (Malik keeps the key in his password manager; services only ever get its SHA-256 hash) |
+| GitHub secrets (Actions) | `MODAL_TOKEN_ID`, `MODAL_TOKEN_SECRET`, `HF_READ_TOKEN`, `PHC_API_KEY` (Malik keeps the key in his password manager; services only ever get its SHA-256 hash) |
 | Decisions | `docs/adr/0001`–`0022` (0016 accepted 30 Sept; **0018–0022 accepted 1 Oct**; 0017 proposed) |
 | Hard negatives (ADR-0020) | `python scripts/build_adeola_items.py` → `data/bench/h.adeola.jsonl` (454 items, MIT notice in `h.adeola.LICENSE`); source files checksum-pinned, cached in `data/private/adeola/` (incl. the three MP3s for the ASR test) |
 | Belebele (G2) | `python -m bench.belebele --model ... --out ...` (zero-shot letter likelihood, pinned revision); runs on Kaggle with `PLAN = "prefreeze"` |

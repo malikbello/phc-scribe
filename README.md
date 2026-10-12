@@ -51,7 +51,7 @@ The sets are labelled as they are:
  Clinic hub: a laptop running Docker, no internet needed
    Tákàdá server: sync, drafting queue, FHIR R4 export, retention of recordings (ADR-0033)
    PHC Scribe API (/v1): voice-activity gate → N-ATLaS speech recognition (fine-tuned
-     Yorùbá and Pidgin; int8 option) → fine-tuned N-ATLaS 8B (4-bit, llama.cpp)
+     Yorùbá and Pidgin; int8 on the CPU) → fine-tuned N-ATLaS 8B (4-bit, llama.cpp)
      → schema check, grounding, polarity check → danger-sign rules
 ```
 - **Rules decide danger signs; the model only documents.** Each rule names its WHO source (`rules/danger_signs.v0.yaml`).
@@ -108,7 +108,7 @@ The sets are labelled as they are:
 
 ## Roadmap
 1. **Hardware tiers (ADR-0032):**
-   - int8 speech is built and checked (English live; Yorùbá and Pidgin after their test-pool check);
+   - int8 speech is done: checked on dev and confirmed on the test pool, and live for all three languages;
    - next, a distilled 1–3B note model for 8 GB laptops;
    - then phone-only clinics.
 2. **Live listening (ADR-0034):** question prompts and quiet danger-sign hints during the visit, from transcripts 20 s at a time.
