@@ -914,7 +914,7 @@
             "type": "string"
           },
           "reason": {
-            "description": "polarity: the finding's own quote seems to say the opposite (ADR-0030).",
+            "description": "polarity: the finding's own quote seems to say the opposite (ADR-0030); support: the quote does not mention the danger sign, or a measurement's quote has no number (ADR-0036).",
             "title": "Reason",
             "type": "string"
           }

@@ -52,12 +52,13 @@ The sets are labelled as they are:
    Tákàdá server: sync, drafting queue, FHIR R4 export, retention of recordings (ADR-0033)
    PHC Scribe API (/v1): voice-activity gate → N-ATLaS speech recognition (fine-tuned
      Yorùbá and Pidgin; int8 on the CPU) → fine-tuned N-ATLaS 8B (4-bit, llama.cpp)
-     → schema check, grounding, polarity check → danger-sign rules
+     → schema check, grounding, polarity and support checks → danger-sign rules
 ```
 - **Rules decide danger signs; the model only documents.** Each rule names its WHO source (`rules/danger_signs.v0.yaml`).
 - **The nurse confirms every record:**
   - model findings are marked "AI draft", with the words they were heard in;
-  - a finding whose quote reads as a denial or a normal state gets a "Please check" note (ADR-0030).
+  - a finding whose quote reads as a denial or a normal state gets a "Please check" note (ADR-0030);
+  - so does a danger sign whose quote never mentions it, or a measurement whose quote has no number (ADR-0036).
 - **Speech the model should not trust is stopped early:** silence and noise never reach Whisper (ADR-0031), and decoding loops are cut (audit H4).
 - **The same API also runs as a private cloud service** (Modal, ADR-0017), for clinics with connectivity.
 

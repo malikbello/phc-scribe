@@ -1,0 +1,438 @@
+{
+  "date": "2026-10-12",
+  "dev_sources": [
+    "data\\bench\\pilot.20261004.jsonl",
+    "data\\train\\phrasebank.rare.v0.yaml",
+    "data\\private\\train\\sft.v1.jsonl",
+    "data\\private\\train\\sft.v1.dev.items.jsonl",
+    "results\\modal\\base\\dev.pred.jsonl",
+    "results\\modal\\base\\pilot-b8.pred.jsonl",
+    "results\\modal\\base-q4\\pilot.pred.jsonl",
+    "results\\modal\\natlas-qlora-v1-plain\\pilot.pred.jsonl",
+    "results\\modal\\natlas-qlora-v1-weighted\\dev-s0.5.pred.jsonl",
+    "results\\modal\\natlas-qlora-v1-weighted\\pilot-s0.5.pred.jsonl",
+    "results\\modal\\natlas-qlora-v1-weighted\\pilot-s0.75.pred.jsonl",
+    "results\\modal\\natlas-qlora-v1-weighted\\pilot.pred.jsonl",
+    "results\\modal\\natlas-qlora-v1-weighted-fs\\pilot.pred.jsonl"
+  ],
+  "gold": {
+    "pilot": {
+      "danger_findings": 26,
+      "false_flags": 0,
+      "false_flag_quotes": []
+    },
+    "phrasebank": {
+      "danger_findings": 28,
+      "false_flags": 0,
+      "false_flag_quotes": []
+    },
+    "train (private, generated)": {
+      "danger_findings": 76,
+      "false_flags": 0
+    },
+    "train (private, real)": {
+      "danger_findings": 128,
+      "false_flags": 43
+    },
+    "dev (private, generated)": {
+      "danger_findings": 15,
+      "false_flags": 0
+    },
+    "dev (private, real)": {
+      "danger_findings": 26,
+      "false_flags": 13
+    }
+  },
+  "predictions": {
+    "results\\modal\\base\\dev.pred.jsonl": {
+      "danger_predictions": 39,
+      "flagged": 13,
+      "flagged_and_wrong_by_gold": 13,
+      "vitals_predicted": 0,
+      "vitals_flagged": 0,
+      "vitals_flagged_and_not_in_gold": 0,
+      "flags": [
+        {
+          "item_id": "syn-en-0026",
+          "concept": "unconscious",
+          "gold_agrees": false
+        },
+        {
+          "item_id": "syn-en-0034",
+          "concept": "unconscious",
+          "gold_agrees": false
+        },
+        {
+          "item_id": "t-pcm-pcm_f_PHTT2F32_he_spontaneous_571",
+          "concept": "severe_abdominal_pain",
+          "gold_agrees": false
+        },
+        {
+          "item_id": "t-yo-yor_f_YHTT1F15_he_spontaneous_048",
+          "concept": "severe_abdominal_pain",
+          "gold_agrees": false
+        },
+        {
+          "item_id": "t-yo-yor_f_YHTT1F24_he_spontaneous_224",
+          "concept": "convulsions",
+          "gold_agrees": false
+        },
+        {
+          "item_id": "t-yo-yor_f_YHTT1F3_he_spontaneous_361",
+          "concept": "severe_pallor",
+          "gold_agrees": false
+        },
+        {
+          "item_id": "t-yo-yor_m_YHTT1M20_he_spontaneous_374",
+          "concept": "vaginal_bleeding",
+          "gold_agrees": false
+        },
+        {
+          "item_id": "t-yo-yor_f_YHTT1F15_he_spontaneous_048-asr",
+          "concept": "severe_abdominal_pain",
+          "gold_agrees": false
+        },
+        {
+          "item_id": "t-yo-yor_f_YHTT1F15_he_spontaneous_121-asr",
+          "concept": "severe_pallor",
+          "gold_agrees": false
+        },
+        {
+          "item_id": "t-yo-yor_f_YHTT1F31_he_spontaneous_283-asr",
+          "concept": "severe_headache",
+          "gold_agrees": false
+        },
+        {
+          "item_id": "t-yo-yor_f_YHTT1F31_he_spontaneous_283-asr",
+          "concept": "swelling_face_hands",
+          "gold_agrees": false
+        },
+        {
+          "item_id": "t-yo-yor_f_YHTT1F3_he_spontaneous_361-asr",
+          "concept": "severe_pallor",
+          "gold_agrees": false
+        },
+        {
+          "item_id": "t-yo-yor_m_YHTT1M20_he_spontaneous_429-asr",
+          "concept": "severe_abdominal_pain",
+          "gold_agrees": false
+        }
+      ]
+    },
+    "results\\modal\\base\\pilot-b8.pred.jsonl": {
+      "danger_predictions": 31,
+      "flagged": 9,
+      "flagged_and_wrong_by_gold": 9,
+      "vitals_predicted": 43,
+      "vitals_flagged": 0,
+      "vitals_flagged_and_not_in_gold": 0,
+      "flags": [
+        {
+          "item_id": "pilot-20261004-0001",
+          "concept": "severe_pallor",
+          "gold_agrees": false,
+          "quote": "T 36.4"
+        },
+        {
+          "item_id": "pilot-20261004-0004",
+          "concept": "severe_pallor",
+          "gold_agrees": false,
+          "quote": "Wt 56kg"
+        },
+        {
+          "item_id": "pilot-20261004-0005",
+          "concept": "severe_pallor",
+          "gold_agrees": false,
+          "quote": "body weakness"
+        },
+        {
+          "item_id": "pilot-20261004-0013",
+          "concept": "severe_pallor",
+          "gold_agrees": false,
+          "quote": "?very ill appearance"
+        },
+        {
+          "item_id": "pilot-20261004-0014",
+          "concept": "severe_pallor",
+          "gold_agrees": false,
+          "quote": "TCA 2/52"
+        },
+        {
+          "item_id": "pilot-20261004-0018",
+          "concept": "severe_headache",
+          "gold_agrees": false,
+          "quote": "Counselled on birth preparedness"
+        },
+        {
+          "item_id": "pilot-20261004-0018",
+          "concept": "fever",
+          "gold_agrees": false,
+          "quote": "Counselled on birth preparedness"
+        },
+        {
+          "item_id": "pilot-20261004-0022",
+          "concept": "convulsions",
+          "gold_agrees": false,
+          "quote": "Severe headache"
+        },
+        {
+          "item_id": "pilot-20261004-0022",
+          "concept": "fever",
+          "gold_agrees": false,
+          "quote": "Severe headache"
+        }
+      ]
+    },
+    "results\\modal\\base-q4\\pilot.pred.jsonl": {
+      "danger_predictions": 27,
+      "flagged": 7,
+      "flagged_and_wrong_by_gold": 7,
+      "vitals_predicted": 36,
+      "vitals_flagged": 0,
+      "vitals_flagged_and_not_in_gold": 0,
+      "flags": [
+        {
+          "item_id": "pilot-20261004-0001",
+          "concept": "severe_pallor",
+          "gold_agrees": false,
+          "quote": "T 36.4"
+        },
+        {
+          "item_id": "pilot-20261004-0010",
+          "concept": "severe_headache",
+          "gold_agrees": false,
+          "quote": "?visual disturbance"
+        },
+        {
+          "item_id": "pilot-20261004-0014",
+          "concept": "severe_pallor",
+          "gold_agrees": false,
+          "quote": "TCA 2/52"
+        },
+        {
+          "item_id": "pilot-20261004-0022",
+          "concept": "severe_headache",
+          "gold_agrees": false,
+          "quote": "Referred to FMC."
+        },
+        {
+          "item_id": "pilot-20261004-0022",
+          "concept": "convulsions",
+          "gold_agrees": false,
+          "quote": "Referred to FMC."
+        },
+        {
+          "item_id": "pilot-20261004-0022",
+          "concept": "fever",
+          "gold_agrees": false,
+          "quote": "Referred to FMC."
+        },
+        {
+          "item_id": "pilot-20261004-0022",
+          "concept": "swelling_face_hands",
+          "gold_agrees": false,
+          "quote": "Referred to FMC."
+        }
+      ]
+    },
+    "results\\modal\\natlas-qlora-v1-plain\\pilot.pred.jsonl": {
+      "danger_predictions": 23,
+      "flagged": 5,
+      "flagged_and_wrong_by_gold": 5,
+      "vitals_predicted": 14,
+      "vitals_flagged": 0,
+      "vitals_flagged_and_not_in_gold": 0,
+      "flags": [
+        {
+          "item_id": "pilot-20261004-0007",
+          "concept": "reduced_fetal_movement",
+          "gold_agrees": false,
+          "quote": "G1P0, 34 weeks gestation"
+        },
+        {
+          "item_id": "pilot-20261004-0008",
+          "concept": "vaginal_bleeding",
+          "gold_agrees": false,
+          "quote": "reports vomiting everything taken."
+        },
+        {
+          "item_id": "pilot-20261004-0008",
+          "concept": "severe_headache",
+          "gold_agrees": false,
+          "quote": "BP 162/119mmHg"
+        },
+        {
+          "item_id": "pilot-20261004-0016",
+          "concept": "severe_vomiting",
+          "gold_agrees": false,
+          "quote": "c/o reduced fetal movements"
+        },
+        {
+          "item_id": "pilot-20261004-0018",
+          "concept": "severe_headache",
+          "gold_agrees": false,
+          "quote": "BP 153/102mmHg"
+        }
+      ]
+    },
+    "results\\modal\\natlas-qlora-v1-weighted\\dev-s0.5.pred.jsonl": {
+      "danger_predictions": 31,
+      "flagged": 10,
+      "flagged_and_wrong_by_gold": 8,
+      "vitals_predicted": 0,
+      "vitals_flagged": 0,
+      "vitals_flagged_and_not_in_gold": 0,
+      "flags": [
+        {
+          "item_id": "syn-en-0026",
+          "concept": "severe_headache",
+          "gold_agrees": false
+        },
+        {
+          "item_id": "syn-en-0026",
+          "concept": "unconscious",
+          "gold_agrees": false
+        },
+        {
+          "item_id": "syn-en-0034",
+          "concept": "severe_headache",
+          "gold_agrees": false
+        },
+        {
+          "item_id": "syn-en-0083",
+          "concept": "severe_headache",
+          "gold_agrees": false
+        },
+        {
+          "item_id": "t-yo-yor_f_YHTT1F14_he_spontaneous_235",
+          "concept": "vaginal_bleeding",
+          "gold_agrees": false
+        },
+        {
+          "item_id": "t-yo-yor_f_YHTT1F24_he_spontaneous_224",
+          "concept": "vaginal_bleeding",
+          "gold_agrees": true
+        },
+        {
+          "item_id": "t-yo-yor_m_YHTT1M20_he_spontaneous_230",
+          "concept": "vaginal_bleeding",
+          "gold_agrees": false
+        },
+        {
+          "item_id": "t-yo-yor_f_YHTT1F14_he_spontaneous_235-asr",
+          "concept": "vaginal_bleeding",
+          "gold_agrees": false
+        },
+        {
+          "item_id": "t-yo-yor_f_YHTT1F24_he_spontaneous_099-asr",
+          "concept": "vaginal_bleeding",
+          "gold_agrees": false
+        },
+        {
+          "item_id": "t-yo-yor_f_YHTT1F24_he_spontaneous_224-asr",
+          "concept": "vaginal_bleeding",
+          "gold_agrees": true
+        }
+      ]
+    },
+    "results\\modal\\natlas-qlora-v1-weighted\\pilot-s0.5.pred.jsonl": {
+      "danger_predictions": 10,
+      "flagged": 2,
+      "flagged_and_wrong_by_gold": 2,
+      "vitals_predicted": 8,
+      "vitals_flagged": 0,
+      "vitals_flagged_and_not_in_gold": 0,
+      "flags": [
+        {
+          "item_id": "pilot-20261004-0008",
+          "concept": "severe_headache",
+          "gold_agrees": false,
+          "quote": "had convulsions in last pregnancy"
+        },
+        {
+          "item_id": "pilot-20261004-0009",
+          "concept": "vaginal_bleeding",
+          "gold_agrees": false,
+          "quote": "very ill appearance"
+        }
+      ]
+    },
+    "results\\modal\\natlas-qlora-v1-weighted\\pilot-s0.75.pred.jsonl": {
+      "danger_predictions": 14,
+      "flagged": 0,
+      "flagged_and_wrong_by_gold": 0,
+      "vitals_predicted": 15,
+      "vitals_flagged": 0,
+      "vitals_flagged_and_not_in_gold": 0,
+      "flags": []
+    },
+    "results\\modal\\natlas-qlora-v1-weighted\\pilot.pred.jsonl": {
+      "danger_predictions": 17,
+      "flagged": 1,
+      "flagged_and_wrong_by_gold": 1,
+      "vitals_predicted": 9,
+      "vitals_flagged": 0,
+      "vitals_flagged_and_not_in_gold": 0,
+      "flags": [
+        {
+          "item_id": "pilot-20261004-0018",
+          "concept": "severe_headache",
+          "gold_agrees": false,
+          "quote": "BP 153/102mmHg"
+        }
+      ]
+    },
+    "results\\modal\\natlas-qlora-v1-weighted-fs\\pilot.pred.jsonl": {
+      "danger_predictions": 32,
+      "flagged": 7,
+      "flagged_and_wrong_by_gold": 7,
+      "vitals_predicted": 53,
+      "vitals_flagged": 0,
+      "vitals_flagged_and_not_in_gold": 0,
+      "flags": [
+        {
+          "item_id": "pilot-20261004-0004",
+          "concept": "severe_vomiting",
+          "gold_agrees": false,
+          "quote": "Counselled on birth preparedness."
+        },
+        {
+          "item_id": "pilot-20261004-0008",
+          "concept": "vaginal_bleeding",
+          "gold_agrees": false,
+          "quote": "had convulsions in last pregnancy;"
+        },
+        {
+          "item_id": "pilot-20261004-0011",
+          "concept": "vaginal_bleeding",
+          "gold_agrees": false,
+          "quote": "Cephalic presentation."
+        },
+        {
+          "item_id": "pilot-20261004-0018",
+          "concept": "vaginal_bleeding",
+          "gold_agrees": false,
+          "quote": "TCA 4/52."
+        },
+        {
+          "item_id": "pilot-20261004-0018",
+          "concept": "severe_headache",
+          "gold_agrees": false,
+          "quote": "T 36.8."
+        },
+        {
+          "item_id": "pilot-20261004-0025",
+          "concept": "vaginal_bleeding",
+          "gold_agrees": false,
+          "quote": "TCA 4/52."
+        },
+        {
+          "item_id": "pilot-20261004-0029",
+          "concept": "vaginal_bleeding",
+          "gold_agrees": false,
+          "quote": "hot body in previous pregnancy;"
+        }
+      ]
+    }
+  }
+}

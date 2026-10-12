@@ -103,6 +103,16 @@ General (non-health) speech improved too, on held-out training speakers: Pidgin 
   - records confirmed before the AI draft was asked for (the draft now starts by itself);
   - the hotspot switching itself off (an operations note);
   - an int8 decoding failure on long windows (below).
+- **End to end, 12 Oct** (ADR-0036):
+  - **The setup:** the real app on a phone-sized screen against the hub, playing a recorded 20 s English visit through the microphone.
+  - **What the draft got right:** both spoken danger signs, bleeding and severe headache, and the "Refer now" banner.
+  - **What it got wrong:**
+    - one false sign ("the baby moved well"), flagged for the nurse by the polarity check;
+    - the headache came with the wrong quote;
+    - a temperature was invented from "no fever";
+    - the blood pressure was dropped because its quote did not match the transcript.
+  - **Fixed the same day:** the support check now flags the wrong quote and the invented temperature for the nurse, so the "Please check" list covers every error in that draft.
+  - **Draft time:** 12.9 minutes, with under 2 GB of the laptop's memory free. The operations guide now says to close other programs, and the model call waits up to 14 minutes before retrying (takada-app hub config).
 
 ## 8. Smaller and faster: Tier 2 (ADR-0032, 11 Oct)
 **Speech in int8 (CTranslate2).** Same models and same decoding; only the weights change. The rule was written before measuring: int8 may be at most 3 points worse in WER (upper bound of the CI). The numbers below are the re-check with the windows that ship (`results/asr/int8-dev-recheck.20261011.json`); int8 was 5.5–6.6× faster per clip.
