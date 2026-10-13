@@ -1,9 +1,9 @@
 # Project status and working agreement
 
-_Last updated: 12 Oct 2026, evening (deadline day). Keep this file current; it is the handoff between work sessions (local or cloud)._
+_Last updated: 13 Oct 2026, 02:30 (after submission; judges' sandbox live). Keep this file current; it is the handoff between work sessions (local or cloud)._
 
 ## Resume prompt (paste this into a new session)
-> Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`) from "START HERE (11 Oct)" and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution (the `.githooks/commit-msg` guard rejects "claude", co-author or session lines, so never use a default merge message that names a `claude/...` branch), no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results, and never score the frozen test sets to choose anything. Run `./scripts/ci_local.sh` before every push. The work spans four repos: phc-scribe (model, benchmark, API), takada-app (phone app, clinic hub), scholarship-applications and project-archive; this file's "Zones" table says what is open in each and gives a prompt per zone. Keep only truly human tasks human (labelling, clinical decisions, my approvals); automate the rest robustly. Ask me before anything outward-facing or irreversible (the stage-2 freeze, making a repo public, submitting). Update this file and the resume prompt at the end of every work block.
+> Read `docs/status.md` in phc-scribe (repo `malikbello/phc-scribe`) from "START HERE (13 Oct)" and follow its working agreement exactly: commits as `malikbello <139644523+malikbello@users.noreply.github.com>` with no AI attribution (the `.githooks/commit-msg` guard rejects "claude", co-author or session lines, so never use a default merge message that names a `claude/...` branch), no secrets in chat/code/logs, $0 unless I approve, ADRs for architecture changes, honest results, and never score the frozen test sets to choose anything. Run `./scripts/ci_local.sh` before every push. The work spans four repos: phc-scribe (model, benchmark, API), takada-app (phone app, clinic hub), scholarship-applications and project-archive; this file's "Zones" table says what is open in each and gives a prompt per zone. Keep only truly human tasks human (labelling, clinical decisions, my approvals); automate the rest robustly. Ask me before anything outward-facing or irreversible (the stage-2 freeze, making a repo public, submitting). Update this file and the resume prompt at the end of every work block.
 
 ## Plan to win (agreed 3 Oct, session 6). Submission target 11 Oct; deadline 12 Oct 23:59 WAT
 Malik: "innovate… let us win the hackathon with bright and shining colours"; "the best way without having to rely on people". Labellers: Malik, Rahmat, Success.
@@ -47,6 +47,53 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
 - **BP:** "14/9 doesn't mean 140/90". Shorthand or incomplete BP is never acted on and is flagged for recheck (both nurses, Q3/Q4).
 - **Uyo mapping:** both answered with specific mappings, so the ADR-0019 check can now run with `--confirmed-by`.
 - **Phrases, guide and rules:** 31 change requests, mostly local and lay phrasings (e.g. "running temperature", "serious stomach pain", "spotting", "pale +++", ">3 vomits a day") and follow-up tests (urinalysis every visit; PCV with bleeding). To be applied via a traceability matrix (each note → applied, or declined with a reason).
+
+## START HERE (13 Oct 2026): submitted; judges' sandbox live and QA'd
+**Submitted** to NAIC on 12 Oct before the deadline (Track B, PS3). Both repos are public, and `main` takes changes only through PRs with passing checks.
+
+### Done on 13 Oct
+- **Judges' sandbox:**
+  - **App:** https://takada-app.vercel.app → **Try the AI demo now** (first screen). One tap gives a guest profile paired with the cloud demo hub; drafts come from the fine-tuned N-ATLaS on a GPU.
+  - **API:** https://malikbello--phc-scribe-api-api.modal.run/docs, the live-API address in the submission form. API key in the private file `content/naic-submission/sandbox-access.private.txt`.
+  - **Code:**
+    - Modal apps `phc-scribe-api` (T4, `deploy/modal_demo.py`, scales to zero) and `takada-demo-hub` (CPU, takada-app `deploy/modal_demo_hub.py`, min_containers=1 until 20 Oct);
+    - each phone gets its own demo clinic;
+    - caps of 10 drafts per phone per hour and 25 a day;
+    - demo data is deleted after a day.
+  - **Cost gate:** the Modal spend limit is $0, and $12.21 of credit was left on 13 Oct. Never run `deploy-modal.yml` or `deploy/modal_app.py`: they would put the keyword-only API back at the form address.
+- **Polarity check** for unpunctuated speech (ADR-0030 amendment, PR 51); dev data unchanged.
+- **Live QA:**
+  - **API:** 23 of 23 checks pass (`content/naic-submission/qa_api.py`).
+  - **Site:** all features pass on production (`content/phc-film/tools/qa_site.mjs`). The one real issue, a 20 s "to sync" after sign-off, is fixed (takada-app PR 19).
+- **takada-app:**
+  - "Please check" notes in plain words (PR 16);
+  - the demo hub (PRs 17 and 18);
+  - sync after confirm (PR 19);
+  - the demo on the first screen (PR 20).
+
+### Open
+1. **Malik:**
+   - send `content/naic-submission/email-to-naic-sandbox.md` with the API key pasted in (recommended);
+   - the voice test on the laptop hub (`tonight-checklist.md` section B, with a screen recording);
+   - a look at Modal usage.
+2. **Agent, after the voice test:**
+   - the benchmark report §7 (real-voice results);
+   - reconcile the "recall on real recorded speech" limit: the submitted PDF v1.1 dropped it at Malik's request, and the repo docs still state it;
+   - technical PDF v1.2.
+3. **Film v2,** labelled as updated after submission, in the same Drive folder:
+   - a nurse speaking with a pregnant woman;
+   - consent b-roll and the consent screen;
+   - re-voice "WHO guidance" and "GPU";
+   - a lead-in to the danger hit;
+   - highlight frames instead of red lines;
+   - Malik's offline phone footage.
+4. **After judging (about 20 Oct):** demo hub min_containers to 0; delete the `takada-demo-models` volume (storage accrues even at a $0 limit).
+5. **Housekeeping:**
+   - rotate the maya-ai HF token (check Render first);
+   - a CAC name and trademark search for "PHC Scribe" and "Tákàdá".
+6. **Model, next training round:**
+   - Pidgin severity ("belle dey pain me well well" missed);
+   - Yorùbá normal-movement phrasing ("ọmọ ń mì dáadáa" once marked as reduced movement; flagged by the polarity check).
 
 ## START HERE (12 Oct 2026, deadline day)
 **Deadline:** 12 Oct 23:59 WAT. **Work from `main`.**
