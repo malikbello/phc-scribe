@@ -148,7 +148,7 @@ On the clinic laptop (`results/hub/int8-speech-laptop.20261011.json`):
   8 GB laptops need a distilled model instead (ADR-0032 step 3).
 
 ## 9. Limits
-- **Recall on real recorded speech is not yet measured:** real speech has too few danger signs, and recall comes from S5 and G.
+- **Recall on real recorded speech, early evidence only:** S4-W has too few danger signs to measure recall, so the recall figures come from S5 and G. End to end, the team's recorded English test visit (two danger signs) ran five times: bleeding was found 5 of 5 times and severe headache 4 of 5, with a recurring false "reduced fetal movement" that the polarity check flags (`results/e2e/real-voice.20261013.json`). A labelled study of recorded visits in all three languages is planned.
 - **About 1 in 3 Yorùbá and 1 in 4 Pidgin danger signs are missed (S5).** The nurse confirms every record, and the visit guide prompts the danger-sign questions.
 - **No real-patient clinic use yet.** A pilot needs ethics approval and a data-protection impact assessment (ADR-0033).
 

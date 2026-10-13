@@ -37,5 +37,5 @@
 ## Limits
 Read the [README's limits](../README.md#limits-said-plainly) and the [error taxonomy](error-taxonomy.md) next to the results:
 - danger signs are still missed;
-- recall on real recorded speech is not yet measured;
+- recall on real recorded speech has early evidence only: one recorded test visit, run five times;
 - there has been no clinic pilot yet.

@@ -103,7 +103,7 @@ The sets are labelled as they are:
 
 ## Limits, said plainly
 - **Danger signs are still missed:** about 1 in 3 in Yorùbá statements and 1 in 4 in Pidgin (S5). That is why the nurse confirms every record and the visit guide prompts the danger-sign questions.
-- **Recall on real recorded speech is not yet measured.** Real speech has too few danger signs; S4-W measures false alarms.
+- **Recall on real recorded speech: early evidence only.** The team's recorded English test visit (two danger signs) has run end to end five times, on the laptop hub and in the cloud sandbox: bleeding was found 5 of 5 times, and severe headache 4 of 5. A false "reduced fetal movement" from "the baby moved well" recurs, and the polarity check flags it for the nurse (`results/e2e/real-voice.20261013.json`). Recorded Pidgin and Yorùbá visits and a labelled study across all three languages come next.
 - **Not yet used in a clinic with real patients.** Validation so far:
   - real speech clips and real antenatal teaching sentences;
   - clinical sign-off of the content by a nurse;

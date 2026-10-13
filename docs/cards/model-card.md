@@ -54,7 +54,7 @@ It is the note model of **PHC Scribe** and the **Tákàdá** app, an offline scr
 - Full method and intervals: the PHC Scribe benchmark report.
 
 ## Limits and risks
-- **It misses danger signs:** about 1 in 3 in Yorùbá statements and 1 in 4 in Pidgin. Recall on real recorded speech is not yet measured.
+- **It misses danger signs:** about 1 in 3 in Yorùbá statements and 1 in 4 in Pidgin. On real recorded speech there is early evidence only: one recorded test visit run five times end to end, with bleeding found 5 of 5 times and severe headache 4 of 5.
 - **It can raise a sign the speaker denied** (for example "the baby moves well" drafted as reduced movement). PHC Scribe flags such findings for checking.
 - **Evaluated on antenatal care only,** in Yorùbá, Pidgin and English; Hausa and Igbo are not evaluated.
 - **Not used yet with real patients in a clinic.**

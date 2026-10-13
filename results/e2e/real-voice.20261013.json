@@ -1,0 +1,14 @@
+{
+  "what": "End-to-end runs of the whole system on real recorded speech: the team's own recorded English test visit (a scripted, made-up patient), played into the real Tákàdá app as the microphone, drafted by the shipped stack (N-ATLaS ASR int8 -> fine-tuned N-ATLaS 8B Q4 -> checks -> rules).",
+  "script_danger_signs": ["vaginal_bleeding", "severe_headache"],
+  "script_other": "the baby moved well; no fever; BP 120/80; referral to the general hospital",
+  "note": "A demonstration on one script, not a recall estimate: a labelled study of real recorded visits in all three languages is planned. One 11 Oct recording made with language 'auto' came back as unrelated text; its script is unknown, so it is not scored.",
+  "runs": [
+    {"at": "2026-10-12T00:38", "where": "laptop hub", "vaginal_bleeding": "found", "severe_headache": "found as headache (not severe)", "false_findings": ["reduced_fetal_movement", "fever"], "false_flagged_for_nurse": false, "bp": "120/80 found"},
+    {"at": "2026-10-12T01:22", "where": "laptop hub", "vaginal_bleeding": "found", "severe_headache": "found", "false_findings": ["reduced_fetal_movement"], "false_flagged_for_nurse": true, "bp": "dropped (quote not in transcript); temperature 37 invented, now flagged by the support check (ADR-0036)"},
+    {"at": "2026-10-12T02:01", "where": "laptop hub", "vaginal_bleeding": "found", "severe_headache": "found", "false_findings": ["reduced_fetal_movement"], "false_flagged_for_nurse": true, "bp": "120/80 found"},
+    {"at": "2026-10-13T01:05", "where": "cloud sandbox (GPU)", "vaginal_bleeding": "found", "severe_headache": "found", "false_findings": ["reduced_fetal_movement"], "false_flagged_for_nurse": false, "bp": "120/80 found; pulse 80 read from '120 by 80'"},
+    {"at": "2026-10-13T01:55", "where": "cloud sandbox (GPU), after the ADR-0030 amendment", "vaginal_bleeding": "found", "severe_headache": "found", "false_findings": ["reduced_fetal_movement"], "false_flagged_for_nurse": true, "bp": "found"}
+  ],
+  "summary": {"runs": 5, "vaginal_bleeding_found": "5/5", "severe_headache_found": "4/5 (1 as non-severe headache)", "recurring_false_finding": "reduced_fetal_movement from 'the baby moved well' (5/5); flagged for the nurse in 3/5, and caught by the 13 Oct polarity amendment in unpunctuated speech"}
+}
