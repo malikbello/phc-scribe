@@ -1,0 +1,182 @@
+{
+  "date": "2026-10-13",
+  "dev_sources": [
+    "data\\bench\\pilot.20261004.jsonl",
+    "data\\train\\phrasebank.rare.v0.yaml",
+    "results\\modal\\base\\pilot-b8.pred.jsonl",
+    "results\\modal\\base-q4\\pilot.pred.jsonl",
+    "results\\modal\\natlas-qlora-v1-plain\\pilot.pred.jsonl",
+    "results\\modal\\natlas-qlora-v1-weighted\\pilot-s0.5.pred.jsonl",
+    "results\\modal\\natlas-qlora-v1-weighted\\pilot-s0.75.pred.jsonl",
+    "results\\modal\\natlas-qlora-v1-weighted\\pilot.pred.jsonl",
+    "results\\modal\\natlas-qlora-v1-weighted-fs\\pilot.pred.jsonl"
+  ],
+  "gold": {
+    "positive_findings": 78,
+    "false_flags": 0,
+    "false_flag_quotes": [],
+    "absent_findings": 40,
+    "absent_quotes_flagged_if_marked_present": 32,
+    "missed_absent_quotes": [
+      {
+        "source": "phrasebank-yo",
+        "concept": "unconscious",
+        "assertion": "absent",
+        "quote": "Mi ò dákú rí nígbà oyún yìí"
+      },
+      {
+        "source": "phrasebank-yo",
+        "concept": "unconscious",
+        "assertion": "absent",
+        "quote": "mi ò dákú"
+      },
+      {
+        "source": "phrasebank-pcm",
+        "concept": "unconscious",
+        "assertion": "absent",
+        "quote": "I never faint since I get belle"
+      },
+      {
+        "source": "phrasebank-pcm",
+        "concept": "unconscious",
+        "assertion": "absent",
+        "quote": "I no faint"
+      },
+      {
+        "source": "phrasebank-yo",
+        "concept": "convulsions",
+        "assertion": "absent",
+        "quote": "Mi ò ní gìrì rí"
+      },
+      {
+        "source": "phrasebank-pcm",
+        "concept": "convulsions",
+        "assertion": "absent",
+        "quote": "I never get fit before"
+      },
+      {
+        "source": "phrasebank-yo",
+        "concept": "abdominal_pain",
+        "assertion": "absent",
+        "quote": "Ikùn mi kò dùn mí rárá"
+      },
+      {
+        "source": "phrasebank-pcm",
+        "concept": "abdominal_pain",
+        "assertion": "absent",
+        "quote": "Belle no dey pain me at all"
+      }
+    ]
+  },
+  "predictions": {
+    "results\\modal\\base\\pilot-b8.pred.jsonl": {
+      "non_absent_predictions": 62,
+      "flagged": 0,
+      "flagged_and_wrong": 0,
+      "wrong_but_not_flagged": 31,
+      "flags": []
+    },
+    "results\\modal\\base-q4\\pilot.pred.jsonl": {
+      "non_absent_predictions": 57,
+      "flagged": 1,
+      "flagged_and_wrong": 1,
+      "wrong_but_not_flagged": 25,
+      "flags": [
+        {
+          "item_id": "pilot-20261004-0002",
+          "concept": "dizziness",
+          "assertion": "possible",
+          "quote": "nil fits",
+          "cue": "denial",
+          "gold_agrees": false
+        }
+      ]
+    },
+    "results\\modal\\natlas-qlora-v1-plain\\pilot.pred.jsonl": {
+      "non_absent_predictions": 50,
+      "flagged": 3,
+      "flagged_and_wrong": 3,
+      "wrong_but_not_flagged": 21,
+      "flags": [
+        {
+          "item_id": "pilot-20261004-0010",
+          "concept": "abdominal_pain",
+          "assertion": "present",
+          "quote": "denies breathlessness",
+          "cue": "denial",
+          "gold_agrees": false
+        },
+        {
+          "item_id": "pilot-20261004-0015",
+          "concept": "low_back_pain",
+          "assertion": "present",
+          "quote": "denies pain on passing urine; fits: nil; no headache.",
+          "cue": "denial",
+          "gold_agrees": false
+        },
+        {
+          "item_id": "pilot-20261004-0015",
+          "concept": "constipation",
+          "assertion": "present",
+          "quote": "denies pain on passing urine; fits: nil; no headache.",
+          "cue": "denial",
+          "gold_agrees": false
+        }
+      ]
+    },
+    "results\\modal\\natlas-qlora-v1-weighted\\pilot-s0.5.pred.jsonl": {
+      "non_absent_predictions": 18,
+      "flagged": 0,
+      "flagged_and_wrong": 0,
+      "wrong_but_not_flagged": 9,
+      "flags": []
+    },
+    "results\\modal\\natlas-qlora-v1-weighted\\pilot-s0.75.pred.jsonl": {
+      "non_absent_predictions": 37,
+      "flagged": 0,
+      "flagged_and_wrong": 0,
+      "wrong_but_not_flagged": 13,
+      "flags": []
+    },
+    "results\\modal\\natlas-qlora-v1-weighted\\pilot.pred.jsonl": {
+      "non_absent_predictions": 39,
+      "flagged": 1,
+      "flagged_and_wrong": 1,
+      "wrong_but_not_flagged": 15,
+      "flags": [
+        {
+          "item_id": "pilot-20261004-0010",
+          "concept": "abdominal_pain",
+          "assertion": "present",
+          "quote": "denies breathlessness",
+          "cue": "denial",
+          "gold_agrees": false
+        }
+      ]
+    },
+    "results\\modal\\natlas-qlora-v1-weighted-fs\\pilot.pred.jsonl": {
+      "non_absent_predictions": 58,
+      "flagged": 2,
+      "flagged_and_wrong": 2,
+      "wrong_but_not_flagged": 15,
+      "flags": [
+        {
+          "item_id": "pilot-20261004-0005",
+          "concept": "vaginal_bleeding",
+          "assertion": "possible",
+          "quote": "deny gush of fluid per vaginam;",
+          "cue": "denial",
+          "gold_agrees": false
+        },
+        {
+          "item_id": "pilot-20261004-0016",
+          "concept": "leg_oedema",
+          "assertion": "present",
+          "quote": "swollen ankles: nil.",
+          "cue": "denial",
+          "gold_agrees": false
+        }
+      ]
+    }
+  }
+}

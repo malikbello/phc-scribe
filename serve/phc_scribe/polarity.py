@@ -97,10 +97,38 @@ def reads_opposite(concept: str, assertion: str, quote: str) -> str | None:
         normal = _NORMAL[concept]
         if all(normal.search(c) and not _NEGATOR.search(c) for c in clauses):
             return "normal_state"
+        if _movement_normal_unnegated(concept, q):
+            return "normal_state"
         return "denial" if all(_EXPLICIT.search(c) for c in clauses) else None
     if all(_is_denial(c) for c in clauses):
         return "denial"
     return None
+
+
+# Speech recognition writes no punctuation, so one clause can hold a whole visit: "the baby
+# moved well not feverar the bpe is 120 by 80 ..." (the 13 Oct sandbox test). The clause rule
+# above then sees "not" (from "no fever") and stays quiet. For reduced fetal movement, a
+# normal-state phrase with no negator just before it is enough, unless the quote anywhere
+# says movement is reduced ("not moving", "moving less", "ko mi", "no dey move").
+_MOVEMENT = re.compile(r"\b(mov(e|es|ed|ing)?|kick(s|ed|ing)?|mi)\b")
+_LESS_AFTER = re.compile(r"^\W+(less|small|little|a little|no more|any ?more|but not|not much)\b")
+_BEFORE = 25  # characters before a phrase searched for a negator (about four words)
+
+
+def _movement_normal_unnegated(concept: str, q: str) -> bool:
+    if concept != "reduced_fetal_movement":
+        return False
+    unnegated = any(
+        not _NEGATOR.search(q[max(0, m.start() - _BEFORE) : m.start()])
+        for m in _NORMAL[concept].finditer(q)
+    )
+    if not unnegated:
+        return False
+    for v in _MOVEMENT.finditer(q):
+        before = q[max(0, v.start() - _BEFORE) : v.start()]
+        if _NEGATOR.search(before) or _LESS_AFTER.search(q[v.end() :]):
+            return False  # the quote also says movement is reduced: leave the finding alone
+    return True
 
 
 def _is_denial(clause: str) -> bool:
