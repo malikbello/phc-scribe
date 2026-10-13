@@ -80,6 +80,7 @@ The sets are labelled as they are:
   3. The draft comes from the fine-tuned N-ATLaS on a cloud GPU in 1–2 minutes, or seconds once the GPU is awake.
 
   Each phone gets a demo clinic of its own, and demo recordings are deleted after a day. The demo runs on free cloud credit, with up to 10 drafts per phone per hour and 25 a day overall (`deploy/modal_demo.py`; takada-app `deploy/modal_demo_hub.py`).
+- **The live API:** https://malikbello--phc-scribe-api-api.modal.run/docs, with the fine-tuned N-ATLaS on a GPU (API key on request).
 - **Clinic hub on a laptop, with the phone app:** [takada-app `docs/operations.md`](https://github.com/malikbello/takada-app/blob/main/docs/operations.md) (Docker Desktop, one command, then pair a phone with a code).
 - **The API on its own:**
   ```bash

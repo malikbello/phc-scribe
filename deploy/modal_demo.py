@@ -12,9 +12,10 @@ minute, and the demo hub caps AI drafts per phone and per day. The workspace spe
 ($0 out of pocket) stops everything before any charge.
 
     modal run deploy/modal_demo.py::fetch     # once: the GGUF and int8 speech models -> volume
-    modal deploy deploy/modal_demo.py         # https://malikbello--takada-demo-api.modal.run
+    modal deploy deploy/modal_demo.py         # https://malikbello--phc-scribe-api-api.modal.run
 """
 
+import os
 import shutil
 import subprocess
 import sys
@@ -65,7 +66,10 @@ image = (
     .add_local_file("tests/fixtures/smoke_items.jsonl", "/app/tests/fixtures/smoke_items.jsonl")
 )
 
-app = modal.App("takada-demo-api")
+# The app name gives the address: the one in the NAIC form, malikbello--phc-scribe-api-api.modal.run
+# (this replaces the earlier keyword-only API there, deploy/modal_app.py).
+APP = os.environ.get("PHC_DEMO_APP", "phc-scribe-api")
+app = modal.App(APP)
 
 
 @app.function(
@@ -118,7 +122,7 @@ class Api:
     def stop_model(self) -> None:
         self.llm.terminate()
 
-    @modal.asgi_app(label="takada-demo-api")
+    @modal.asgi_app(label=f"{APP}-api")
     def web(self):
         from phc_scribe.api.app import create_app
 
