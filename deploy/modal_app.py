@@ -1,5 +1,9 @@
 """The /v1 API on Modal (ADR-0017). Deployed by .github/workflows/deploy-modal.yml.
 
+Superseded on 13 Oct 2026: deploy/modal_demo.py now serves this address with the fine-tuned
+N-ATLaS on a GPU (the judges' sandbox). Running this file or the workflow would put the
+keyword-only API back in its place.
+
 - CPU container (1 core, 3 GiB): the API, the rules engine and the N-ATLaS ASR models.
   The fine-tuned N-ATLaS extractor is added as a GPU function once it is trained.
 - Scales to zero: it uses credits only while requests are being served.
