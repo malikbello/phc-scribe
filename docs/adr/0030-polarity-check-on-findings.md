@@ -38,3 +38,11 @@ Grounding (pipeline step 4) proves that a finding's quote is in the transcript, 
   - re-measure on the pilot-day transcripts;
   - if precision stays high, a later ADR may let a high-precision cue lower a flagged finding to "possible" instead of only noting it;
   - never drop on this check alone.
+
+## Amendment, 13 Oct 2026: unpunctuated speech
+- **The miss:** in the first sandbox test, speech recognition wrote "the baby moved well not feverar the bpe is 120 by 80 …" with no punctuation. The whole visit became one clause, the "not" from "no fever" counted as a negator, and a false `reduced_fetal_movement: present` was not flagged.
+- **The fix:** for reduced fetal movement only, a normal-state phrase with no negator in the four words before it also flags. It stays quiet whenever the quote anywhere says movement is reduced ("not moving", "moves less", "ko mi", "dey move small small"). Tests cover both directions.
+- **Dev data, re-measured** (`results/polarity/dev.20261013.json`): unchanged.
+  - 0 of 78 real findings flagged.
+  - 32 of 40 denials would be caught.
+  - All 7 flagged predictions are wrong by gold.

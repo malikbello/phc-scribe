@@ -68,3 +68,31 @@ def test_absent_findings_are_not_judged():
 def test_possible_and_historical_are_judged_too():
     assert reads_opposite("convulsions", "possible", "fits: nil") == "denial"
     assert reads_opposite("convulsions", "historical", "never had fits") == "denial"
+
+
+# Speech recognition writes no punctuation, so one clause can hold the whole visit.
+@pytest.mark.parametrize(
+    "quote",
+    [
+        # the 13 Oct sandbox test: "no fever" came out as "not feverar"
+        "the baby moved well not feverar the bpe is 120 by 80 i think i need to refer her",
+        "the baby moves well in love with her the bp is 120 by 80",
+        "pikin dey kick well well she no get fever",
+    ],
+)
+def test_flags_normal_movement_in_unpunctuated_speech(quote):
+    assert reads_opposite("reduced_fetal_movement", "present", quote) == "normal_state"
+
+
+@pytest.mark.parametrize(
+    "quote",
+    [
+        "the baby was moving well before but now she is not moving",
+        "she said the baby moved well yesterday but today the baby moves less",
+        "the baby moved well last week today it has not kicked at all",
+        "baby dey move small small since morning she no get fever",
+        "omo inu mi n mi daadaa tele sugbon lonii ko mi rara",
+    ],
+)
+def test_keeps_reduced_movement_said_anywhere_in_the_quote(quote):
+    assert reads_opposite("reduced_fetal_movement", "present", quote) is None
