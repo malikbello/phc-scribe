@@ -74,6 +74,12 @@ The sets are labelled as they are:
   - [`malikbello/N-ATLaS-ASR-NigerianAccentedEnglish-int8-Powered-by-Awarri`](https://huggingface.co/malikbello/N-ATLaS-ASR-NigerianAccentedEnglish-int8-Powered-by-Awarri): the English speech model in int8.
 
 ## Try it
+- **Live demo, no setup:** open **https://takada-app.vercel.app** on a phone or laptop.
+  1. Set up your name, then tap **Try the AI demo**.
+  2. Start a visit, tick consent, and record yourself in English, Pidgin or Yorùbá (made-up visits only).
+  3. The draft comes from the fine-tuned N-ATLaS on a cloud GPU in 1–2 minutes, or seconds once the GPU is awake.
+
+  Each phone gets a demo clinic of its own, and demo recordings are deleted after a day. The demo runs on free cloud credit, with up to 10 drafts per phone per hour and 25 a day overall (`deploy/modal_demo.py`; takada-app `deploy/modal_demo_hub.py`).
 - **Clinic hub on a laptop, with the phone app:** [takada-app `docs/operations.md`](https://github.com/malikbello/takada-app/blob/main/docs/operations.md) (Docker Desktop, one command, then pair a phone with a code).
 - **The API on its own:**
   ```bash
