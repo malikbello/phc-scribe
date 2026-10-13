@@ -78,7 +78,7 @@ GPU budget for the week: about 25 of 30 Kaggle hours (the quota resets weekly).
    - a look at Modal usage.
 2. **Agent, after the voice test:**
    - the benchmark report §7 (real-voice results);
-   - reconcile the "recall on real recorded speech" limit: the submitted PDF v1.1 dropped it at Malik's request, and the repo docs still state it;
+   - add the voice-test runs to `results/e2e/` and the recorded-speech wording (13 Oct: "early evidence only": 5 runs of one English test visit; the submitted PDF v1.1 omits the line);
    - technical PDF v1.2.
 3. **Film v2,** labelled as updated after submission, in the same Drive folder:
    - a nurse speaking with a pregnant woman;
