@@ -37,3 +37,6 @@ takada-app.bundle
 data/train/sft*.jsonl
 # Dev-split predictions quote real WazobiaSpeech transcripts (training data): never committed.
 results/**/dev*.pred.jsonl
+
+# Local agent session files: never commit (rules live in the private workspace)
+.claude/
