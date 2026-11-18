@@ -145,8 +145,13 @@ function buildConceptSelect() {
   const sel = $("concept");
   const groups = [["Danger signs", VOCAB.concepts.filter(c => c.danger_sign)],
                   ["Other ANC findings", VOCAB.concepts.filter(c => !c.danger_sign)]];
-  sel.innerHTML = "<option value=''>Concept…</option>" + groups.map(([g, cs]) =>
-    `<optgroup label="${g}">` + cs.map(c => `<option value="${c.id}">${esc(c.label_en)}</option>`).join("") + "</optgroup>").join("");
+  // Built with DOM nodes, not an HTML string: vocabulary text never runs as markup.
+  sel.replaceChildren(new Option("Concept…", ""), ...groups.map(([g, cs]) => {
+    const og = document.createElement("optgroup");
+    og.label = g;
+    og.append(...cs.map(c => new Option(c.label_en, c.id)));
+    return og;
+  }));
   $("assertions").innerHTML = ASSERTIONS.map(([a, k]) =>
     `<button data-a="${a}">${a} <span class="kbd">${k}</span></button>`).join("");
   $("assertions").querySelectorAll("button").forEach(b => b.onclick = () => setAssertion(b.dataset.a));
