@@ -3,7 +3,7 @@
 //   npm run make-codes -- "Malik Bello:admin" "Nurse Adeola:clinician" "Dr Okafor:clinician" "Tunde:annotator"
 // Paste the two values into Vercel > Project > Settings > Environment Variables.
 // Send each person their own code privately (not in a group chat). Nothing is written to disk.
-import { randomBytes } from "node:crypto";
+import { randomBytes, randomInt } from "node:crypto";
 
 const args = process.argv.slice(2);
 if (!args.length) {
@@ -12,9 +12,8 @@ if (!args.length) {
 }
 const words = ["ewe", "odo", "oko", "ile", "oju", "ina", "omi", "igi", "ayo", "ire", "oba", "ona"];
 const code = () => {
-  const b = randomBytes(10);
-  const w = words[b[0] % words.length];
-  return `${w}-${b.subarray(1).toString("base64url").slice(0, 12)}`;
+  const w = words[randomInt(words.length)]; // uniform; `byte % 12` would favour some words
+  return `${w}-${randomBytes(9).toString("base64url").slice(0, 12)}`;
 };
 const seen = new Set();
 const reviewers = args.map((a) => {
